@@ -1,0 +1,341 @@
+/* ─── Fluir · Components ────────────────────────────────────────────────── */
+
+/* ── Buttons ── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: normal;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-subtle);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:hover  { background: var(--bg-surface); border-color: var(--border-strong); }
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+  background: var(--color-cyan-bg);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+.btn--primary:hover { background: #122a30; }
+
+.btn--success {
+  background: var(--color-green-bg);
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.btn--danger {
+  background: var(--color-red-bg);
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+.btn--amber {
+  background: var(--color-amber-bg);
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+.btn--ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+
+.btn--full { width: 100%; }
+
+.btn--lg {
+  font-size: var(--text-base);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+}
+
+.btn--sm {
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Cards ── */
+
+.card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+}
+
+.card--raised {
+  background: var(--bg-raised);
+}
+
+.card--interactive {
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.card--interactive:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-raised);
+}
+
+.card--interactive:active { transform: scale(0.99); }
+
+/* ── Chapter cards ── */
+
+.chapter-card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  text-decoration: none;
+  margin-bottom: var(--space-3);
+}
+
+.chapter-card:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-raised);
+  text-decoration: none;
+}
+
+.chapter-card:active { transform: scale(0.99); }
+
+.chapter-card--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chapter-card--complete {
+  border-color: var(--color-green);
+}
+
+.chapter-card__number {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  color: var(--color-purple);
+  flex-shrink: 0;
+}
+
+.chapter-card--complete .chapter-card__number {
+  background: var(--color-green-bg);
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.chapter-card__body { flex: 1; min-width: 0; }
+
+.chapter-card__title {
+  font-size: var(--text-base);
+  color: var(--text-bright);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapter-card__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.chapter-card__arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Answer options ── */
+
+.option {
+  width: 100%;
+  display: block;
+  background: var(--bg-raised);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+  margin-bottom: var(--space-3);
+  line-height: 1.4;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--bg-surface);
+}
+
+.option:active:not(:disabled) { transform: scale(0.99); }
+
+.option.correct {
+  background: var(--color-green-bg);
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.option.wrong {
+  background: var(--color-red-bg);
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+.option.reveal {
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+  background: var(--color-amber-bg);
+}
+
+.option:disabled { cursor: default; }
+
+/* ── Text input ── */
+
+.text-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  color: var(--color-amber);
+  outline: none;
+  transition: border-color var(--transition-fast);
+  caret-color: var(--color-cyan);
+}
+
+.text-input:focus { border-color: var(--color-cyan); }
+.text-input::placeholder { color: var(--text-faint); font-family: var(--font-sans); font-size: var(--text-base); }
+.text-input.correct { border-color: var(--color-green); color: var(--color-green); }
+.text-input.wrong   { border-color: var(--color-red);   color: var(--color-red); }
+
+/* ── Feedback banner ── */
+
+.feedback {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  display: none;
+  margin-bottom: var(--space-4);
+}
+
+.feedback.show   { display: block; }
+.feedback.correct { background: var(--color-green-bg); color: var(--color-green); border: 0.5px solid var(--color-green); }
+.feedback.wrong   { background: var(--color-red-bg);   color: var(--color-red);   border: 0.5px solid var(--color-red); }
+.feedback.info    { background: var(--color-cyan-bg);  color: var(--color-cyan);  border: 0.5px solid var(--color-cyan); }
+
+/* ── Divider ── */
+
+.divider {
+  height: 1px;
+  background: var(--border-muted);
+  margin: var(--space-5) 0;
+}
+
+/* ── Metric chips ── */
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.metric {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.metric__value {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--text-bright);
+  line-height: 1.2;
+}
+
+.metric__label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+/* ── Game chrome ── */
+
+.game-type-tag {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+}
+
+.game-prompt {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+} */
+
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--space-4));
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+  opacity: 0;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

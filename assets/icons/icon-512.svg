@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="61.44" fill="#181a1f"/>
+  <rect width="512" height="512" rx="61.44" fill="url(#diag)" opacity="0.4"/>
+  <defs>
+    <pattern id="diag" x="0" y="0" width="30.72" height="30.72" patternUnits="userSpaceOnUse">
+      <path d="M-1,1 l2,-2 M0,30.72 l30.72,-30.72 M29.72,31.72 l2,-2" stroke="#323843" stroke-width="0.8" fill="none"/>
+    </pattern>
+  </defs>
+  <text x="256" y="302.08" text-anchor="middle"
+        font-family="Georgia, 'Palatino Linotype', serif"
+        font-size="266.24" fill="#c678dd" font-weight="normal">F</text>
+  <text x="256" y="450.56" text-anchor="middle"
+        font-family="Verdana, Geneva, sans-serif"
+        font-size="61.44" fill="#5c6370" letter-spacing="1">fluir</text>
+</svg>

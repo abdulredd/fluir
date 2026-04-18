@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#181a1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fluir">
+  <meta name="description" content="A companion app for Complete Spanish Step-by-Step">
+
+  <title>Fluir</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.svg">
+
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+
+  <style>
+    /* Toggle switch for settings */
+    .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle__track {
+      position: absolute; inset: 0;
+      background: var(--bg-raised);
+      border: 0.5px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background var(--transition-base), border-color var(--transition-base);
+    }
+    .toggle__track::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: transform var(--transition-base), background var(--transition-base);
+    }
+    .toggle input:checked + .toggle__track { background: var(--color-cyan-bg); border-color: var(--color-cyan); }
+    .toggle input:checked + .toggle__track::after { transform: translateX(20px); background: var(--color-cyan); }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <a id="topbar-logo" class="topbar__logo" href="#/">Fluir</a>
+      <div class="topbar__meta">
+        <div id="topbar-streak" style="color:var(--color-amber);font-size:var(--text-xs)"></div>
+        <div style="color:var(--text-muted);font-size:var(--text-xs)">Complete Spanish Step-by-Step</div>
+      </div>
+    </header>
+
+    <!-- Main content — pages render here -->
+    <main id="main-content" style="flex:1"></main>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+
+      <button class="nav-item active" data-route="/" aria-label="Home">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+          <polyline points="9 21 9 12 15 12 15 21"/>
+        </svg>
+        Home
+      </button>
+
+      <button class="nav-item" data-route="/training" aria-label="Practice">
+        <svg viewBox="0 0 24 24">
+          <path d="M6.5 6.5h1v11h-1z"/>
+          <path d="M16.5 6.5h1v11h-1z"/>
+          <path d="M4 8.5h3v7H4z" stroke-linejoin="round"/>
+          <path d="M17 8.5h3v7h-3z" stroke-linejoin="round"/>
+          <line x1="7" y1="12" x2="17" y2="12"/>
+        </svg>
+        Practice
+      </button>
+
+      <button class="nav-item" data-route="/progress" aria-label="Progress">
+        <svg viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6"  y1="20" x2="6"  y2="14"/>
+        </svg>
+        Progress
+      </button>
+
+      <button class="nav-item" data-route="/settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+        Settings
+      </button>
+
+    </nav>
+
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Anki export dependencies (vendored locally for offline support) -->
+  <script src="/js/vendor/sql-wasm.min.js"></script>
+  <script src="/js/vendor/jszip.min.js"></script>
+
+  <!-- Service worker: register in production, actively clean up on localhost -->
+  <script>
+    (function () {
+      if (!('serviceWorker' in navigator)) return;
+      const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (isLocal) {
+        /* Unregister any stale SW and wipe its caches so dev reloads are clean */
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister());
+        });
+        if (window.caches) {
+          caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+        }
+        return;
+      }
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .catch(err => console.warn('[Fluir] SW registration failed:', err));
+      });
+    })();
+  </script>
+
+  <!-- App boot -->
+  <script type="module" src="/js/app.js"></script>
+
+</body>
+</html>
