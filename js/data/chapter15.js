@@ -329,6 +329,19 @@ const SUBLESSON_15_4 = {
     { sentence:'¿___ explicaste? (te + la)',                           answer:'Te la',   choices:['Te la','Se la','Me la','Nos la'],     fills:['Te la'],   en:'Did you explain it to yourself / to you?',      rule:'te (to you) + la (it, fem.) → te la' },
     { sentence:'Ana ___ trae a sus amigas. (les + los → se)',          answer:'se los',  choices:['se los','les los','me los','te los'],  fills:['se los'],  en:'Ana brings them to her friends.',               rule:'les + los → se los' },
   ],
+
+  readingVocab: [
+    { id:'rv15_1',  es:'averiguar',       en:'to check / to verify / to find out' },
+    { id:'rv15_2',  es:'darse cuenta de', en:'to realize' },
+    { id:'rv15_3',  es:'valer',           en:'to be worth' },
+    { id:'rv15_4',  es:'el arte',         en:'the art' },
+    { id:'rv15_5',  es:'hábil',           en:'skillful / capable' },
+    { id:'rv15_6',  es:'propio',          en:'one\'s own' },
+    { id:'rv15_7',  es:'la rabia',        en:'the rage / anger' },
+    { id:'rv15_8',  es:'la investigación',en:'the investigation / research' },
+    { id:'rv15_9',  es:'sabio',           en:'wise' },
+    { id:'rv15_10', es:'la defensa',      en:'the defense' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

@@ -337,6 +337,19 @@ const SUBLESSON_13_4 = {
     { sentence:'Aunque ___ difícil, él lo puede hacer.',   answer:'sea',      choices:['sea','es','estar','fue'],              fills:['sea'],      en:'Although it may be difficult, he can do it.', rule:'aunque + hypothetical → subjunctive; ser irregular: sea' },
     { sentence:'Aunque ___ enfermo, va al trabajo.',       answer:'está',     choices:['está','esté','estar','estaba'],        fills:['está'],     en:'Although he is sick, he goes to work.',     rule:'aunque + known fact → indicative' },
   ],
+
+  readingVocab: [
+    { id:'rv13_1',  es:'agradecer',       en:'to thank / to be grateful for' },
+    { id:'rv13_2',  es:'despedirse',      en:'to say goodbye / to take leave' },
+    { id:'rv13_3',  es:'el abrazo',       en:'the embrace / hug' },
+    { id:'rv13_4',  es:'el cariño',       en:'the affection / fondness' },
+    { id:'rv13_5',  es:'la despedida',    en:'the farewell / goodbye' },
+    { id:'rv13_6',  es:'la soledad',      en:'the solitude / loneliness' },
+    { id:'rv13_7',  es:'el calor humano', en:'human warmth' },
+    { id:'rv13_8',  es:'lo antiguo',      en:'the ancient / what is old' },
+    { id:'rv13_9',  es:'lo histórico',    en:'the historic / what is historical' },
+    { id:'rv13_10', es:'realmente',       en:'actually / really' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

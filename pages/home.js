@@ -5,27 +5,55 @@ import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
 
 const CHAPTERS = ALL_CHAPTERS;
 
+function getWeekDays(progress) {
+  const todayDate = new Date();
+  const todayStr  = todayDate.toISOString().split('T')[0];
+
+  // Monday of current week
+  const dow    = todayDate.getDay();
+  const offset = dow === 0 ? -6 : 1 - dow;
+  const monday = new Date(todayDate);
+  monday.setDate(todayDate.getDate() + offset);
+
+  // Build set of studied dates from streak + lastStudyDate
+  const studied = new Set();
+  if (progress.lastStudyDate && progress.currentStreak > 0) {
+    const last = new Date(progress.lastStudyDate + 'T12:00:00');
+    for (let i = 0; i < progress.currentStreak; i++) {
+      const d = new Date(last);
+      d.setDate(last.getDate() - i);
+      studied.add(d.toISOString().split('T')[0]);
+    }
+  }
+
+  return ['M','T','W','T','F','S','S'].map((label, i) => {
+    const date    = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const dateStr = date.toISOString().split('T')[0];
+    return { label, lit: studied.has(dateStr), future: dateStr > todayStr };
+  });
+}
+
 function renderHome(container) {
   const progress  = Store.getProgress();
-  const today     = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   const completed = progress.chaptersComplete.length;
   const total     = CHAPTERS.length;
   const pct       = Math.round((completed / total) * 100);
+  const weekDays  = getWeekDays(progress);
 
   container.innerHTML = `
     <div class="page active" id="page-home">
 
-      <div class="streak-bar">
-        <div class="streak-bar__flame">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${progress.currentStreak > 0 ? 'var(--color-amber)' : 'var(--text-muted)'}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2c0 0-5 5-5 10a5 5 0 0010 0c0-2-1-4-2-5 0 2-1 3-3 3s-2-2-2-4c0 0 1 2 2 1z"/>
-          </svg>
-          <div>
-            <div class="streak-bar__count">${progress.currentStreak}</div>
-            <div class="streak-bar__label">day streak</div>
+      <div class="week-streak">
+        ${weekDays.map(d => `
+          <div class="week-streak__day">
+            <div class="week-streak__label">${d.label}</div>
+            ${d.lit
+              ? `<div class="week-streak__flame">🔥</div>`
+              : `<div class="week-streak__dot ${d.future ? 'week-streak__dot--future' : ''}"></div>`
+            }
           </div>
-        </div>
-        <div class="streak-bar__date">${today}</div>
+        `).join('')}
       </div>
 
       <div class="metrics-row">

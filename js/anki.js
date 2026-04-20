@@ -9,40 +9,90 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from './store.js';
-import CHAPTER_1, { SUBLESSON_1, SUBLESSON_2, SUBLESSON_3 } from './data/chapter1.js';
+import CHAPTER_1  from './data/chapter1.js';
+import CHAPTER_2  from './data/chapter2.js';
+import CHAPTER_3  from './data/chapter3.js';
+import CHAPTER_4  from './data/chapter4.js';
+import CHAPTER_5  from './data/chapter5.js';
+import CHAPTER_6  from './data/chapter6.js';
+import CHAPTER_7  from './data/chapter7.js';
+import CHAPTER_8  from './data/chapter8.js';
+import CHAPTER_9  from './data/chapter9.js';
+import CHAPTER_10 from './data/chapter10.js';
+import CHAPTER_11 from './data/chapter11.js';
+import CHAPTER_12 from './data/chapter12.js';
+import CHAPTER_13 from './data/chapter13.js';
+import CHAPTER_14 from './data/chapter14.js';
+import CHAPTER_15 from './data/chapter15.js';
 
-const CHAPTERS = { 1: CHAPTER_1 };
+const CHAPTERS = {
+  1: CHAPTER_1,   2: CHAPTER_2,   3: CHAPTER_3,   4: CHAPTER_4,   5: CHAPTER_5,
+  6: CHAPTER_6,   7: CHAPTER_7,   8: CHAPTER_8,   9: CHAPTER_9,   10: CHAPTER_10,
+  11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15,
+};
+
+const VOCAB_KEYS = [
+  'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
+  'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
+  'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
+  'readingVocab',
+];
 
 /* ── sql.js and JSZip are loaded via CDN script tags in index.html ── */
 
 /* ════════════════════════════════════════════════════════════════════════════
+   Normalize a raw item from any vocab array into a consistent card shape
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function normalizeItem(raw, chapterId, arrayKey) {
+  /* Verbs use `infinitive` as the Spanish term */
+  const es = raw.es || raw.infinitive || '';
+  /* Generate a stable id if the item doesn't have one */
+  const id = raw.id || `${chapterId}_${arrayKey}_${es.replace(/\s+/g, '_')}`;
+  return {
+    id,
+    es,
+    en:         raw.en || '',
+    article:    raw.article || '',
+    gender:     raw.gender  || 'n',
+    plural:     raw.plural  || '',
+    ex:         raw.ex      || raw.example || '',
+    exEn:       raw.exEn    || '',
+    rule:       raw.rule    || '',
+    arrayKey,
+    chapterId,
+  };
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
    Main export function
-   Called from settings.js with a scope object: { chapterIds: [1] | 'all' }
+   Called from settings.js with a scope object: { chapterIds: [1,2,...] | 'all' }
    ════════════════════════════════════════════════════════════════════════════ */
 
 async function exportToAnki(scope = { chapterIds: 'all' }) {
   const queue = Store.getAnkiQueue();
 
-  /* Gather all vocab items to export */
-  const allCards = [];
-
   const chapterIds = scope.chapterIds === 'all'
     ? Object.keys(CHAPTERS).map(Number)
     : scope.chapterIds;
+
+  /* Gather all vocab items to export */
+  const allCards = [];
 
   chapterIds.forEach(cid => {
     const chapter = CHAPTERS[cid];
     if (!chapter) return;
     chapter.sublessons.forEach(sl => {
-      const vocab = [
-        ...(sl.vocabulary  || []),
-        ...(sl.adjectives  || []),
-      ];
-      vocab.forEach(v => {
-        /* Only export pending — never duplicate */
-        if (queue.pending.includes(v.id) || scope.forceAll) {
-          allCards.push({ ...v, chapterId: cid, chapterTitle: chapter.title });
-        }
+      VOCAB_KEYS.forEach(key => {
+        const arr = sl[key];
+        if (!arr?.length) return;
+        arr.forEach(raw => {
+          const card = normalizeItem(raw, cid, key);
+          if (!card.es) return; /* skip items with no Spanish term */
+          if (queue.pending.includes(card.id) || scope.forceAll) {
+            allCards.push({ ...card, chapterTitle: chapter.title });
+          }
+        });
       });
     });
   });
@@ -93,19 +143,8 @@ async function buildApkg(cards, chapterIds) {
   const confJson   = buildConfJson(deckId);
 
   db.run(`INSERT INTO col VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`, [
-    colId,           /* id */
-    now,             /* crt */
-    now,             /* mod */
-    now,             /* scm */
-    11,              /* ver */
-    0,               /* dty */
-    0,               /* usn */
-    0,               /* ls */
-    confJson,        /* conf */
-    modelsJson,      /* models */
-    decksJson,       /* decks */
-    '{}',            /* dconf */
-    '[]',            /* tags */
+    colId, now, now, now, 11, 0, 0, 0,
+    confJson, modelsJson, decksJson, '{}', '[]',
   ]);
 
   /* ── Insert notes and cards ── */
@@ -114,43 +153,16 @@ async function buildApkg(cards, chapterIds) {
     const cardId  = now + 200 + i;
     const front   = buildFront(card);
     const back    = buildBack(card);
-    const sfld    = card.es || card.word || '';
+    const sfld    = card.es || '';
     const fields  = `${front}\x1f${back}`;
     const tags    = buildTags(card);
 
     db.run(`INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?,?,?)`, [
-      noteId,       /* id */
-      guid(noteId), /* guid */
-      modelId,      /* mid */
-      now,          /* mod */
-      -1,           /* usn */
-      tags,         /* tags */
-      fields,       /* flds */
-      sfld,         /* sfld */
-      0,            /* csum */
-      0,            /* flags */
-      '',           /* data */
+      noteId, guid(noteId), modelId, now, -1, tags, fields, sfld, 0, 0, '',
     ]);
 
     db.run(`INSERT INTO cards VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [
-      cardId,   /* id */
-      noteId,   /* nid */
-      deckId,   /* did */
-      0,        /* ord */
-      now,      /* mod */
-      -1,       /* usn */
-      0,        /* type */
-      0,        /* queue */
-      0,        /* due */
-      0,        /* ivl */
-      2500,     /* factor */
-      0,        /* reps */
-      0,        /* lapses */
-      0,        /* left */
-      0,        /* odue */
-      0,        /* odid */
-      0,        /* flags */
-      '',       /* data */
+      cardId, noteId, deckId, 0, now, -1, 0, 0, 0, 0, 2500, 0, 0, 0, 0, 0, 0, '',
     ]);
   });
 
@@ -171,47 +183,39 @@ async function buildApkg(cards, chapterIds) {
    ════════════════════════════════════════════════════════════════════════════ */
 
 function buildFront(card) {
-  const article = card.article || '';
-  const word    = card.es || '';
+  const isVerb = card.arrayKey === 'verbs' || card.arrayKey === 'movementVerbs' ||
+                 card.arrayKey === 'reciprocalVerbs' || card.arrayKey === 'emotionVerbs' ||
+                 card.arrayKey === 'commandVerbs' || card.arrayKey === 'readingVocab';
+  const article = card.article && card.article !== 'el/la' ? card.article + ' ' : '';
   const gender  = card.gender === 'm' ? 'masculine' : card.gender === 'f' ? 'feminine' : '';
 
-  if (article && article !== 'el/la') {
-    return `<div style="text-align:center;font-family:Georgia,serif;font-size:2em;color:#e5c07b">${article} ${word}</div>${gender ? `<div style="text-align:center;font-size:0.8em;color:#5c6370;margin-top:6px">${gender}</div>` : ''}`;
-  }
-  return `<div style="text-align:center;font-family:Georgia,serif;font-size:2em;color:#e5c07b">${word}</div>`;
+  return `<div style="text-align:center;font-family:Georgia,serif;font-size:2em;color:#e5c07b">${article}${card.es}</div>${gender && !isVerb ? `<div style="text-align:center;font-size:0.8em;color:#5c6370;margin-top:6px">${gender}</div>` : ''}`;
 }
 
 function buildBack(card) {
-  const en      = card.en    || '';
-  const article = card.article || '';
-  const word    = card.es    || '';
-  const plural  = card.plural ? `<div style="font-size:0.8em;color:#5c6370;margin-top:4px">plural: ${card.gender === 'm' ? 'los' : 'las'} ${card.plural}</div>` : '';
-  const example = card.ex ? `
+  const article  = card.article && card.article !== 'el/la' ? card.article + ' ' : '';
+  const plural   = card.plural ? `<div style="font-size:0.8em;color:#5c6370;margin-top:4px">plural: ${card.gender === 'm' ? 'los' : 'las'} ${card.plural}</div>` : '';
+  const example  = card.ex ? `
     <div style="margin:10px 0;padding:8px 10px;background:#181a1f;border-radius:5px;text-align:left">
       <div style="font-family:Georgia,serif;font-size:0.95em;color:#e5c07b">${card.ex}</div>
       <div style="font-size:0.75em;color:#5c6370;margin-top:3px">${card.exEn || ''}</div>
     </div>` : '';
-  const ruleKey = card.rule  || '';
   const ruleMap = {
-    ends_o:       'Ends in -o → masculine',
-    ends_a:       'Ends in -a → feminine',
-    ends_cion:    'Ends in -ción → feminine',
-    ends_sion:    'Ends in -sión → feminine',
-    ends_dad:     'Ends in -dad → feminine',
-    ends_tad:     'Ends in -tad → feminine',
-    ends_tud:     'Ends in -tud → feminine',
-    masc_a_excep: 'Exception: ends in -a but masculine',
-    fem_o_excep:  'Exception: ends in -o but feminine',
-    masc_irreg:   'Irregular masculine — memorize with article',
-    fem_irreg:    'Irregular feminine — memorize with article',
-    ista_gender:  'Ends in -ista — article shows gender',
-    nte_gender:   'Ends in -nte — article shows gender',
+    ends_o: 'Ends in -o → masculine', ends_a: 'Ends in -a → feminine',
+    ends_cion: 'Ends in -ción → feminine', ends_sion: 'Ends in -sión → feminine',
+    ends_dad: 'Ends in -dad → feminine', ends_tad: 'Ends in -tad → feminine',
+    ends_tud: 'Ends in -tud → feminine', masc_a_excep: 'Exception: ends in -a but masculine',
+    fem_o_excep: 'Exception: ends in -o but feminine',
+    masc_irreg: 'Irregular masculine — memorize with article',
+    fem_irreg: 'Irregular feminine — memorize with article',
+    ista_gender: 'Ends in -ista — article shows gender',
+    nte_gender: 'Ends in -nte — article shows gender',
   };
-  const ruleNote = ruleMap[ruleKey] ? `<div style="font-size:0.75em;color:#56b6c2;margin-top:8px;font-style:italic">${ruleMap[ruleKey]}</div>` : '';
+  const ruleNote = ruleMap[card.rule] ? `<div style="font-size:0.75em;color:#56b6c2;margin-top:8px;font-style:italic">${ruleMap[card.rule]}</div>` : '';
 
   return `<div style="text-align:center">
-    <div style="font-family:Georgia,serif;font-size:1.8em;color:#e5c07b">${article && article !== 'el/la' ? article + ' ' : ''}${word}</div>
-    <div style="font-size:1.1em;color:#abb2bf;margin-top:6px">${en}</div>
+    <div style="font-family:Georgia,serif;font-size:1.8em;color:#e5c07b">${article}${card.es}</div>
+    <div style="font-size:1.1em;color:#abb2bf;margin-top:6px">${card.en}</div>
     ${plural}
     ${example}
     ${ruleNote}
@@ -220,7 +224,7 @@ function buildBack(card) {
 }
 
 function buildTags(card) {
-  const tags = [`fluir`, `chapter${card.chapterId}`];
+  const tags = [`fluir`, `chapter${card.chapterId}`, card.arrayKey];
   if (card.gender === 'm') tags.push('masculine');
   if (card.gender === 'f') tags.push('feminine');
   if (card.rule)           tags.push(card.rule.replace(/_/g, '-'));
@@ -233,74 +237,31 @@ function buildTags(card) {
 
 function createSchema(db) {
   db.run(`CREATE TABLE IF NOT EXISTS col (
-    id    INTEGER PRIMARY KEY,
-    crt   INTEGER NOT NULL,
-    mod   INTEGER NOT NULL,
-    scm   INTEGER NOT NULL,
-    ver   INTEGER NOT NULL,
-    dty   INTEGER NOT NULL,
-    usn   INTEGER NOT NULL,
-    ls    INTEGER NOT NULL,
-    conf  TEXT NOT NULL,
-    models TEXT NOT NULL,
-    decks TEXT NOT NULL,
-    dconf TEXT NOT NULL,
-    tags  TEXT NOT NULL
+    id INTEGER PRIMARY KEY, crt INTEGER NOT NULL, mod INTEGER NOT NULL,
+    scm INTEGER NOT NULL, ver INTEGER NOT NULL, dty INTEGER NOT NULL,
+    usn INTEGER NOT NULL, ls INTEGER NOT NULL, conf TEXT NOT NULL,
+    models TEXT NOT NULL, decks TEXT NOT NULL, dconf TEXT NOT NULL, tags TEXT NOT NULL
   )`);
-
   db.run(`CREATE TABLE IF NOT EXISTS notes (
-    id    INTEGER PRIMARY KEY,
-    guid  TEXT NOT NULL,
-    mid   INTEGER NOT NULL,
-    mod   INTEGER NOT NULL,
-    usn   INTEGER NOT NULL,
-    tags  TEXT NOT NULL,
-    flds  TEXT NOT NULL,
-    sfld  INTEGER NOT NULL,
-    csum  INTEGER NOT NULL,
-    flags INTEGER NOT NULL,
-    data  TEXT NOT NULL
+    id INTEGER PRIMARY KEY, guid TEXT NOT NULL, mid INTEGER NOT NULL,
+    mod INTEGER NOT NULL, usn INTEGER NOT NULL, tags TEXT NOT NULL,
+    flds TEXT NOT NULL, sfld INTEGER NOT NULL, csum INTEGER NOT NULL,
+    flags INTEGER NOT NULL, data TEXT NOT NULL
   )`);
-
   db.run(`CREATE TABLE IF NOT EXISTS cards (
-    id    INTEGER PRIMARY KEY,
-    nid   INTEGER NOT NULL,
-    did   INTEGER NOT NULL,
-    ord   INTEGER NOT NULL,
-    mod   INTEGER NOT NULL,
-    usn   INTEGER NOT NULL,
-    type  INTEGER NOT NULL,
-    queue INTEGER NOT NULL,
-    due   INTEGER NOT NULL,
-    ivl   INTEGER NOT NULL,
-    factor INTEGER NOT NULL,
-    reps  INTEGER NOT NULL,
-    lapses INTEGER NOT NULL,
-    left  INTEGER NOT NULL,
-    odue  INTEGER NOT NULL,
-    odid  INTEGER NOT NULL,
-    flags INTEGER NOT NULL,
-    data  TEXT NOT NULL
+    id INTEGER PRIMARY KEY, nid INTEGER NOT NULL, did INTEGER NOT NULL,
+    ord INTEGER NOT NULL, mod INTEGER NOT NULL, usn INTEGER NOT NULL,
+    type INTEGER NOT NULL, queue INTEGER NOT NULL, due INTEGER NOT NULL,
+    ivl INTEGER NOT NULL, factor INTEGER NOT NULL, reps INTEGER NOT NULL,
+    lapses INTEGER NOT NULL, left INTEGER NOT NULL, odue INTEGER NOT NULL,
+    odid INTEGER NOT NULL, flags INTEGER NOT NULL, data TEXT NOT NULL
   )`);
-
   db.run(`CREATE TABLE IF NOT EXISTS revlog (
-    id      INTEGER PRIMARY KEY,
-    cid     INTEGER NOT NULL,
-    usn     INTEGER NOT NULL,
-    ease    INTEGER NOT NULL,
-    ivl     INTEGER NOT NULL,
-    lastIvl INTEGER NOT NULL,
-    factor  INTEGER NOT NULL,
-    time    INTEGER NOT NULL,
-    type    INTEGER NOT NULL
+    id INTEGER PRIMARY KEY, cid INTEGER NOT NULL, usn INTEGER NOT NULL,
+    ease INTEGER NOT NULL, ivl INTEGER NOT NULL, lastIvl INTEGER NOT NULL,
+    factor INTEGER NOT NULL, time INTEGER NOT NULL, type INTEGER NOT NULL
   )`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS graves (
-    usn  INTEGER NOT NULL,
-    oid  INTEGER NOT NULL,
-    type INTEGER NOT NULL
-  )`);
-
+  db.run(`CREATE TABLE IF NOT EXISTS graves (usn INTEGER NOT NULL, oid INTEGER NOT NULL, type INTEGER NOT NULL)`);
   db.run(`CREATE INDEX IF NOT EXISTS ix_notes_usn ON notes (usn)`);
   db.run(`CREATE INDEX IF NOT EXISTS ix_cards_usn ON cards (usn)`);
   db.run(`CREATE INDEX IF NOT EXISTS ix_cards_nid ON cards (nid)`);
@@ -338,11 +299,7 @@ function buildModelsJson(modelId, now) {
         { name: 'Front', ord: 0, sticky: false, rtl: false, font: 'Arial', size: 20, media: [] },
         { name: 'Back',  ord: 1, sticky: false, rtl: false, font: 'Arial', size: 20, media: [] },
       ],
-      css: `
-        .card { font-family: arial; font-size: 20px; text-align: center;
-                color: #abb2bf; background-color: #282c34; }
-        .card1 { background-color: #21252b; }
-      `,
+      css: `.card { font-family: arial; font-size: 20px; text-align: center; color: #abb2bf; background-color: #282c34; } .card1 { background-color: #21252b; }`,
       latexPre:  '\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n',
       latexPost: '\\end{document}',
       tags: [], vers: [],

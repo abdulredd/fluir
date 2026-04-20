@@ -52,10 +52,12 @@
   color: var(--color-amber);
 }
 
-.btn--ghost {
+.btn--ghost,
+.btn--ghost.btn--sm {
   background: transparent;
   border-color: transparent;
   color: var(--text-muted);
+  padding-inline: 0 var(--space-3);
 }
 .btn--ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
 
@@ -316,6 +318,113 @@
   margin-bottom: var(--space-4);
   line-height: 1.5;
 } */
+
+/* ── Confirm sheet ── */
+
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  animation: fade-in 0.15s ease;
+}
+
+.confirm-sheet {
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  animation: fade-in 0.15s ease;
+}
+
+.confirm-sheet__title {
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.confirm-sheet__body {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-6);
+}
+
+.confirm-sheet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── Vocab browser cards ── */
+
+.vocab-card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  min-height: 72px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: border-color var(--transition-base);
+}
+
+.vocab-card[data-flipped="true"] {
+  border-color: var(--color-amber);
+  background: var(--color-amber-bg);
+}
+
+.vocab-card__front,
+.vocab-card__back {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vocab-card[data-flipped="true"] .vocab-card__front,
+.vocab-card[data-flipped="false"] .vocab-card__back {
+  display: none;
+}
+
+.vocab-card__es {
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.vocab-card__en {
+  font-size: var(--text-sm);
+  color: var(--color-amber);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.vocab-card__sub {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
 
 .toast {
   position: fixed;

@@ -306,6 +306,28 @@ const SUBLESSON_11_4 = {
       forms:{ yo:'visito',     tu:'visitas',     el:'visita',    nos:'visitamos',  vos:'visitáis',  ellos:'visitan'    },
       ex:'Los ingleses van a visitar los Estados Unidos.', exEn:'The English are going to visit the United States.' },
   ],
+
+  readingVocab: [
+    { id:'rv11_1',  es:'abrazar',         en:'to embrace / to hug' },
+    { id:'rv11_2',  es:'bajarse de',      en:'to get off / to get out of' },
+    { id:'rv11_3',  es:'recoger',         en:'to pick up / to collect' },
+    { id:'rv11_4',  es:'saltar',          en:'to jump' },
+    { id:'rv11_5',  es:'sellar',          en:'to stamp / to seal' },
+    { id:'rv11_6',  es:'la aduana',       en:'customs (border)' },
+    { id:'rv11_7',  es:'la bienvenida',   en:'the welcome' },
+    { id:'rv11_8',  es:'el conductor',    en:'the driver' },
+    { id:'rv11_9',  es:'el dueño',        en:'the owner' },
+    { id:'rv11_10', es:'la fila',         en:'the line / queue' },
+    { id:'rv11_11', es:'la lágrima',      en:'the tear (from crying)' },
+    { id:'rv11_12', es:'la maleta',       en:'the suitcase' },
+    { id:'rv11_13', es:'la propina',      en:'the tip (gratuity)' },
+    { id:'rv11_14', es:'el registro',     en:'the register / record' },
+    { id:'rv11_15', es:'la sonrisa',      en:'the smile' },
+    { id:'rv11_16', es:'la tarifa',       en:'the fare / rate' },
+    { id:'rv11_17', es:'el viajero',      en:'the traveler' },
+    { id:'rv11_18', es:'cariñoso',        en:'affectionate' },
+    { id:'rv11_19', es:'emocionado',      en:'excited / moved' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

@@ -1,6 +1,6 @@
 /* ─── Fluir · Training Grounds ──────────────────────────────────────────────
    Free-practice mode. Unlocks after chapter lesson is complete.
-   User picks game type and sub-lesson. No scoring — just drill.
+   User picks game type and lesson. No scoring — just drill.
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
@@ -37,6 +37,23 @@ const CHAPTERS = { 1: CHAPTER_1, 2: CHAPTER_2, 3: CHAPTER_3, 4: CHAPTER_4, 5: CH
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
+const VOCAB_KEYS = [
+  'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
+  'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
+  'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
+  'readingVocab',
+];
+
+const VOCAB_KEY_LABELS = {
+  vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
+  tenerExpressions: 'Tener Expressions', hacerExpressions: 'Hacer Expressions',
+  locationPrepositions: 'Prepositions', porExpressions: 'Por Expressions',
+  becomeExpressions: 'Become Expressions', movementVerbs: 'Movement Verbs',
+  reciprocalVerbs: 'Reciprocal Verbs', impersonalExpressions: 'Impersonal Expressions',
+  emotionVerbs: 'Emotion Verbs', commandVerbs: 'Command Verbs',
+  conjunctions: 'Conjunctions', readingVocab: 'Reading Vocabulary',
+};
+
 /* ════════════════════════════════════════════════════════════════════════════
    Entry point
    ════════════════════════════════════════════════════════════════════════════ */
@@ -50,7 +67,8 @@ function renderTraining(container, chapterId) {
 
   const chapter  = CHAPTERS[chapterId];
   const progress = Store.getProgress();
-  const complete = progress.chaptersComplete.includes(chapterId);
+  const settings = Store.getSettings();
+  const complete = progress.chaptersComplete.includes(chapterId) || !!settings.unlockAllPractice;
 
   if (!chapter) {
     container.innerHTML = `
@@ -71,7 +89,6 @@ function renderTraining(container, chapterId) {
       <div class="page active">
         <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
           <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
-          <span class="tag-chapter">Chapter ${chapterId}</span>
         </div>
         <div class="card" style="text-align:center;padding:var(--space-8)">
           <div style="font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-3)">Complete the lesson first</div>
@@ -91,7 +108,10 @@ function renderTraining(container, chapterId) {
 
 function renderTrainingHub(container) {
   const progress  = Store.getProgress();
-  const completed = progress.chaptersComplete || [];
+  const settings  = Store.getSettings();
+  const completed = settings.unlockAllPractice
+    ? ALL_CHAPTERS.map(ch => ch.id)
+    : (progress.chaptersComplete || []);
 
   container.innerHTML = `
     <div class="page active">
@@ -108,7 +128,7 @@ function renderTrainingHub(container) {
         const CHAPTER_DATA = CHAPTERS[ch.id];
         const vocabCount = CHAPTER_DATA
           ? CHAPTER_DATA.sublessons.reduce((n, s) =>
-              n + (s.vocabulary?.length || 0) + (s.adjectives?.length || 0), 0)
+              n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0)
           : 0;
 
         return `
@@ -120,7 +140,7 @@ function renderTrainingHub(container) {
               <div class="chapter-card__title">${ch.title}</div>
               <div class="chapter-card__meta">
                 ${isComplete
-                  ? `${vocabCount} words · ${CHAPTER_DATA?.sublessons?.length || 0} sub-lessons`
+                  ? `${vocabCount} words · ${CHAPTER_DATA?.sublessons?.length || 0} lessons`
                   : 'Complete the lesson to unlock'}
               </div>
             </div>
@@ -148,14 +168,24 @@ function renderTrainingMenu(container, chapter) {
 
       <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
         <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
-        <span class="tag-chapter">Chapter ${chapter.id}</span>
-        <span style="font-size:var(--text-xs);color:var(--color-amber);background:var(--color-amber-bg);padding:2px 8px;border-radius:var(--radius-sm);border:0.5px solid var(--color-amber);">Training Grounds</span>
       </div>
 
+      <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:var(--space-3)">Chapter ${chapter.id}</div>
       <h2 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-2)">Training Grounds</h2>
       <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">Free practice — no scoring. Drill whatever you want, as many times as you want.</p>
 
-      <div class="section-label">Choose a sub-lesson</div>
+      <div style="margin-bottom:var(--space-6)">
+        <button class="btn btn--full" id="browse-vocab-btn"
+          style="justify-content:space-between;text-align:left;padding:var(--space-3) var(--space-4);border-color:var(--border-subtle)">
+          <div>
+            <div style="font-size:var(--text-sm);color:var(--text-bright)">Browse vocabulary</div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted)">All words from Chapter ${chapter.id}</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </button>
+      </div>
+
+      <div class="section-label">Practice</div>
       <div id="sublesson-list" style="margin-bottom:var(--space-6)">
         ${chapter.sublessons.map((sl, i) => `
           <button class="btn btn--full" id="sl-btn-${i}"
@@ -170,7 +200,7 @@ function renderTrainingMenu(container, chapter) {
         <button class="btn btn--full btn--amber" id="sl-btn-all"
           style="justify-content:space-between;text-align:left;padding:var(--space-3) var(--space-4)">
           <div>
-            <div style="font-size:var(--text-sm)">All sub-lessons mixed</div>
+            <div style="font-size:var(--text-sm)">All lessons mixed</div>
             <div style="font-size:var(--text-xs);color:var(--color-amber-bg);opacity:0.8">Everything from Chapter ${chapter.id}</div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -180,6 +210,10 @@ function renderTrainingMenu(container, chapter) {
     </div>
   `;
 
+  container.querySelector('#browse-vocab-btn').addEventListener('click', () => {
+    renderVocabBrowser(container, chapter);
+  });
+
   chapter.sublessons.forEach((sl, i) => {
     container.querySelector(`#sl-btn-${i}`).addEventListener('click', () => {
       renderGameTypePicker(container, chapter, [sl]);
@@ -188,6 +222,72 @@ function renderTrainingMenu(container, chapter) {
 
   container.querySelector('#sl-btn-all').addEventListener('click', () => {
     renderGameTypePicker(container, chapter, chapter.sublessons);
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Vocabulary browser — tap a card to flip it
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function renderVocabBrowser(container, chapter) {
+  const totalCount = chapter.sublessons.reduce((n, s) =>
+    n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0);
+
+  const sections = chapter.sublessons.map(sl => {
+    const groups = VOCAB_KEYS
+      .filter(k => sl[k]?.length)
+      .map(k => {
+        const cards = sl[k].map(item => {
+          const word = item.article
+            ? `${item.article} ${item.es || item.infinitive || ''}`
+            : (item.es || item.infinitive || '');
+          const sub = item.plural
+            ? `pl: ${item.plural}`
+            : (item.rule ? item.rule.replace(/<[^>]+>/g, '').trim().slice(0, 40) : '');
+          return `<div class="vocab-card" data-flipped="false">
+            <div class="vocab-card__front">
+              <span class="vocab-card__es">${word}</span>
+              ${sub ? `<span class="vocab-card__sub">${sub}</span>` : ''}
+            </div>
+            <div class="vocab-card__back">
+              <span class="vocab-card__en">${item.en || ''}</span>
+            </div>
+          </div>`;
+        }).join('');
+        return `<div style="margin-bottom:var(--space-4)">
+          <div class="section-label" style="margin-bottom:var(--space-2)">${VOCAB_KEY_LABELS[k]}</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-2)">${cards}</div>
+        </div>`;
+      }).join('');
+
+    if (!groups) return '';
+    return `<div style="margin-bottom:var(--space-7)">
+      <div style="font-size:var(--text-sm);color:var(--text-bright);font-weight:600;margin-bottom:var(--space-1)">${sl.title}</div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-4)">${sl.subtitle}</div>
+      ${groups}
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="page active">
+      <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
+        <button class="btn btn--ghost btn--sm" id="vocab-back">← Back</button>
+      </div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:var(--space-1)">Chapter ${chapter.id} · ${totalCount} items</div>
+      <h2 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-2)">Vocabulary</h2>
+      <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">Tap a card to see the translation.</p>
+      ${sections}
+    </div>
+  `;
+
+  container.querySelector('#vocab-back').addEventListener('click', () => {
+    renderTrainingMenu(container, chapter);
+  });
+
+  container.querySelectorAll('.vocab-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.dataset.flipped = card.dataset.flipped === 'true' ? 'false' : 'true';
+    });
   });
 }
 

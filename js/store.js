@@ -161,33 +161,40 @@ const Store = {
     return this.set(KEYS.SETTINGS, settings);
   },
 
-  /* ── Lesson session state ── */
+  /* ── Lesson session state (per chapter) ── */
 
-  /* Save mid-lesson state so user can resume at the right sub-lesson */
   saveLessonState(chapterId, state) {
-    return this.set(KEYS.LESSON_STATE, {
-      chapterId,
-      subIndex:          state.subIndex,
-      completedSubLessons: state.completedSubLessons,
-      sessionCorrect:    state.sessionCorrect,
-      sessionTotal:      state.sessionTotal,
-      savedAt:           Date.now(),
-    });
+    const all = this.get(KEYS.LESSON_STATE) || {};
+    all[chapterId] = {
+      subIndex:       state.subIndex,
+      qIndex:         state.qIndex,
+      questions:      state.questions,
+      sessionCorrect: state.sessionCorrect,
+      sessionTotal:   state.sessionTotal,
+      savedAt:        Date.now(),
+    };
+    return this.set(KEYS.LESSON_STATE, all);
   },
 
   getLessonState(chapterId) {
-    const state = this.get(KEYS.LESSON_STATE);
-    if (!state || state.chapterId !== chapterId) return null;
-    /* Expire state older than 7 days */
+    const all   = this.get(KEYS.LESSON_STATE) || {};
+    const state = all[chapterId];
+    if (!state) return null;
     if (Date.now() - state.savedAt > 7 * 24 * 60 * 60 * 1000) {
-      this.clearLessonState();
+      this.clearLessonState(chapterId);
       return null;
     }
     return state;
   },
 
-  clearLessonState() {
-    this.remove(KEYS.LESSON_STATE);
+  clearLessonState(chapterId) {
+    if (chapterId === undefined) {
+      this.remove(KEYS.LESSON_STATE);
+    } else {
+      const all = this.get(KEYS.LESSON_STATE) || {};
+      delete all[chapterId];
+      this.set(KEYS.LESSON_STATE, all);
+    }
   },
 
   /* ── Dev utility ── */

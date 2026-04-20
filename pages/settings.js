@@ -1,7 +1,7 @@
 /* ─── Fluir · Settings page ─────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
-import { showToast } from '../js/app.js';
+import { showToast, showConfirmSheet } from '../js/app.js';
 import { exportToAnki } from '../js/anki.js';
 import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
 
@@ -9,7 +9,8 @@ function renderSettings(container) {
   const settings    = Store.getSettings();
   const queue       = Store.getAnkiQueue();
   const progress    = Store.getProgress();
-  const allUnlocked = settings.unlockAll || false;
+  const allUnlocked         = settings.unlockAll         || false;
+  const allPracticeUnlocked = settings.unlockAllPractice || false;
 
   container.innerHTML = `
     <div class="page active" id="page-settings">
@@ -64,6 +65,21 @@ function renderSettings(container) {
           <div style="font-size:var(--text-xs);color:var(--color-amber);padding:var(--space-2) var(--space-3);background:var(--color-amber-bg);border-radius:var(--radius-sm);margin-top:var(--space-2)">
             All ${ALL_CHAPTERS.length} chapters unlocked. Chapters without lesson data yet show as "Coming soon."
           </div>` : ''}
+        <div style="border-top:0.5px solid var(--border-subtle);margin:var(--space-3) 0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-2)">
+          <div>
+            <div style="font-size:var(--text-sm);color:var(--text-bright)">Unlock all practice</div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted)">Access Practice for any chapter without completing the lesson</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="unlock-practice-toggle" ${allPracticeUnlocked ? 'checked' : ''}>
+            <span class="toggle__track"></span>
+          </label>
+        </div>
+        ${allPracticeUnlocked ? `
+          <div style="font-size:var(--text-xs);color:var(--color-amber);padding:var(--space-2) var(--space-3);background:var(--color-amber-bg);border-radius:var(--radius-sm);margin-top:var(--space-2)">
+            All ${ALL_CHAPTERS.length} practice chapters unlocked.
+          </div>` : ''}
       </div>
 
       <div class="section-label">Data</div>
@@ -88,6 +104,12 @@ function renderSettings(container) {
   document.getElementById('unlock-all-toggle')?.addEventListener('change', e => {
     Store.saveSetting('unlockAll', e.target.checked);
     showToast(e.target.checked ? 'All chapters unlocked' : 'Linear progression restored');
+    renderSettings(container);
+  });
+
+  document.getElementById('unlock-practice-toggle')?.addEventListener('change', e => {
+    Store.saveSetting('unlockAllPractice', e.target.checked);
+    showToast(e.target.checked ? 'All practice unlocked' : 'Practice lock restored');
     renderSettings(container);
   });
 
@@ -118,11 +140,17 @@ function renderSettings(container) {
   });
 
   document.getElementById('reset-btn')?.addEventListener('click', () => {
-    if (confirm('Reset all Fluir data? This cannot be undone.')) {
-      Store.clearAll();
-      showToast('Data cleared');
-      setTimeout(() => location.hash = '#/', 800);
-    }
+    showConfirmSheet({
+      title:        'Reset all data',
+      body:         'This will erase all your progress, scores, and settings. This cannot be undone.',
+      confirmLabel: 'Reset Fluir',
+      cancelLabel:  'Cancel',
+      onConfirm:    () => {
+        Store.clearAll();
+        showToast('Data cleared');
+        setTimeout(() => location.hash = '#/', 800);
+      },
+    });
   });
 }
 

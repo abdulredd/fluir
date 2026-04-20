@@ -309,6 +309,29 @@ const SUBLESSON_10_4 = {
     { sentence:'___ debemos decir la verdad.',              answer:'Les',   choices:['Me','Te','Le','Les'],    fills:['Les'],   en:'We ought to tell you (all) the truth.', rule:'les = to you all / to them' },
     { sentence:'Debemos decir___ la verdad.',               answer:'les',   choices:['me','te','le','les'],    fills:['les'],   en:'We ought to tell you (all) the truth.', rule:'pronoun attached to decir' },
   ],
+
+  readingVocab: [
+    { id:'rv10_1',  es:'las afueras',       en:'the outskirts / suburbs' },
+    { id:'rv10_2',  es:'probar',            en:'to taste / to try' },
+    { id:'rv10_3',  es:'recomendar',        en:'to recommend' },
+    { id:'rv10_4',  es:'los mariscos',      en:'the seafood' },
+    { id:'rv10_5',  es:'la langosta',       en:'the lobster' },
+    { id:'rv10_6',  es:'escoger',           en:'to choose / to select' },
+    { id:'rv10_7',  es:'el cangrejo',       en:'the crab' },
+    { id:'rv10_8',  es:'los camarones',     en:'the shrimp' },
+    { id:'rv10_9',  es:'el ajo',            en:'the garlic' },
+    { id:'rv10_10', es:'el asiento',        en:'the seat' },
+    { id:'rv10_11', es:'la azafata',        en:'the flight attendant' },
+    { id:'rv10_12', es:'el pasillo',        en:'the aisle' },
+    { id:'rv10_13', es:'la ventanilla',     en:'the window (vehicle)' },
+    { id:'rv10_14', es:'el vuelo',          en:'the flight' },
+    { id:'rv10_15', es:'los audífonos',     en:'the headphones' },
+    { id:'rv10_16', es:'cenar',             en:'to dine / to have dinner' },
+    { id:'rv10_17', es:'gozar de',          en:'to enjoy' },
+    { id:'rv10_18', es:'tardar',            en:'to delay / to take time' },
+    { id:'rv10_19', es:'ida y vuelta',      en:'round-trip' },
+    { id:'rv10_20', es:'cargar',            en:'to carry / to load' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

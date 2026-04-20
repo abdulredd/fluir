@@ -28,12 +28,15 @@
 }
 
 .topbar__logo {
-  font-family: var(--font-serif);
-  font-size: var(--text-lg);
-  color: var(--color-purple);
-  font-weight: normal;
+  font-family: 'Plus Jakarta Sans', var(--font-sans);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: -0.3px;
   text-decoration: none;
 }
+
+.topbar__logo-dot { color: var(--color-purple); }
 
 .topbar__logo:hover { text-decoration: none; }
 
@@ -137,41 +140,48 @@
   margin-bottom: var(--space-3);
 }
 
-/* ── Streak bar ── */
+/* ── Week streak ── */
 
-.streak-bar {
+.week-streak {
   background: var(--bg-surface);
   border: 0.5px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-4);
   display: flex;
-  align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-5);
 }
 
-.streak-bar__flame {
+.week-streak__day {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  flex: 1;
 }
 
-.streak-bar__count {
-  font-family: var(--font-serif);
-  font-size: var(--text-lg);
-  color: var(--color-amber);
-}
-
-.streak-bar__label {
+.week-streak__label {
   font-size: var(--text-xs);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
 }
 
-.streak-bar__date {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
+.week-streak__flame {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.week-streak__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  margin-top: 3px;
+}
+
+.week-streak__dot--future {
+  background: var(--border-muted);
 }
 
 /* ── Progress bar ── */

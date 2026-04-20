@@ -277,6 +277,24 @@ const SUBLESSON_8_4 = {
     { id:'adv8_9',  es:'mejor',          en:'better',            gender:'n', rule:'adverb', article:'', plural:'', ex:'Ella cocina mejor que su hermana.',  exEn:'She cooks better than her sister.' },
     { id:'adv8_10', es:'peor',           en:'worse',             gender:'n', rule:'adverb', article:'', plural:'', ex:'Hoy canto peor que ayer.',           exEn:'Today I sing worse than yesterday.' },
   ],
+
+  readingVocab: [
+    { id:'rv8_1',  es:'apagar',          en:'to turn off' },
+    { id:'rv8_2',  es:'imaginar',        en:'to imagine' },
+    { id:'rv8_3',  es:'sonreír',         en:'to smile' },
+    { id:'rv8_4',  es:'la brisa',        en:'the breeze' },
+    { id:'rv8_5',  es:'el entremés',     en:'the appetizer' },
+    { id:'rv8_6',  es:'el invitado',     en:'the guest' },
+    { id:'rv8_7',  es:'la letra',        en:'the lyrics / words of a song' },
+    { id:'rv8_8',  es:'el ambiente',     en:'the atmosphere' },
+    { id:'rv8_9',  es:'el anfitrión',    en:'the host' },
+    { id:'rv8_10', es:'el bocadillo',    en:'the snack' },
+    { id:'rv8_11', es:'la botella',      en:'the bottle' },
+    { id:'rv8_12', es:'la pareja',       en:'the couple / partner' },
+    { id:'rv8_13', es:'la vela',         en:'the candle' },
+    { id:'rv8_14', es:'el vestuario',    en:'the wardrobe / closet' },
+    { id:'rv8_15', es:'acerca de',       en:'about / concerning' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

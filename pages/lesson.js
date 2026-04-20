@@ -28,7 +28,7 @@ import {
   gameNumberQuiz,
   gameSentenceCompletion,
 } from '../js/games.js';
-import { showToast } from '../js/app.js';
+import { showToast, showConfirmSheet } from '../js/app.js';
 
 const CHAPTERS = { 1: CHAPTER_1, 2: CHAPTER_2, 3: CHAPTER_3, 4: CHAPTER_4, 5: CHAPTER_5, 6: CHAPTER_6, 7: CHAPTER_7, 8: CHAPTER_8, 9: CHAPTER_9, 10: CHAPTER_10, 11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15 };
 
@@ -53,8 +53,14 @@ function renderChapterIntro(container, chapter) {
   const score       = progress.lessonScores[chapter.id];
   const savedState  = Store.getLessonState(chapter.id);
   const hasResume   = savedState && !complete && savedState.sessionTotal > 0;
-  const vocabCount  = chapter.sublessons.reduce((n, s) =>
-    n + (s.vocabulary?.length || 0) + (s.adjectives?.length || 0), 0);
+  const VOCAB_KEYS = [
+    'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
+    'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
+    'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
+    'readingVocab',
+  ];
+  const vocabCount = chapter.sublessons.reduce((n, s) =>
+    n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0);
 
   const resumeSubLesson = hasResume ? chapter.sublessons[savedState.subIndex] : null;
   const resumeQIndex    = hasResume ? (savedState.qIndex   || 0) : 0;
@@ -67,12 +73,12 @@ function renderChapterIntro(container, chapter) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           Back
         </button>
-        <span class="tag-chapter">Chapter ${chapter.id}</span>
         ${complete ? `<span style="font-size:var(--text-xs);color:var(--color-green);background:var(--color-green-bg);padding:2px 8px;border-radius:var(--radius-sm);border:0.5px solid var(--color-green);">Complete</span>` : ''}
       </div>
 
+      <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:var(--space-3)">Chapter ${chapter.id}</div>
       <h2 style="font-family:var(--font-serif);color:var(--color-purple);font-weight:normal;margin-bottom:var(--space-2)">${chapter.title}</h2>
-      <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">${vocabCount} vocabulary items · ${chapter.sublessons.length} sub-lessons</p>
+      <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">${vocabCount} vocabulary items · ${chapter.sublessons.length} lessons</p>
 
       ${score ? `
         <div class="card" style="margin-bottom:var(--space-5);display:flex;align-items:center;justify-content:space-between">
@@ -87,17 +93,17 @@ function renderChapterIntro(container, chapter) {
       ${hasResume ? `
         <div style="background:var(--color-cyan-bg);border:0.5px solid var(--color-cyan);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-5)">
           <div style="font-size:var(--text-xs);color:var(--color-cyan);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">In progress</div>
-          <div style="font-size:var(--text-sm);color:var(--text-bright)">Sub-lesson ${savedState.subIndex + 1} — ${resumeSubLesson?.title}</div>
+          <div style="font-size:var(--text-sm);color:var(--text-bright)">Lesson ${savedState.subIndex + 1} — ${resumeSubLesson?.title}</div>
           <div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:2px">Question ${resumeQIndex + 1} of ${resumeQTotal} · ${savedState.sessionCorrect} correct so far</div>
         </div>
       ` : ''}
 
-      <div class="section-label">Sub-lessons</div>
+      <div class="section-label">Lessons</div>
       ${chapter.sublessons.map((sl, i) => {
         const isDone    = hasResume && i < savedState.subIndex;
         const isCurrent = hasResume && i === savedState.subIndex;
         return `
-          <div class="card" style="margin-bottom:var(--space-3);display:flex;align-items:center;gap:var(--space-3)">
+          <div class="card chapter-card" data-sub="${i}" style="margin-bottom:var(--space-3);display:flex;align-items:center;gap:var(--space-3);cursor:pointer;">
             <div style="width:32px;height:32px;border-radius:var(--radius-md);background:${isDone ? 'var(--color-green-bg)' : isCurrent ? 'var(--color-cyan-bg)' : 'var(--bg-panel)'};border:0.5px solid ${isDone ? 'var(--color-green)' : isCurrent ? 'var(--color-cyan)' : 'var(--border-subtle)'};display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:var(--text-md);color:${isDone ? 'var(--color-green)' : isCurrent ? 'var(--color-cyan)' : 'var(--color-purple)'};flex-shrink:0">
               ${isDone ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : i + 1}
             </div>
@@ -105,6 +111,7 @@ function renderChapterIntro(container, chapter) {
               <div class="text-sm text-bright">${sl.title}</div>
               <div class="text-muted" style="font-size:var(--text-xs)">${isDone ? 'Complete' : isCurrent ? 'Resume here' : sl.subtitle}</div>
             </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         `;
       }).join('')}
@@ -114,8 +121,10 @@ function renderChapterIntro(container, chapter) {
           <button class="btn btn--primary btn--full btn--lg" id="resume-btn">Resume lesson →</button>
           <button class="btn btn--ghost btn--full" id="start-btn">Start over from the beginning</button>
         ` : `
+          <button class="btn btn--full" id="rules-btn">Review Rules</button>
+          <div style="height:4px;background:var(--bg-raised);border-radius:var(--radius-full)"></div>
           <button class="btn btn--primary btn--full btn--lg" id="start-btn">
-            ${complete ? 'Study again' : 'Begin lesson'}
+            ${complete ? 'Study Again' : 'Begin Lesson'}
           </button>
         `}
       </div>
@@ -123,8 +132,35 @@ function renderChapterIntro(container, chapter) {
   `;
 
   container.querySelector('#start-btn').addEventListener('click', () => {
-    Store.clearLessonState();
-    startSubLesson(container, chapter, 0, { correct: 0, total: 0 });
+    Store.clearLessonState(chapter.id);
+    startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true);
+  });
+
+  container.querySelectorAll('[data-sub]').forEach(el => {
+    el.addEventListener('click', () => {
+      const targetSub  = parseInt(el.dataset.sub);
+      if (hasResume && savedState.subIndex !== targetSub) {
+        const lessonName = chapter.sublessons[savedState.subIndex]?.title || `Lesson ${savedState.subIndex + 1}`;
+        showConfirmSheet({
+          title:        'Unsaved progress',
+          body:         `You're in the middle of "${lessonName}." Starting a different lesson will lose your progress.`,
+          confirmLabel: 'Start new lesson',
+          cancelLabel:  'Go back',
+          onConfirm:    () => {
+            Store.clearLessonState(chapter.id);
+            startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
+          },
+        });
+        return;
+      }
+      Store.clearLessonState(chapter.id);
+      startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
+    });
+  });
+
+  container.querySelector('#rules-btn')?.addEventListener('click', () => {
+    Store.clearLessonState(chapter.id);
+    startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, false);
   });
 
   container.querySelector('#resume-btn')?.addEventListener('click', () => {
@@ -142,13 +178,17 @@ function renderChapterIntro(container, chapter) {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   Sub-lesson flow
+   Lesson flow
    ════════════════════════════════════════════════════════════════════════════ */
 
-function startSubLesson(container, chapter, subIndex, sessionScore) {
+function startSubLesson(container, chapter, subIndex, sessionScore, skipRules = false) {
   const sublesson = chapter.sublessons[subIndex];
   if (!sublesson) { renderLessonComplete(container, chapter, sessionScore); return; }
-  renderRuleCards(container, chapter, sublesson, subIndex, sessionScore);
+  if (skipRules) {
+    buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore);
+  } else {
+    renderRuleCards(container, chapter, sublesson, subIndex, sessionScore);
+  }
 }
 
 /* ── Teach-first rule cards ── */
@@ -163,19 +203,19 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
       return;
     }
 
-    const rule   = rules[ruleIndex];
-    const isLast = ruleIndex === rules.length - 1;
-    const prog   = Math.round((subIndex / chapter.sublessons.length) * 100);
+    const rule      = rules[ruleIndex];
+    const isLast    = ruleIndex === rules.length - 1;
+    const ruleProg  = Math.round(((ruleIndex + 1) / rules.length) * 100);
 
     container.innerHTML = `
       <div class="page active">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)">
-          <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
-          <span class="text-xs text-muted">Ch.${chapter.id} · ${subIndex + 1} of ${chapter.sublessons.length}</span>
+          <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+          <span class="text-xs text-muted">${ruleIndex + 1} of ${rules.length} rules</span>
         </div>
 
         <div class="progress-track" style="margin-bottom:var(--space-5)">
-          <div class="progress-fill" style="width:${Math.max(prog, 3)}%"></div>
+          <div class="progress-fill" style="width:${Math.max(ruleProg, 3)}%"></div>
         </div>
 
         <div style="display:inline-block;font-size:var(--text-xs);background:var(--color-purple-bg);color:var(--color-purple);border:0.5px solid var(--color-purple);border-radius:var(--radius-sm);padding:2px 8px;margin-bottom:var(--space-4);letter-spacing:0.05em;text-transform:uppercase">${sublesson.title}</div>
@@ -198,10 +238,13 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
           ` : ''}
         </div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span class="text-xs text-muted">${ruleIndex + 1} of ${rules.length} rules</span>
-          <button class="btn btn--primary btn--lg" id="rule-next">
-            ${isLast ? 'Start practice →' : 'Next rule →'}
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          ${ruleIndex > 0
+            ? `<button class="btn btn--full btn--lg" id="rule-prev">← Prev rule</button>`
+            : `<div class="btn btn--full btn--lg" style="visibility:hidden"></div>`
+          }
+          <button class="btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg" id="rule-next">
+            ${isLast ? 'Begin Lesson →' : 'Next rule →'}
           </button>
         </div>
       </div>
@@ -210,6 +253,13 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
     container.querySelector('#rule-next').addEventListener('click', () => {
       ruleIndex++;
       showRule();
+    });
+    container.querySelector('#rule-prev')?.addEventListener('click', () => {
+      ruleIndex--;
+      showRule();
+    });
+    container.querySelector('#back-btn').addEventListener('click', () => {
+      renderChapterIntro(container, chapter);
     });
   }
 
@@ -751,6 +801,13 @@ function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScor
       const pairs = shuffle(exprs).slice(0, 4).map(e => ({ es: e.es, en: e.en }));
       questions.push({ type: 'matching', pairs });
     }
+    /* Nature vocabulary matching */
+    if (sublesson.vocabulary?.length) {
+      for (let i = 0; i < 4; i++) {
+        const pairs = shuffle(sublesson.vocabulary).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
+        questions.push({ type: 'matching', pairs });
+      }
+    }
 
   /* ── Chapter 10 ── */
   } else if (sublesson.id === '10-1') {
@@ -1007,7 +1064,7 @@ function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScor
       const pairs = shuffle(conj).slice(0, 4).map(c => ({ es: c.es, en: c.en }));
       questions.push({ type: 'matching', pairs });
     }
-    /* Sentence completion — the hardest sub-lesson */
+    /* Sentence completion — the hardest lesson */
     shuffle(sublesson.sentenceCompletionDrills).forEach(d => {
       questions.push({ type: 'sentence-completion', ...d });
     });
@@ -1189,6 +1246,14 @@ function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScor
     });
   }
 
+  /* Reading vocabulary matching — appended to last sublesson of each chapter */
+  if (sublesson.readingVocab?.length >= 4) {
+    for (let i = 0; i < 3; i++) {
+      const pairs = shuffle(sublesson.readingVocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
+      questions.push({ type: 'matching', pairs });
+    }
+  }
+
   /* Save the full question queue so resume can reconstruct exact position */
   Store.saveLessonState(chapter.id, {
     subIndex,
@@ -1231,7 +1296,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
   container.innerHTML = `
     <div class="page active">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)">
-        <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
+        <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
         <span class="text-xs text-muted">${sublesson.title}</span>
       </div>
       <div class="progress-track" style="margin-bottom:var(--space-2)">
@@ -1247,7 +1312,12 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
 
   const gameContent = container.querySelector('#game-content');
 
+  container.querySelector('#back-btn').addEventListener('click', () => {
+    renderChapterIntro(container, chapter);
+  });
+
   function onAnswer(isCorrect) {
+    if (score.total === 0) Store.recordStudySession();
     if (isCorrect) score.correct++;
     score.total++;
   }
@@ -1279,7 +1349,7 @@ function renderLessonComplete(container, chapter, score) {
   const pct = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
   Store.recordChapterComplete(chapter.id, pct);
   Store.recordStudySession();
-  Store.clearLessonState();
+  Store.clearLessonState(chapter.id);
 
   const allVocabIds = chapter.sublessons.flatMap(sl =>
     [...(sl.vocabulary || []), ...(sl.adjectives || [])].map(v => v.id)
@@ -1329,7 +1399,6 @@ function renderUnknownChapter(container, chapterId) {
     <div class="page active">
       <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
         <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
-        <span class="tag-chapter">Chapter ${chapterId}</span>
       </div>
       <div class="empty-state">
         <div class="empty-state__title">Chapter ${chapterId} not yet available</div>

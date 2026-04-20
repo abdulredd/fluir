@@ -404,6 +404,24 @@ const SUBLESSON_14_4 = {
     { sentence:'Él ___ el carro. (conducir)',                    answer:'condujo',   choices:['condujo','condució','condujó','conduci'],   fills:['condujo'],   en:'He drove the car.',                       rule:'conducir follows producir: conduj- stem (condujo)' },
     { sentence:'Ella ___ una canción hermosa. (componer)',        answer:'compuso',   choices:['compuso','componió','compuse','componian'], fills:['compuso'],  en:'She composed a beautiful song.',          rule:'componer follows poner: compus- stem (compuso)' },
   ],
+
+  readingVocab: [
+    { id:'rv14_1',  es:'adivinar',        en:'to guess' },
+    { id:'rv14_2',  es:'intentar',        en:'to try / to attempt' },
+    { id:'rv14_3',  es:'los acontecimientos', en:'the events / happenings' },
+    { id:'rv14_4',  es:'el ciudadano',    en:'the citizen' },
+    { id:'rv14_5',  es:'la clave',        en:'the key / the clue' },
+    { id:'rv14_6',  es:'la corte',        en:'the court' },
+    { id:'rv14_7',  es:'la cuestión',     en:'the issue / question' },
+    { id:'rv14_8',  es:'el personaje',    en:'the character (in a story)' },
+    { id:'rv14_9',  es:'el prejuicio',    en:'the prejudice' },
+    { id:'rv14_10', es:'la sabiduría',    en:'the wisdom / knowledge' },
+    { id:'rv14_11', es:'el veredicto',    en:'the verdict' },
+    { id:'rv14_12', es:'justo',           en:'fair / just' },
+    { id:'rv14_13', es:'sabio',           en:'wise' },
+    { id:'rv14_14', es:'sagaz',           en:'shrewd / clever' },
+    { id:'rv14_15', es:'siguiente',       en:'following / next' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════

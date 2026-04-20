@@ -59,16 +59,7 @@ function setActiveNav(path) {
   });
 }
 
-/* ── Topbar streak ── */
 
-function updateTopbarStreak() {
-  const progress = Store.getProgress();
-  const el       = document.getElementById('topbar-streak');
-  if (!el) return;
-  el.textContent = progress.currentStreak > 0
-    ? `${progress.currentStreak} day streak`
-    : 'Start your streak';
-}
 
 /* ── Toast ── */
 
@@ -83,13 +74,34 @@ function showToast(message, duration = 2500) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
 }
 
+/* ── Confirm sheet ── */
+
+function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel = 'Cancel', onConfirm, onCancel }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-sheet">
+      <div class="confirm-sheet__title">${title}</div>
+      <div class="confirm-sheet__body">${body}</div>
+      <div class="confirm-sheet__actions">
+        <button class="btn btn--danger btn--full" id="cs-confirm">${confirmLabel}</button>
+        <button class="btn btn--ghost btn--full" id="cs-cancel">${cancelLabel}</button>
+      </div>
+    </div>
+  `;
+
+  function dismiss() { overlay.remove(); }
+
+  overlay.querySelector('#cs-confirm').addEventListener('click', () => { dismiss(); onConfirm?.(); });
+  overlay.querySelector('#cs-cancel').addEventListener('click',  () => { dismiss(); onCancel?.();  });
+  overlay.addEventListener('click', e => { if (e.target === overlay) { dismiss(); onCancel?.(); } });
+
+  document.body.appendChild(overlay);
+}
+
 /* ── Boot ── */
 
 function boot() {
-  /* record today as a study day on any interaction */
-  Store.recordStudySession();
-  updateTopbarStreak();
-
   /* nav click handlers */
   document.querySelectorAll('.nav-item').forEach(el => {
     el.addEventListener('click', () => navigate(el.dataset.route));
@@ -102,8 +114,7 @@ function boot() {
   /* route changes */
   window.addEventListener('hashchange', () => {
     handleRoute();
-    updateTopbarStreak();
-  });
+    });
 
   /* initial route */
   handleRoute();
@@ -111,4 +122,4 @@ function boot() {
 
 document.addEventListener('DOMContentLoaded', boot);
 
-export { navigate, showToast };
+export { navigate, showToast, showConfirmSheet };

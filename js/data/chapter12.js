@@ -328,6 +328,22 @@ const SUBLESSON_12_4 = {
     { sentence:'___ voy a bañar.',                answer:'Me',     choices:['Me','Te','Se','Nos'],      fills:['Me'],     en:'I am going to bathe.',                  rule:'pronoun before first verb: me voy a bañar' },
     { sentence:'Queremos ___ bien en español.',    answer:'expresarnos', choices:['expresarnos','nos expresar','expresamos','expresarte'], fills:['expresarnos'], en:'We want to express ourselves well in Spanish.', rule:'pronoun attached to infinitive after querer' },
   ],
+
+  readingVocab: [
+    { id:'rv12_1',  es:'apresurarse',     en:'to rush / to hurry' },
+    { id:'rv12_2',  es:'charlar',         en:'to chat' },
+    { id:'rv12_3',  es:'llenarse',        en:'to fill up / become full' },
+    { id:'rv12_4',  es:'el pastel',       en:'the pastry / cake' },
+    { id:'rv12_5',  es:'la nata',         en:'the cream (Spain)' },
+    { id:'rv12_6',  es:'acogedor',        en:'cozy / welcoming' },
+    { id:'rv12_7',  es:'animado',         en:'lively / energetic' },
+    { id:'rv12_8',  es:'complacido',      en:'satisfied / pleased' },
+    { id:'rv12_9',  es:'delgado',         en:'thin / slim' },
+    { id:'rv12_10', es:'hablador',        en:'talkative' },
+    { id:'rv12_11', es:'radiante',        en:'radiant / glowing' },
+    { id:'rv12_12', es:'a lo lejos',      en:'in the distance / far away' },
+    { id:'rv12_13', es:'sobre todo',      en:'above all / especially' },
+  ],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════
