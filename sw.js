@@ -1,6 +1,6 @@
 /* ─── Fluir · Service Worker ────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v37';
+const CACHE_NAME = 'fluir-v42';
 
 const STATIC_ASSETS = [
   '/',

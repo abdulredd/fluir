@@ -55,7 +55,7 @@ function gameArticlePicker(container, question, onAnswer) {
     <div class="game-type-tag tag-vocab" style="margin-bottom:var(--space-3)">Definite article</div>
     <div class="game-prompt" style="margin-bottom:var(--space-4)">Choose the correct article</div>
     <div class="es-large" style="margin-bottom:var(--space-2)">${vocab.es}</div>
-    <div class="text-muted text-sm" style="margin-bottom:var(--space-5)">${vocab.en}</div>
+    <div class="lesson-translation" style="margin-bottom:var(--space-5)">${vocab.en}</div>
     <div id="choices"></div>
     <div class="feedback" id="feedback"></div>
     <button class="btn btn--primary" id="next-btn" style="display:none;margin-top:var(--space-3)">Next →</button>
@@ -113,7 +113,7 @@ function gameFillArticle(container, question, onAnswer) {
              maxlength="3" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"/>
       <span class="es-large">${vocab.es}</span>
     </div>
-    <div class="text-muted text-sm" style="margin-bottom:var(--space-4)">${vocab.en}</div>
+    <div class="lesson-translation" style="margin-bottom:var(--space-4)">${vocab.en}</div>
     <button class="btn btn--primary" id="check-btn">Check</button>
     <div class="feedback" id="feedback" style="margin-top:var(--space-3)"></div>
     <button class="btn btn--primary" id="next-btn" style="display:none;margin-top:var(--space-3)">Next →</button>
@@ -271,7 +271,7 @@ function gamePluralPicker(container, question, onAnswer) {
       <span style="font-size:var(--text-sm);color:var(--text-muted)">${singularArticle}</span>
       <span class="es-large">${vocab.es}</span>
     </div>
-    <div class="text-muted text-sm" style="margin-bottom:var(--space-5)">${vocab.en}</div>
+    <div class="lesson-translation" style="margin-bottom:var(--space-5)">${vocab.en}</div>
     <div id="choices"></div>
     <div class="feedback" id="feedback"></div>
     <button class="btn btn--primary" id="next-btn" style="display:none;margin-top:var(--space-3)">Next →</button>
@@ -348,7 +348,7 @@ function gameAdjectiveAgreement(container, question, onAnswer) {
     <div class="game-type-tag tag-grammar" style="margin-bottom:var(--space-3)">Adjective agreement</div>
     <div class="game-prompt" style="margin-bottom:var(--space-4)">Choose the correct adjective form</div>
     <div class="es-large" style="margin-bottom:var(--space-2)">${article} ${noun.es} ___</div>
-    <div class="text-muted text-sm" style="margin-bottom:var(--space-5)">the ${noun.en} · ${adjective.en}</div>
+    <div class="lesson-translation" style="margin-bottom:var(--space-5)">the ${noun.en} · ${adjective.en}</div>
     <div id="choices"></div>
     <div class="feedback" id="feedback"></div>
     <button class="btn btn--primary" id="next-btn" style="display:none;margin-top:var(--space-3)">Next →</button>
@@ -481,7 +481,7 @@ function gameConjugationPicker(container, question, onAnswer) {
     <div class="game-prompt" style="margin-bottom:var(--space-4)">Choose the correct form of <em style="color:var(--color-purple)">${verb}</em></div>
     <div style="margin-bottom:var(--space-5)">
       <div style="font-family:var(--font-serif);font-size:var(--text-2xl);color:var(--color-amber);margin-bottom:var(--space-1)">${pronoun}</div>
-      <div class="text-muted text-sm">${en}</div>
+      <div class="lesson-translation">${en}</div>
     </div>
     <div id="choices"></div>
     <div class="feedback" id="feedback"></div>
@@ -567,7 +567,7 @@ function gameSerVsEstar(container, question, onAnswer) {
     <div class="game-prompt" style="margin-bottom:var(--space-4)">Which verb completes this sentence?</div>
     <div class="card" style="margin-bottom:var(--space-5)">
       <div style="font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-2);line-height:1.4">${displaySentence}</div>
-      <div class="text-muted text-sm">${en}</div>
+      <div class="lesson-translation">${en}</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4)" id="choices"></div>
     <div class="feedback" id="feedback"></div>
@@ -713,7 +713,7 @@ function gameSentenceCompletion(container, question, onAnswer) {
     <div class="game-prompt" style="margin-bottom:var(--space-4)">Choose the correct option to complete the sentence</div>
     <div class="card" style="margin-bottom:var(--space-5)">
       <div style="font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-2);line-height:1.6">${sentence.replace(/___/g, '<span style="display:inline-block;min-width:50px;border-bottom:2px solid var(--color-cyan);color:var(--color-cyan);text-align:center;padding:0 4px">___</span>')}</div>
-      <div class="text-muted text-sm">${en}</div>
+      <div class="lesson-translation">${en}</div>
     </div>
     <div id="choices" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
     <div class="feedback" id="feedback"></div>

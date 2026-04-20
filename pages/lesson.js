@@ -121,11 +121,10 @@ function renderChapterIntro(container, chapter) {
           <button class="btn btn--primary btn--full btn--lg" id="resume-btn">Resume lesson →</button>
           <button class="btn btn--ghost btn--full" id="start-btn">Start over from the beginning</button>
         ` : `
-          <button class="btn btn--full" id="rules-btn">Review Rules</button>
-          <div style="height:4px;background:var(--bg-raised);border-radius:var(--radius-full)"></div>
           <button class="btn btn--primary btn--full btn--lg" id="start-btn">
             ${complete ? 'Study Again' : 'Begin Lesson'}
           </button>
+          <button class="btn btn--ghost btn--full" id="rules-btn">Review Rules</button>
         `}
       </div>
     </div>

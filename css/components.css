@@ -56,7 +56,7 @@
 .btn--ghost.btn--sm {
   background: transparent;
   border-color: transparent;
-  color: var(--text-muted);
+  color: var(--text-subtle);
   padding-inline: 0 var(--space-3);
 }
 .btn--ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
@@ -317,7 +317,17 @@
   color: var(--text-muted);
   margin-bottom: var(--space-4);
   line-height: 1.5;
-} */
+}
+
+/* ── Lesson translation line ── */
+
+.lesson-translation {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: var(--text-md);
+  color: var(--text-subtle);
+  line-height: 1.4;
+  font-style: italic;
+}
 
 /* ── Confirm sheet ── */
 

@@ -86,11 +86,11 @@ function renderSettings(container) {
       <div class="card" style="margin-bottom:var(--space-5)">
         <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:var(--space-2)">Reset all data</div>
         <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">Clears all chapters, progress, and settings. This cannot be undone.</div>
-        <button class="btn btn--danger" id="reset-btn">Reset Fluir.</button>
+        <button class="btn btn--danger btn--full" id="reset-btn">Reset Fluir</button>
       </div>
 
       <div style="text-align:center;padding:var(--space-6) 0;font-size:var(--text-xs);color:var(--text-muted)">
-        <span style="font-family:var(--font-serif);color:var(--color-purple)">Fluir</span> · companion to Complete Spanish Step-by-Step
+        <span style="font-family:'Plus Jakarta Sans',var(--font-sans);font-size:var(--text-sm);font-weight:600;color:var(--text-bright);letter-spacing:-0.3px">fluir<span style="color:var(--color-purple)">.</span></span> · Companion App to Easy Spanish Step-by-Step
       </div>
 
     </div>
