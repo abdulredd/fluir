@@ -86,7 +86,7 @@ function renderSettings(container) {
       <div class="card" style="margin-bottom:var(--space-5)">
         <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:var(--space-2)">Reset all data</div>
         <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">Clears all chapters, progress, and settings. This cannot be undone.</div>
-        <button class="btn btn--danger" id="reset-btn">Reset Fluir</button>
+        <button class="btn btn--danger" id="reset-btn">Reset Fluir.</button>
       </div>
 
       <div style="text-align:center;padding:var(--space-6) 0;font-size:var(--text-xs);color:var(--text-muted)">

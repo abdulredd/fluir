@@ -77,26 +77,30 @@ function showToast(message, duration = 2500) {
 /* ── Confirm sheet ── */
 
 function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel = 'Cancel', onConfirm, onCancel }) {
-  const overlay = document.createElement('div');
-  overlay.className = 'confirm-overlay';
-  overlay.innerHTML = `
-    <div class="confirm-sheet">
-      <div class="confirm-sheet__title">${title}</div>
-      <div class="confirm-sheet__body">${body}</div>
-      <div class="confirm-sheet__actions">
-        <button class="btn btn--danger btn--full" id="cs-confirm">${confirmLabel}</button>
-        <button class="btn btn--ghost btn--full" id="cs-cancel">${cancelLabel}</button>
-      </div>
+  const backdrop = document.createElement('div');
+  backdrop.className = 'confirm-overlay';
+  backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:400;';
+
+  const sheet = document.createElement('div');
+  sheet.className = 'confirm-sheet';
+  sheet.style.zIndex = '401';
+  sheet.innerHTML = `
+    <div class="confirm-sheet__title">${title}</div>
+    <div class="confirm-sheet__body">${body}</div>
+    <div class="confirm-sheet__actions">
+      <button class="btn btn--danger btn--full" id="cs-confirm">${confirmLabel}</button>
+      <button class="btn btn--ghost btn--full" id="cs-cancel">${cancelLabel}</button>
     </div>
   `;
 
-  function dismiss() { overlay.remove(); }
+  function dismiss() { backdrop.remove(); sheet.remove(); }
 
-  overlay.querySelector('#cs-confirm').addEventListener('click', () => { dismiss(); onConfirm?.(); });
-  overlay.querySelector('#cs-cancel').addEventListener('click',  () => { dismiss(); onCancel?.();  });
-  overlay.addEventListener('click', e => { if (e.target === overlay) { dismiss(); onCancel?.(); } });
+  sheet.querySelector('#cs-confirm').addEventListener('click', () => { dismiss(); onConfirm?.(); });
+  sheet.querySelector('#cs-cancel').addEventListener('click',  () => { dismiss(); onCancel?.();  });
+  backdrop.addEventListener('click', () => { dismiss(); onCancel?.(); });
 
-  document.body.appendChild(overlay);
+  document.body.appendChild(backdrop);
+  document.body.appendChild(sheet);
 }
 
 /* ── Boot ── */

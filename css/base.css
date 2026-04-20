@@ -11,6 +11,7 @@ html {
   font-size: 16px;
   height: 100%;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -21,7 +22,6 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M-1,1 l2,-2 M0,12 l12,-12 M11,13 l2,-2' stroke='%23323843' stroke-width='0.6' fill='none'/%3E%3C/svg%3E");
   line-height: 1.6;
   min-height: 100%;
-  overflow-x: hidden;
 }
 
 /* ── Typography ── */

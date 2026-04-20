@@ -1,0 +1,15 @@
+---
+description: Always read the code before answering questions about it
+alwaysApply: true
+---
+
+# Verify Before Answering
+
+Never answer questions about how the codebase works from memory or assumption. Always read the relevant file first.
+
+- If asked how a feature works, read the file before responding.
+- If asked whether something exists (a modal, a handler, a check), search or read the code to confirm before saying yes or no.
+- Stating something as fact without verifying it first is not acceptable, even if it seems obvious.
+- If you are challenged on an answer, do not defend it — read the code immediately and correct yourself if wrong.
+
+A wrong answer stated confidently is worse than saying "let me check."
