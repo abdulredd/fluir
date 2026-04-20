@@ -44,7 +44,7 @@ function gameArticlePicker(container, question, onAnswer) {
   const wrong     = correct ? wrongArticle(correct) : null;
 
   /* skip -ista/-nte words in this game type — use a different game */
-  if (!correct) { onAnswer(true, question); return; }
+  if (!correct) { container.dispatchEvent(new CustomEvent('game:next')); return; }
 
   const opts = shuffle([
     `${correct} ${vocab.es}`,
@@ -103,7 +103,7 @@ function gameArticlePicker(container, question, onAnswer) {
 function gameFillArticle(container, question, onAnswer) {
   const { vocab } = question;
   const correct   = vocab.article === 'el/la' ? null : vocab.article;
-  if (!correct) { onAnswer(true, question); return; }
+  if (!correct) { container.dispatchEvent(new CustomEvent('game:next')); return; }
 
   container.innerHTML = `
     <div class="game-type-tag tag-grammar" style="margin-bottom:var(--space-3)">Fill in the blank</div>
@@ -246,14 +246,14 @@ function gamePluralPicker(container, question, onAnswer) {
   const correct = vocab.plural;
 
   /* Guard — if plural is missing, skip this question */
-  if (!correct) { onAnswer(true, question); return; }
+  if (!correct) { container.dispatchEvent(new CustomEvent('game:next')); return; }
 
   /* generate a plausible wrong answer — inverted rule */
   const endsVowel = /[aeiouáéíóú]$/i.test(vocab.es);
   const wrong = endsVowel ? vocab.es + 'es' : vocab.es + 's';
 
   /* Avoid showing wrong === correct */
-  if (wrong === correct) { onAnswer(true, question); return; }
+  if (wrong === correct) { container.dispatchEvent(new CustomEvent('game:next')); return; }
 
   const opts = shuffle([correct, wrong]);
 
@@ -394,7 +394,7 @@ function gameAdjectiveAgreement(container, question, onAnswer) {
 
 function gameTranslation(container, question, onAnswer) {
   const { vocab } = question;
-  if (vocab.article === 'el/la') { onAnswer(true, question); return; }
+  if (vocab.article === 'el/la') { container.dispatchEvent(new CustomEvent('game:next')); return; }
 
   /* Only show gender hint when the word is genuinely ambiguous —
      i.e. both a masculine and feminine form exist for the same concept.
@@ -763,6 +763,59 @@ function gameSentenceCompletion(container, question, onAnswer) {
 
 /* ── Exports ── */
 
+/* ════════════════════════════════════════════════════════════════════════════
+   GAME 11: Vocab Picker — given English, pick correct Spanish word
+   question: { vocab: { es, en }, distractors: ['...','...','...'] }
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function gameVocabPicker(container, question, onAnswer) {
+  const { vocab, distractors = [] } = question;
+  const correct = vocab.es;
+  const opts    = shuffle([correct, ...distractors]).slice(0, 4);
+
+  container.innerHTML = `
+    <div class="game-type-tag tag-vocab" style="margin-bottom:var(--space-3)">Translate</div>
+    <div class="game-prompt" style="margin-bottom:var(--space-4)">Which Spanish word means…</div>
+    <div class="es-large" style="color:var(--color-cyan);margin-bottom:var(--space-5)">${vocab.en}</div>
+    <div id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn btn--primary" id="next-btn" style="display:none;margin-top:var(--space-3)">Next →</button>
+  `;
+
+  const choicesEl = container.querySelector('#choices');
+
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.style.fontFamily = 'var(--font-serif)';
+    btn.style.fontSize   = 'var(--text-lg)';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      const isCorrect = opt === correct;
+      container.querySelectorAll('.option').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correct) b.classList.add('correct');
+        else if (b === btn && !isCorrect) b.classList.add('wrong');
+      });
+      const fb = container.querySelector('#feedback');
+      if (isCorrect) {
+        fb.innerHTML = `✓ Correct — <em>${correct}</em> means ${vocab.en}`;
+        fb.className = 'feedback show correct';
+      } else {
+        fb.innerHTML = `✗ The answer is <em>${correct}</em> — ${vocab.en}`;
+        fb.className = 'feedback show wrong';
+      }
+      container.querySelector('#next-btn').style.display = 'inline-flex';
+      onAnswer(isCorrect, question);
+    });
+    choicesEl.appendChild(btn);
+  });
+
+  container.querySelector('#next-btn').addEventListener('click', () => {
+    container.dispatchEvent(new CustomEvent('game:next'));
+  });
+}
+
 export {
   gameArticlePicker,
   gameFillArticle,
@@ -774,6 +827,7 @@ export {
   gameSerVsEstar,
   gameNumberQuiz,
   gameSentenceCompletion,
+  gameVocabPicker,
 };
 
 

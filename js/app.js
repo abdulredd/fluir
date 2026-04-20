@@ -103,6 +103,41 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
   document.body.appendChild(sheet);
 }
 
+/* ── Choice sheet (N actions) ── */
+
+function showChoiceSheet({ title, body = '', actions = [] }) {
+  const backdrop = document.createElement('div');
+  backdrop.className = 'confirm-overlay';
+  backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:400;';
+
+  const sheet = document.createElement('div');
+  sheet.className = 'confirm-sheet';
+  sheet.style.zIndex = '401';
+  sheet.innerHTML = `
+    <div class="confirm-sheet__title">${title}</div>
+    ${body ? `<div class="confirm-sheet__body">${body}</div>` : ''}
+    <div class="confirm-sheet__actions">
+      ${actions.map((a, i) => `
+        <button class="btn ${a.className || ''} btn--full" data-action="${i}">${a.label}</button>
+      `).join('')}
+    </div>
+  `;
+
+  function dismiss() { backdrop.remove(); sheet.remove(); }
+
+  sheet.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.action);
+      dismiss();
+      actions[idx].onClick?.();
+    });
+  });
+  backdrop.addEventListener('click', dismiss);
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(sheet);
+}
+
 /* ── Boot ── */
 
 function boot() {
@@ -126,4 +161,4 @@ function boot() {
 
 document.addEventListener('DOMContentLoaded', boot);
 
-export { navigate, showToast, showConfirmSheet };
+export { navigate, showToast, showConfirmSheet, showChoiceSheet };

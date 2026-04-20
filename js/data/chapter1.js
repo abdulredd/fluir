@@ -230,18 +230,18 @@ const SUBLESSON_2 = {
 
   /* Indefinite article vocabulary — subset for drill */
   vocabulary: [
-    { id:'v2_1',  es:'jardín',    en:'garden',        gender:'m', rule:'masc_irreg',  article:'un',  indef:'un',  ex:'El jardín es verde.',            exEn:'The garden is green.' },
-    { id:'v2_2',  es:'museo',     en:'museum',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  ex:'El museo es grande.',            exEn:'The museum is big.' },
-    { id:'v2_3',  es:'espejo',    en:'mirror',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  ex:'El espejo es pequeño.',          exEn:'The mirror is small.' },
-    { id:'v2_4',  es:'sillón',    en:'armchair',      gender:'m', rule:'masc_irreg',  article:'un',  indef:'un',  ex:'El sillón es cómodo.',           exEn:'The armchair is comfortable.' },
-    { id:'v2_5',  es:'tiquete',   en:'ticket',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  ex:'El tiquete es caro.',            exEn:'The ticket is expensive.' },
-    { id:'v2_6',  es:'biblioteca',en:'library',       gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La biblioteca es grande.',       exEn:'The library is big.' },
-    { id:'v2_7',  es:'librería',  en:'bookstore',     gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La librería es pequeña.',        exEn:'The bookstore is small.' },
-    { id:'v2_8',  es:'maleta',    en:'suitcase',      gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La maleta es vieja.',            exEn:'The suitcase is old.' },
-    { id:'v2_9',  es:'página',    en:'page',          gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La página es interesante.',      exEn:'The page is interesting.' },
-    { id:'v2_10', es:'pluma',     en:'pen',           gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La pluma es azul.',              exEn:'The pen is blue.' },
-    { id:'v2_11', es:'idea',      en:'idea',          gender:'f', rule:'ends_a',      article:'una', indef:'una', ex:'La idea es fantástica.',         exEn:'The idea is fantastic.' },
-    { id:'v2_12', es:'barco',     en:'boat',          gender:'m', rule:'ends_o',      article:'un',  indef:'un',  ex:'El barco es grande.',            exEn:'The boat is big.' },
+    { id:'v2_1',  es:'jardín',    en:'garden',        gender:'m', rule:'masc_irreg',  article:'un',  indef:'un',  plural:'jardines',     ex:'El jardín es verde.',            exEn:'The garden is green.' },
+    { id:'v2_2',  es:'museo',     en:'museum',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  plural:'museos',       ex:'El museo es grande.',            exEn:'The museum is big.' },
+    { id:'v2_3',  es:'espejo',    en:'mirror',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  plural:'espejos',      ex:'El espejo es pequeño.',          exEn:'The mirror is small.' },
+    { id:'v2_4',  es:'sillón',    en:'armchair',      gender:'m', rule:'masc_irreg',  article:'un',  indef:'un',  plural:'sillones',     ex:'El sillón es cómodo.',           exEn:'The armchair is comfortable.' },
+    { id:'v2_5',  es:'tiquete',   en:'ticket',        gender:'m', rule:'ends_o',      article:'un',  indef:'un',  plural:'tiquetes',     ex:'El tiquete es caro.',            exEn:'The ticket is expensive.' },
+    { id:'v2_6',  es:'biblioteca',en:'library',       gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'bibliotecas',  ex:'La biblioteca es grande.',       exEn:'The library is big.' },
+    { id:'v2_7',  es:'librería',  en:'bookstore',     gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'librerías',    ex:'La librería es pequeña.',        exEn:'The bookstore is small.' },
+    { id:'v2_8',  es:'maleta',    en:'suitcase',      gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'maletas',      ex:'La maleta es vieja.',            exEn:'The suitcase is old.' },
+    { id:'v2_9',  es:'página',    en:'page',          gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'páginas',      ex:'La página es interesante.',      exEn:'The page is interesting.' },
+    { id:'v2_10', es:'pluma',     en:'pen',           gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'plumas',       ex:'La pluma es azul.',              exEn:'The pen is blue.' },
+    { id:'v2_11', es:'idea',      en:'idea',          gender:'f', rule:'ends_a',      article:'una', indef:'una', plural:'ideas',        ex:'La idea es fantástica.',         exEn:'The idea is fantastic.' },
+    { id:'v2_12', es:'barco',     en:'boat',          gender:'m', rule:'ends_o',      article:'un',  indef:'un',  plural:'barcos',       ex:'El barco es grande.',            exEn:'The boat is big.' },
   ],
 };
 

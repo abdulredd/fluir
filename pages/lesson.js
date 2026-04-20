@@ -27,6 +27,7 @@ import {
   gameSerVsEstar,
   gameNumberQuiz,
   gameSentenceCompletion,
+  gameVocabPicker,
 } from '../js/games.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
 
@@ -124,7 +125,7 @@ function renderChapterIntro(container, chapter) {
           <button class="btn btn--primary btn--full btn--lg" id="start-btn">
             ${complete ? 'Study Again' : 'Begin Lesson'}
           </button>
-          <button class="btn btn--ghost btn--full" id="rules-btn">Review Rules</button>
+          <button class="btn btn--ghost btn--full" id="rules-btn">Review chapter rules</button>
         `}
       </div>
     </div>
@@ -132,12 +133,12 @@ function renderChapterIntro(container, chapter) {
 
   container.querySelector('#start-btn').addEventListener('click', () => {
     Store.clearLessonState(chapter.id);
-    startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true);
+    startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true);
   });
 
   container.querySelectorAll('[data-sub]').forEach(el => {
     el.addEventListener('click', () => {
-      const targetSub  = parseInt(el.dataset.sub);
+      const targetSub = parseInt(el.dataset.sub);
       if (hasResume && savedState.subIndex !== targetSub) {
         const lessonName = chapter.sublessons[savedState.subIndex]?.title || `Lesson ${savedState.subIndex + 1}`;
         showConfirmSheet({
@@ -159,7 +160,7 @@ function renderChapterIntro(container, chapter) {
 
   container.querySelector('#rules-btn')?.addEventListener('click', () => {
     Store.clearLessonState(chapter.id);
-    startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, false);
+    reviewAllRules(container, chapter);
   });
 
   container.querySelector('#resume-btn')?.addEventListener('click', () => {
@@ -180,25 +181,115 @@ function renderChapterIntro(container, chapter) {
    Lesson flow
    ════════════════════════════════════════════════════════════════════════════ */
 
-function startSubLesson(container, chapter, subIndex, sessionScore, skipRules = false) {
+function startSubLesson(container, chapter, subIndex, sessionScore, skipRules = false, autoSkipRules = false) {
   const sublesson = chapter.sublessons[subIndex];
   if (!sublesson) { renderLessonComplete(container, chapter, sessionScore); return; }
-  if (skipRules) {
-    buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore);
+  if (skipRules || autoSkipRules) {
+    buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore, 0, autoSkipRules);
   } else {
     renderRuleCards(container, chapter, sublesson, subIndex, sessionScore);
   }
 }
 
+/* ── Chapter-wide rules review (no quizzes) ── */
+
+function reviewAllRules(container, chapter) {
+  const allRules = [];
+  chapter.sublessons.forEach((sl, sIdx) => {
+    (sl.rules || []).forEach(rule => {
+      allRules.push({ rule, sublesson: sl, sublessonNumber: sIdx + 1 });
+    });
+  });
+
+  if (allRules.length === 0) {
+    renderChapterIntro(container, chapter);
+    return;
+  }
+
+  let ruleIndex = 0;
+
+  function showRule() {
+    const { rule, sublesson, sublessonNumber } = allRules[ruleIndex];
+    const isLast   = ruleIndex === allRules.length - 1;
+    const isFirst  = ruleIndex === 0;
+    const ruleProg = Math.round(((ruleIndex + 1) / allRules.length) * 100);
+
+    container.innerHTML = `
+      <div class="page active">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)">
+          <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+          <span class="text-xs text-muted">${ruleIndex + 1} of ${allRules.length} rules</span>
+        </div>
+
+        <div class="progress-track" style="margin-bottom:var(--space-5)">
+          <div class="progress-fill" style="width:${Math.max(ruleProg, 3)}%"></div>
+        </div>
+
+        <div style="display:inline-block;font-size:var(--text-xs);background:var(--color-purple-bg);color:var(--color-purple);border:0.5px solid var(--color-purple);border-radius:var(--radius-sm);padding:2px 8px;margin-bottom:var(--space-4);letter-spacing:0.05em;text-transform:uppercase">Lesson ${sublessonNumber} · ${sublesson.title}</div>
+
+        <div class="card" style="margin-bottom:var(--space-5)">
+          <h3 style="font-family:var(--font-serif);color:var(--color-purple);font-weight:normal;margin-bottom:var(--space-3)">${rule.heading}</h3>
+          <p style="font-size:var(--text-sm);color:var(--text-primary);margin-bottom:var(--space-4);line-height:1.7">${rule.body}</p>
+
+          <div style="background:var(--bg-panel);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:${rule.tip ? 'var(--space-3)' : '0'}">
+            ${rule.examples.map(ex => `
+              <div style="display:flex;align-items:baseline;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border-muted)">
+                <span style="font-family:var(--font-serif);font-size:var(--text-md);color:var(--color-amber)">${ex.es}</span>
+                <span style="font-size:var(--text-xs);color:var(--text-muted)">${ex.en}${ex.note ? ` · <em style="color:var(--color-cyan)">${ex.note}</em>` : ''}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          ${rule.tip ? `
+            <div style="margin-top:var(--space-3);padding:var(--space-2) var(--space-3);border-left:2px solid var(--color-amber);border-radius:0;font-size:var(--text-xs);color:var(--color-amber);line-height:1.5">${rule.tip}</div>
+          ` : ''}
+        </div>
+
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          ${isFirst
+            ? `<div class="btn btn--full btn--lg" style="visibility:hidden"></div>`
+            : `<button class="btn btn--full btn--lg" id="rule-prev">← Prev rule</button>`
+          }
+          <button class="btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg" id="rule-next">
+            ${isLast ? 'Begin Lesson →' : 'Next rule →'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    container.querySelector('#rule-next').addEventListener('click', () => {
+      if (isLast) {
+        startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true);
+      } else {
+        ruleIndex++;
+        showRule();
+      }
+    });
+    container.querySelector('#rule-prev')?.addEventListener('click', () => {
+      ruleIndex--;
+      showRule();
+    });
+    container.querySelector('#back-btn').addEventListener('click', () => {
+      renderChapterIntro(container, chapter);
+    });
+  }
+
+  showRule();
+}
+
 /* ── Teach-first rule cards ── */
 
-function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) {
+function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore, options = {}) {
+  const onExit     = options.onExit     || (() => renderChapterIntro(container, chapter));
+  const onComplete = options.onComplete || (() => buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore));
+  const lastLabel  = options.lastLabel  || 'Begin Lesson →';
+
   let ruleIndex = 0;
   const rules   = sublesson.rules || [];
 
   function showRule() {
     if (ruleIndex >= rules.length) {
-      buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore);
+      onComplete();
       return;
     }
 
@@ -243,7 +334,7 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
             : `<div class="btn btn--full btn--lg" style="visibility:hidden"></div>`
           }
           <button class="btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg" id="rule-next">
-            ${isLast ? 'Begin Lesson →' : 'Next rule →'}
+            ${isLast ? lastLabel : 'Next rule →'}
           </button>
         </div>
       </div>
@@ -257,9 +348,7 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
       ruleIndex--;
       showRule();
     });
-    container.querySelector('#back-btn').addEventListener('click', () => {
-      renderChapterIntro(container, chapter);
-    });
+    container.querySelector('#back-btn').addEventListener('click', onExit);
   }
 
   showRule();
@@ -269,7 +358,7 @@ function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore) 
    Question queue builder
    ════════════════════════════════════════════════════════════════════════════ */
 
-function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore, resumeFromQ = 0) {
+function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore, resumeFromQ = 0, autoSkipRules = false) {
   const questions = [];
 
   /* ── Chapter 1 ── */
@@ -318,7 +407,8 @@ function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScor
       questions.push({ type: 'matching', pairs });
     }
     shuffle(vocab).slice(0, 6).forEach(v => {
-      questions.push({ type: 'fill-article', vocab: { ...v, article: v.es } });
+      const distractors = shuffle(vocab.filter(o => o.id !== v.id)).slice(0, 3).map(o => o.es);
+      questions.push({ type: 'vocab-picker', vocab: v, distractors });
     });
 
   } else if (sublesson.id === '2-2') {
@@ -1263,16 +1353,16 @@ function buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScor
     savedAt:        Date.now(),
   });
 
-  runQuestions(container, chapter, sublesson, subIndex, questions, resumeFromQ, { ...sessionScore });
+  runQuestions(container, chapter, sublesson, subIndex, questions, resumeFromQ, { ...sessionScore }, autoSkipRules);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
    Question runner
    ════════════════════════════════════════════════════════════════════════════ */
 
-function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score) {
+function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score, autoSkipRules = false) {
   if (qIndex >= questions.length) {
-    startSubLesson(container, chapter, subIndex + 1, score);
+    startSubLesson(container, chapter, subIndex + 1, score, false, autoSkipRules);
     return;
   }
 
@@ -1292,11 +1382,21 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
      (qIndex / (questions.length * chapter.sublessons.length))) * 100
   );
 
+  const hasRules = (sublesson.rules || []).length > 0;
+
   container.innerHTML = `
     <div class="page active">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)">
         <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-        <span class="text-xs text-muted">${sublesson.title}</span>
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <span class="text-xs text-muted">${sublesson.title}</span>
+          ${hasRules ? `
+            <button class="btn btn--ghost btn--sm" id="view-rules-btn" title="View lesson rules">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Rules
+            </button>
+          ` : ''}
+        </div>
       </div>
       <div class="progress-track" style="margin-bottom:var(--space-2)">
         <div class="progress-fill" style="width:${Math.max(prog, 5)}%"></div>
@@ -1315,6 +1415,15 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
     renderChapterIntro(container, chapter);
   });
 
+  container.querySelector('#view-rules-btn')?.addEventListener('click', () => {
+    const returnToQuiz = () => runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score, autoSkipRules);
+    renderRuleCards(container, chapter, sublesson, subIndex, score, {
+      onExit:     returnToQuiz,
+      onComplete: returnToQuiz,
+      lastLabel:  'Back to questions →',
+    });
+  });
+
   function onAnswer(isCorrect) {
     if (score.total === 0) Store.recordStudySession();
     if (isCorrect) score.correct++;
@@ -1322,7 +1431,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
   }
 
   gameContent.addEventListener('game:next', () => {
-    runQuestions(container, chapter, sublesson, subIndex, questions, qIndex + 1, score);
+    runQuestions(container, chapter, sublesson, subIndex, questions, qIndex + 1, score, autoSkipRules);
   }, { once: true });
 
   switch (q.type) {
@@ -1336,6 +1445,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
     case 'ser-vs-estar':    gameSerVsEstar(gameContent, q, onAnswer);          break;
     case 'number-quiz':          gameNumberQuiz(gameContent, q, onAnswer);          break;
     case 'sentence-completion':  gameSentenceCompletion(gameContent, q, onAnswer);  break;
+    case 'vocab-picker':         gameVocabPicker(gameContent, q, onAnswer);         break;
     default:                     gameContent.dispatchEvent(new CustomEvent('game:next'));
   }
 }
