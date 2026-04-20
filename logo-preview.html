@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluir — Logo Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base:    #282c34;
+      --bg-panel:   #181a1f;
+      --bg-surface: #21252b;
+      --bg-raised:  #2c313a;
+      --border-muted: #2c313a;
+      --border-subtle: #3e4451;
+      --text-primary: #abb2bf;
+      --text-bright:  #e6e8ec;
+      --text-muted:   #5c6370;
+      --color-purple: #c678dd;
+      --color-cyan:   #56b6c2;
+      --color-blue:   #61afef;
+      --font-serif: 'Palatino Linotype', Palatino, Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      padding: 32px 24px 64px;
+    }
+
+    h2 {
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 40px 0 16px;
+    }
+    h2:first-of-type { margin-top: 0; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; max-width: 620px; }
+
+    .option {
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .option__label {
+      background: var(--bg-surface);
+      padding: 6px 14px;
+      font-size: 10px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-muted);
+      letter-spacing: 0.3px;
+    }
+    .topbar-mock {
+      background: var(--bg-panel);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    .meta { text-align: right; line-height: 1.5; }
+    .meta .streak { color: #e5c07b; font-size: 11px; font-family: Inter; }
+    .meta .sub    { color: var(--text-muted); font-size: 11px; font-family: Inter; }
+
+    a { text-decoration: none; }
+
+    /* ── A: Wordmark-only, modern sans ─────────────────────────── */
+
+    /* A1 — Inter Medium, normal tracking */
+    .a1 {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-bright);
+      letter-spacing: -0.5px;
+    }
+
+    /* A2 — Space Grotesk, heavier, purple */
+    .a2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-purple);
+      letter-spacing: -0.5px;
+    }
+
+    /* A3 — Syne, wide, all-caps */
+    .a3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    /* A4 — Outfit Light, wide tracking, muted */
+    .a4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-bright);
+      letter-spacing: 5px;
+    }
+
+    /* A5 — Plus Jakarta Sans, medium weight, dot accent */
+    .a5 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: -0.3px;
+    }
+    .a5 .dot { color: var(--color-purple); }
+
+    /* A6 — DM Sans, mixed weight */
+    .a6 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .a6 .heavy { font-weight: 700; color: var(--text-bright); }
+    .a6 .light { font-weight: 300; color: var(--text-muted); }
+
+    /* ── B: Mark + wordmark ─────────────────────────────────────── */
+
+    .mark-row { display: flex; align-items: center; gap: 9px; }
+    .wordmark-inter {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-bright);
+      letter-spacing: -0.3px;
+    }
+    .wordmark-jakarta {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: -0.3px;
+    }
+    .wordmark-syne {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── C: Gradient / color treatments ──────────────────────────── */
+
+    .c1 {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #c678dd 0%, #61afef 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .c2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #c678dd 0%, #56b6c2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Section A: Wordmark only ── -->
+<h2>A — Wordmark only</h2>
+<div class="options">
+
+  <div class="option">
+    <div class="option__label">A1 — Inter Medium · neutral bright</div>
+    <div class="topbar-mock">
+      <a class="a1">Fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A2 — Space Grotesk · purple</div>
+    <div class="topbar-mock">
+      <a class="a2">Fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A3 — Syne · all-caps, wide tracking</div>
+    <div class="topbar-mock">
+      <a class="a3">Fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A4 — Outfit Light · airy, wide tracking</div>
+    <div class="topbar-mock">
+      <a class="a4">fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A5 — Plus Jakarta Sans · dot accent</div>
+    <div class="topbar-mock">
+      <a class="a5">fluir<span class="dot">.</span></a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A5 + C3 — Plus Jakarta Sans · dot accent · purple → cyan gradient</div>
+    <div class="topbar-mock">
+      <a style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.3px;background:linear-gradient(90deg,#c678dd,#56b6c2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">fluir.</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A5 variant — purple text · white dot</div>
+    <div class="topbar-mock">
+      <a style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.3px;text-decoration:none;"><span style="color:#c678dd;">fluir</span><span style="color:#e6e8ec;">.</span></a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">A6 — DM Sans · mixed weight (bold "fl", light "uir")</div>
+    <div class="topbar-mock">
+      <a class="a6"><span class="heavy">fl</span><span class="light">uir</span></a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Section B: Mark + wordmark ── -->
+<h2>B — Icon mark + wordmark</h2>
+<div class="options">
+
+  <div class="option">
+    <div class="option__label">B1 — Rounded square "F" monogram + Inter</div>
+    <div class="topbar-mock">
+      <a class="mark-row">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="28" height="28" rx="7" fill="#c678dd"/>
+          <text x="7" y="21" font-family="Inter,sans-serif" font-size="17" font-weight="700" fill="#181a1f">F</text>
+        </svg>
+        <span class="wordmark-inter">Fluir</span>
+      </a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">B2 — Flow arc mark + Syne all-caps</div>
+    <div class="topbar-mock">
+      <a class="mark-row">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 19 C7 19 8 8 13 8 C18 8 19 19 22 19" stroke="#c678dd" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M4 13 C7 13 8 5 13 5 C18 5 19 13 22 13" stroke="#56b6c2" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+        </svg>
+        <span class="wordmark-syne">Fluir</span>
+      </a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">B3 — Pill badge "fl" + Plus Jakarta Sans wordmark</div>
+    <div class="topbar-mock">
+      <a class="mark-row">
+        <svg width="34" height="22" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="34" height="22" rx="11" fill="#2c313a"/>
+          <text x="5" y="16" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#c678dd">fl</text>
+        </svg>
+        <span class="wordmark-jakarta">uir</span>
+      </a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">B4 — Geometric diamond mark + Inter</div>
+    <div class="topbar-mock">
+      <a class="mark-row">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11 2 L20 11 L11 20 L2 11 Z" stroke="#c678dd" stroke-width="1.8" fill="none"/>
+          <path d="M11 6 L16 11 L11 16 L6 11 Z" fill="#c678dd" opacity="0.25"/>
+          <circle cx="11" cy="11" r="2" fill="#c678dd"/>
+        </svg>
+        <span class="wordmark-inter">fluir</span>
+      </a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">B5 — Gradient circle mark + Space Grotesk</div>
+    <div class="topbar-mock">
+      <a class="mark-row">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="circleGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c678dd"/>
+              <stop offset="100%" stop-color="#56b6c2"/>
+            </linearGradient>
+          </defs>
+          <circle cx="13" cy="13" r="12" fill="url(#circleGrad)" opacity="0.15"/>
+          <circle cx="13" cy="13" r="12" stroke="url(#circleGrad)" stroke-width="1.5" fill="none"/>
+          <text x="7.5" y="18" font-family="'Space Grotesk',sans-serif" font-size="12" font-weight="700" fill="url(#circleGrad)">F</text>
+        </svg>
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--text-bright);letter-spacing:-0.3px">Fluir</span>
+      </a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Section C: Gradient wordmarks ── -->
+<h2>C — Gradient wordmarks</h2>
+<div class="options">
+
+  <div class="option">
+    <div class="option__label">C1 — Inter Bold · purple → blue gradient</div>
+    <div class="topbar-mock">
+      <a class="c1">Fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">C2 — Space Grotesk · purple → cyan gradient</div>
+    <div class="topbar-mock">
+      <a class="c2">Fluir</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+  <div class="option">
+    <div class="option__label">C3 — Syne all-caps · gradient + wide tracking</div>
+    <div class="topbar-mock">
+      <a style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(90deg,#c678dd,#56b6c2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">FLUIR</a>
+      <div class="meta"><div class="streak">🔥 5-day streak</div><div class="sub">Complete Spanish Step-by-Step</div></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

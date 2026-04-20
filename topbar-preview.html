@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluir — Topbar Subtitle Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base:       #282c34;
+      --bg-panel:      #181a1f;
+      --bg-surface:    #21252b;
+      --border-muted:  #2c313a;
+      --border-subtle: #3e4451;
+      --text-bright:   #e6e8ec;
+      --text-muted:    #5c6370;
+      --color-purple:  #c678dd;
+      --color-amber:   #e5c07b;
+      --font-serif:    'Palatino Linotype', Palatino, Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-base);
+      color: var(--text-bright);
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      padding: 32px 24px 64px;
+    }
+
+    h2 {
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 40px 0 16px;
+    }
+    h2:first-of-type { margin-top: 0; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; max-width: 480px; }
+
+    .option {
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .option__label {
+      background: var(--bg-surface);
+      padding: 6px 14px;
+      font-size: 10px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-muted);
+      letter-spacing: 0.3px;
+    }
+    .topbar-mock {
+      background: var(--bg-panel);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    /* Logo — matches current app */
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: normal;
+      color: var(--color-purple);
+      text-decoration: none;
+    }
+    .logo-dot { color: var(--text-bright); }
+
+    /* Meta block (right side) */
+    .meta { text-align: right; }
+  </style>
+</head>
+<body>
+
+<h2>Subtitle options</h2>
+<div class="options">
+
+  <!-- 1: Current — plain lowercase, two stacked lines -->
+  <div class="option">
+    <div class="option__label">Current — lowercase, stacked, dimmed</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+      <div class="meta">
+        <div style="color:var(--text-muted);font-size:11px">Easy Spanish Step-by-Step</div>
+        <div style="color:var(--text-muted);font-size:11px;opacity:0.6">companion app</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: Inline with separator -->
+  <div class="option">
+    <div class="option__label">Option A — inline, book title · companion app</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+      <div class="meta">
+        <div style="color:var(--text-muted);font-size:11px">Easy Spanish Step-by-Step &nbsp;·&nbsp; <span style="color:var(--color-amber);opacity:0.7">companion app</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: Companion app only, book title dropped -->
+  <div class="option">
+    <div class="option__label">Option B — "Companion App" only, book title dropped</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+      <div class="meta">
+        <div style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;font-weight:600">Companion App</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Book title on top, Companion App in amber small caps beneath -->
+  <div class="option">
+    <div class="option__label">Option C — stacked, "Companion App" in amber small caps</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+      <div class="meta">
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.4">Easy Spanish Step-by-Step</div>
+        <div style="color:var(--color-amber);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;opacity:0.8">Companion App</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: Just the book title, no companion app label -->
+  <div class="option">
+    <div class="option__label">Option D — book title only, no subtitle</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+      <div class="meta">
+        <div style="color:var(--text-muted);font-size:11px">Easy Spanish Step-by-Step</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6: Nothing on the right -->
+  <div class="option">
+    <div class="option__label">Option E — logo only, nothing on the right</div>
+    <div class="topbar-mock">
+      <a class="logo">fluir<span class="logo-dot">.</span></a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
