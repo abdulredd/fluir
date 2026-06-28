@@ -5,7 +5,7 @@
 import Store from '../../js/store.js';
 import { VOCAB_KEYS } from '../../js/data/registry.js';
 import { showConfirmSheet } from '../../js/app.js';
-import { scoreTierClass } from '../../js/utils.js';
+import { scoreTierClass, escapeHtml } from '../../js/utils.js';
 
 /** @param {Element} container @param {Chapter} chapter @param {LessonApi} api */
 function renderChapterIntro(container, chapter, api) {
@@ -32,7 +32,7 @@ function renderChapterIntro(container, chapter, api) {
       </div>
 
       <div class="page-kicker">Chapter ${chapter.id}</div>
-      <h2 class="page-title">${chapter.title}</h2>
+      <h2 class="page-title">${escapeHtml(chapter.title)}</h2>
       <p class="text-muted text-sm page-lead">${vocabCount} vocabulary items · ${chapter.sublessons.length} lessons</p>
 
       ${score ? `
@@ -48,7 +48,7 @@ function renderChapterIntro(container, chapter, api) {
       ${hasResume ? `
         <div class="notice-banner notice-banner--cyan">
           <div class="notice-banner__label">In progress</div>
-          <div class="notice-banner__title">Lesson ${savedState.subIndex + 1} — ${resumeSubLesson?.title}</div>
+          <div class="notice-banner__title">Lesson ${savedState.subIndex + 1} — ${escapeHtml(resumeSubLesson?.title || '')}</div>
           <div class="notice-banner__meta">Question ${resumeQIndex + 1} of ${resumeQTotal} · ${savedState.sessionCorrect} correct so far</div>
         </div>
       ` : ''}
@@ -59,16 +59,16 @@ function renderChapterIntro(container, chapter, api) {
         const isCurrent = hasResume && i === savedState.subIndex;
         const iconClass = isDone ? 'sublesson-row__icon--done' : isCurrent ? 'sublesson-row__icon--current' : '';
         return `
-          <div class="card sublesson-row" data-sub="${i}">
+          <button type="button" class="card sublesson-row" data-sub="${i}">
             <div class="sublesson-row__icon ${iconClass}">
               ${isDone ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : i + 1}
             </div>
             <div class="card-row__main">
-              <div class="text-sm text-bright">${sl.title}</div>
-              <div class="text-muted text-xs">${isDone ? 'Complete' : isCurrent ? 'Resume here' : sl.subtitle}</div>
+              <div class="text-sm text-bright">${escapeHtml(sl.title)}</div>
+              <div class="text-muted text-xs">${escapeHtml(isDone ? 'Complete' : isCurrent ? 'Resume here' : sl.subtitle)}</div>
             </div>
             <svg class="sublesson-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
+          </button>
         `;
       }).join('')}
 

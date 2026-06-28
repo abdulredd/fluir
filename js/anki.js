@@ -9,9 +9,45 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from './store.js';
-import { CHAPTERS, VOCAB_KEYS, vocabItemId } from './data/registry.js';
+import { CHAPTERS, loadChapter, preloadAllChapters, VOCAB_KEYS, vocabItemId } from './data/registry.js';
 
-/* ── sql.js and JSZip are loaded via CDN script tags in index.html ── */
+/* ── sql.js and JSZip load on first export (deferred from index.html) ── */
+
+let vendorReady = null;
+
+const VENDOR_SCRIPTS = [
+  {
+    src: '/js/vendor/sql-wasm.min.js',
+    integrity: 'sha384-6F5mEvGKGAoGW98OnEAEY4JnkwYPkPMeAGAutPVeS92W2yTWeqBcYAX+1SkXYkPM',
+  },
+  {
+    src: '/js/vendor/jszip.min.js',
+    integrity: 'sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG',
+  },
+];
+
+function loadScript({ src, integrity }) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = src;
+    s.crossOrigin = 'anonymous';
+    if (integrity) s.integrity = integrity;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error(`Failed to load ${src}`));
+    document.head.appendChild(s);
+  });
+}
+
+function loadVendorScripts() {
+  if (!vendorReady) {
+    vendorReady = Promise.all(VENDOR_SCRIPTS.map(loadScript));
+  }
+  return vendorReady;
+}
 
 /* ════════════════════════════════════════════════════════════════════════════
    Normalize a raw item from any vocab array into a consistent card shape
@@ -42,11 +78,17 @@ function normalizeItem(raw, chapterId, arrayKey) {
    ════════════════════════════════════════════════════════════════════════════ */
 
 async function exportToAnki(scope = { chapterIds: 'all' }) {
+  await loadVendorScripts();
   const queue = Store.getAnkiQueue();
 
-  const chapterIds = scope.chapterIds === 'all'
-    ? Object.keys(CHAPTERS).map(Number)
-    : scope.chapterIds;
+  let chapterIds;
+  if (scope.chapterIds === 'all') {
+    await preloadAllChapters();
+    chapterIds = Object.keys(CHAPTERS).map(Number);
+  } else {
+    chapterIds = scope.chapterIds;
+    await Promise.all(chapterIds.map(id => loadChapter(id)));
+  }
 
   /* Gather all vocab items to export */
   const allCards = [];

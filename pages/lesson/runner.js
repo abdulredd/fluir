@@ -4,21 +4,8 @@
 
 import Store from '../../js/store.js';
 import { collectChapterVocabIds } from '../../js/data/registry.js';
-import { setupQuestionAudio } from '../../js/audio.js';
-import { scoreTierClass } from '../../js/utils.js';
-import {
-  gameArticlePicker,
-  gameFillArticle,
-  gameMatching,
-  gamePluralPicker,
-  gameAdjectiveAgreement,
-  gameTranslation,
-  gameConjugationPicker,
-  gameSerVsEstar,
-  gameNumberQuiz,
-  gameSentenceCompletion,
-  gameVocabPicker,
-} from '../../js/games.js';
+import { scoreTierClass, escapeHtml } from '../../js/utils.js';
+import { renderGame, renderUnknownGame } from '../../js/games/dispatch.js';
 
 /**
  * @param {Element} container
@@ -59,7 +46,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
       <div class="quiz-header">
         <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
         <div class="page-header__actions">
-          <span class="text-xs text-muted">${sublesson.title}</span>
+          <span class="text-xs text-muted">${escapeHtml(sublesson.title)}</span>
           ${hasRules ? `
             <button class="btn btn--ghost btn--sm" id="view-rules-btn" title="View lesson rules">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -104,22 +91,9 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
     runQuestions(container, chapter, sublesson, subIndex, questions, qIndex + 1, score, autoSkipRules, api);
   }, { once: true });
 
-  switch (q.type) {
-    case 'article-picker':  gameArticlePicker(gameContent, q, onAnswer);       break;
-    case 'fill-article':    gameFillArticle(gameContent, q, onAnswer);         break;
-    case 'matching':        gameMatching(gameContent, q, onAnswer);             break;
-    case 'plural-picker':   gamePluralPicker(gameContent, q, onAnswer);        break;
-    case 'adjective':       gameAdjectiveAgreement(gameContent, q, onAnswer);  break;
-    case 'translation':     gameTranslation(gameContent, q, onAnswer);         break;
-    case 'conjugation':     gameConjugationPicker(gameContent, q, onAnswer);   break;
-    case 'ser-vs-estar':    gameSerVsEstar(gameContent, q, onAnswer);          break;
-    case 'number-quiz':          gameNumberQuiz(gameContent, q, onAnswer);          break;
-    case 'sentence-completion':  gameSentenceCompletion(gameContent, q, onAnswer);  break;
-    case 'vocab-picker':         gameVocabPicker(gameContent, q, onAnswer);         break;
-    default:                     gameContent.dispatchEvent(new CustomEvent('game:next'));
+  if (!renderGame(gameContent, q, onAnswer)) {
+    renderUnknownGame(gameContent, q);
   }
-
-  setupQuestionAudio(gameContent, q);
 }
 
 /** @param {Element} container @param {Chapter} chapter @param {SessionScore} score */

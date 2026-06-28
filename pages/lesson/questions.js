@@ -3,15 +3,28 @@
 /** @import { Sublesson, LessonQuestion } from '../../js/types.js' */
 
 import { shuffle } from '../../js/utils.js';
-import { SUBLESSON_BUILDERS } from './builder-registry.js';
+import {
+  ensureBuilderForSublesson,
+  getSublessonBuilder,
+  SUBLESSON_BUILDERS,
+} from './builder-registry.js';
+
+/**
+ * Ensure builders for a sublesson are loaded (no-op if cached).
+ * @param {Sublesson} sublesson
+ */
+async function prepareQuestions(sublesson) {
+  await ensureBuilderForSublesson(sublesson.id);
+}
 
 /**
  * Build the full question queue for a sublesson (pure — no DOM or Store).
+ * Call prepareQuestions first when builders may not be loaded yet.
  * @param {Sublesson} sublesson
  * @returns {LessonQuestion[]}
  */
 function buildQuestions(sublesson) {
-  const builder = SUBLESSON_BUILDERS[sublesson.id];
+  const builder = getSublessonBuilder(sublesson.id);
   const questions = builder ? builder(sublesson) : [];
 
   if (sublesson.readingVocab?.length >= 4) {
@@ -24,4 +37,4 @@ function buildQuestions(sublesson) {
   return questions;
 }
 
-export { buildQuestions, SUBLESSON_BUILDERS };
+export { buildQuestions, prepareQuestions, SUBLESSON_BUILDERS };

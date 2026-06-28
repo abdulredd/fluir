@@ -4,22 +4,12 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
-import { CHAPTERS, ALL_CHAPTERS, VOCAB_KEYS } from '../js/data/registry.js';
+import { loadChapter, ALL_CHAPTERS, VOCAB_KEYS } from '../js/data/registry.js';
 import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/access.js';
-import {
-  gameArticlePicker,
-  gameFillArticle,
-  gameMatching,
-  gamePluralPicker,
-  gameAdjectiveAgreement,
-  gameTranslation,
-  gameConjugationPicker,
-  gameSerVsEstar,
-  gameNumberQuiz,
-  gameSentenceCompletion,
-} from '../js/games.js';
-import { setupQuestionAudio } from '../js/audio.js';
-import { shuffle } from '../js/utils.js';
+import { renderGame, renderUnknownGame } from '../js/games/dispatch.js';
+import { pickTrainingQuestion } from '../js/training-questions.js';
+import { prepareQuestions } from './lesson/questions.js';
+import { escapeHtml } from '../js/utils.js';
 
 const VOCAB_KEY_LABELS = {
   vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
@@ -35,14 +25,21 @@ const VOCAB_KEY_LABELS = {
    Entry point
    ════════════════════════════════════════════════════════════════════════════ */
 
-function renderTraining(container, chapterId) {
+async function renderTraining(container, chapterId) {
   /* No chapterId = top-level hub — show all completed chapters */
   if (chapterId === null) {
     renderTrainingHub(container);
     return;
   }
 
-  const chapter  = CHAPTERS[chapterId];
+  container.innerHTML = `
+    <div class="page active">
+      <div class="empty-state empty-state--padded">
+        <div class="empty-state__title">Loading practice…</div>
+      </div>
+    </div>`;
+
+  const chapter  = await loadChapter(chapterId);
   const progress = Store.getProgress();
   const settings = Store.getSettings();
   const complete = isPracticeUnlocked(chapterId, progress, settings);
@@ -106,22 +103,15 @@ function renderTrainingHub(container) {
       <div id="training-chapter-list">
         ${ALL_CHAPTERS.map(ch => {
         const isComplete = completed.includes(ch.id);
-        const CHAPTER_DATA = CHAPTERS[ch.id];
-        const vocabCount = CHAPTER_DATA
-          ? CHAPTER_DATA.sublessons.reduce((n, s) =>
-              n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0)
-          : 0;
 
         return `
-          <div class="chapter-card ${!isComplete ? 'chapter-card--locked' : 'chapter-card--clickable'}"
-               data-id="${ch.id}" data-unlocked="${isComplete ? '1' : '0'}">
+          <button type="button" class="chapter-card ${!isComplete ? 'chapter-card--locked' : 'chapter-card--clickable'}"
+               data-id="${ch.id}" data-unlocked="${isComplete ? '1' : '0'}" ${!isComplete ? 'disabled aria-disabled="true"' : ''}>
             <div class="chapter-card__number ${isComplete ? 'chapter-card__number--practice' : ''}">${ch.id}</div>
             <div class="chapter-card__body">
-              <div class="chapter-card__title">${ch.title}</div>
+              <div class="chapter-card__title">${escapeHtml(ch.title)}</div>
               <div class="chapter-card__meta">
-                ${isComplete
-                  ? `${vocabCount} words · ${CHAPTER_DATA?.sublessons?.length || 0} lessons`
-                  : 'Complete the lesson to unlock'}
+                ${isComplete ? 'Practice unlocked' : 'Complete the lesson to unlock'}
               </div>
             </div>
             <div class="chapter-card__arrow">
@@ -130,7 +120,7 @@ function renderTrainingHub(container) {
                 : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`
               }
             </div>
-          </div>
+          </button>
         `;
       }).join('')}
       </div>
@@ -347,9 +337,24 @@ function startTrainingSession(container, chapter, sublessons, gameType) {
   let sessionTotal   = 0;
   let roundCount     = 0;
 
-  function nextQuestion() {
+  async function nextQuestion() {
     roundCount++;
-    const q = buildTrainingQuestion(sublessons, gameType, roundCount);
+    await Promise.all(sublessons.map(sl => prepareQuestions(sl)));
+    const q = pickTrainingQuestion(sublessons, gameType);
+    if (!q) {
+      container.innerHTML = `
+        <div class="page active">
+          <div class="empty-state empty-state--padded">
+            <div class="empty-state__title">No practice content</div>
+            <div class="empty-state__body">These lessons have no questions for this game type yet.</div>
+            <button class="btn btn--primary" id="no-content-back" style="margin-top:var(--space-4)">Back</button>
+          </div>
+        </div>`;
+      container.querySelector('#no-content-back')?.addEventListener('click', () => {
+        renderTrainingMenu(container, chapter);
+      });
+      return;
+    }
     renderTrainingQuestion(container, chapter, sublessons, gameType, q, {
       correct: sessionCorrect,
       total:   sessionTotal,
@@ -364,68 +369,6 @@ function startTrainingSession(container, chapter, sublessons, gameType) {
   }
 
   nextQuestion();
-}
-
-/* ── Build a single training question ── */
-
-function buildTrainingQuestion(sublessons, gameType, round) {
-  const allVocab = sublessons.flatMap(sl => sl.vocabulary || []).filter(v => v.gender !== 'n');
-  const allAdjs  = sublessons.flatMap(sl => sl.adjectives  || []);
-
-  const nouns = [
-    { es: 'libro',    en: 'book',   gender: 'm' },
-    { es: 'casa',     en: 'house',  gender: 'f' },
-    { es: 'perro',    en: 'dog',    gender: 'm' },
-    { es: 'muchacha', en: 'girl',   gender: 'f' },
-    { es: 'hotel',    en: 'hotel',  gender: 'm' },
-    { es: 'lámpara',  en: 'lamp',   gender: 'f' },
-    { es: 'hombre',   en: 'man',    gender: 'm' },
-    { es: 'mujer',    en: 'woman',  gender: 'f' },
-  ];
-
-  switch (gameType) {
-    case 'article-picker':
-    case 'fill-article':
-    case 'translation': {
-      const vocab = shuffle(allVocab.filter(v => v.article))[0];
-      if (!vocab) return { type: 'matching', pairs: shuffle(allVocab).slice(0,4).map(v=>({es:v.es,en:v.en})) };
-      return { type: gameType, vocab };
-    }
-    case 'plural-picker': {
-      const vocab = shuffle(allVocab.filter(v => v.plural))[0];
-      if (!vocab) return { type: 'matching', pairs: shuffle(allVocab).slice(0,4).map(v=>({es:v.es,en:v.en})) };
-      return { type: 'plural-picker', vocab };
-    }
-    case 'adjective': {
-      const adj  = shuffle(allAdjs)[0];
-      if (!adj) return { type: 'matching', pairs: shuffle(allVocab).slice(0,4).map(v=>({es:v.es,en:v.en})) };
-      const noun = nouns[round % nouns.length];
-      return { type: 'adjective', noun, adjective: adj };
-    }
-    case 'conjugation': {
-      const allConjs = sublessons.flatMap(sl => sl.conjugations || []);
-      if (!allConjs.length) return { type: 'matching', pairs: shuffle(allVocab).slice(0,4).map(v=>({es:v.es,en:v.en})) };
-      const c = shuffle(allConjs)[0];
-      const verb = sublessons.find(sl => sl.conjugations?.length)?.id?.startsWith('2-2') ? 'estar' : 'ser';
-      return { type: 'conjugation', pronoun: c.pronoun, correctForm: c.form, verb, en: c.en, allForms: allConjs };
-    }
-    case 'ser-vs-estar': {
-      const allQ = sublessons.flatMap(sl => sl.serVsEstarQuestions || []);
-      if (!allQ.length) return { type: 'matching', pairs: shuffle(allVocab).slice(0,4).map(v=>({es:v.es,en:v.en})) };
-      const q = shuffle(allQ)[0];
-      return { type: 'ser-vs-estar', ...q };
-    }
-    case 'matching': {
-      const pairs = shuffle(allVocab).slice(0, 4).map(v => ({
-        es: v.article ? `${v.article} ${v.es}` : v.es, en: v.en,
-      }));
-      return { type: 'matching', pairs };
-    }
-    default: {
-      const vocab = shuffle(allVocab.filter(v => v.article))[0] || allVocab[0];
-      return { type: 'article-picker', vocab };
-    }
-  }
 }
 
 /* ── Render a training question with quit button ── */
@@ -461,21 +404,9 @@ function renderTrainingQuestion(container, chapter, sublessons, gameType, q, ses
     session.onNext();
   }, { once: true });
 
-  switch (q.type) {
-    case 'article-picker':  gameArticlePicker(gameContent, q, session.onAnswer);      break;
-    case 'fill-article':    gameFillArticle(gameContent, q, session.onAnswer);        break;
-    case 'matching':        gameMatching(gameContent, q, session.onAnswer);            break;
-    case 'plural-picker':   gamePluralPicker(gameContent, q, session.onAnswer);       break;
-    case 'adjective':       gameAdjectiveAgreement(gameContent, q, session.onAnswer); break;
-    case 'translation':     gameTranslation(gameContent, q, session.onAnswer);        break;
-    case 'conjugation':     gameConjugationPicker(gameContent, q, session.onAnswer);  break;
-    case 'ser-vs-estar':    gameSerVsEstar(gameContent, q, session.onAnswer);         break;
-    case 'number-quiz':         gameNumberQuiz(gameContent, q, session.onAnswer);         break;
-    case 'sentence-completion': gameSentenceCompletion(gameContent, q, session.onAnswer); break;
-    default:                    gameArticlePicker(gameContent, q, session.onAnswer);
+  if (!renderGame(gameContent, q, session.onAnswer)) {
+    renderUnknownGame(gameContent, q);
   }
-
-  setupQuestionAudio(gameContent, q);
 }
 
-export { renderTraining };
+export { renderTraining, pickTrainingQuestion };

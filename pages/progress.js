@@ -2,7 +2,7 @@
 
 import Store from '../js/store.js';
 import { ALL_CHAPTERS } from '../js/data/registry.js';
-import { scoreTierClass, scoreTierProgressClass } from '../js/utils.js';
+import { scoreTierClass, scoreTierProgressClass, escapeHtml } from '../js/utils.js';
 
 function formatStudyDate(dateStr) {
   if (!dateStr) return null;
@@ -14,7 +14,7 @@ function formatStudyDate(dateStr) {
 
 function chapterTitle(id) {
   const ch = ALL_CHAPTERS.find(c => String(c.id) === String(id));
-  return ch ? `Chapter ${id} · ${ch.title}` : `Chapter ${id}`;
+  return ch ? `Chapter ${id} · ${escapeHtml(ch.title)}` : `Chapter ${id}`;
 }
 
 function renderProgress(container) {
@@ -89,12 +89,12 @@ function renderProgress(container) {
               <div class="card card--stack">
                 <div class="score-breakdown__header">
                   <div>
-                    <div class="text-sm text-bright">Chapter ${id}${chMeta ? ' · ' + chMeta.title : ''}</div>
+                    <div class="text-sm text-bright">Chapter ${id}${chMeta ? ' · ' + escapeHtml(chMeta.title) : ''}</div>
                     <div class="text-xs text-muted mt-2">${s.attempts} attempt${s.attempts !== 1 ? 's' : ''}${date ? ` · ${date}` : ''}</div>
                   </div>
                   <div class="score-card__value score-card__value--lg ${scoreClass}">${s.best}%</div>
                 </div>
-                <div class="progress-track mb-3">
+                <div class="progress-track mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s.best}" aria-label="Chapter ${id} score">
                   <div class="progress-fill ${progressClass}" style="width:${s.best}%"></div>
                 </div>
                 <div class="card-row__actions">

@@ -1,13 +1,18 @@
-import { describe, it } from 'node:test';
+import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   CHAPTERS,
   ALL_CHAPTERS,
   VOCAB_KEYS,
   collectChapterVocabIds,
+  preloadAllChapters,
 } from '../js/data/registry.js';
 
 describe('registry', () => {
+  before(async () => {
+    await preloadAllChapters();
+  });
+
   it('maps 15 full chapter objects aligned with catalog', () => {
     assert.equal(Object.keys(CHAPTERS).length, 15);
     assert.equal(ALL_CHAPTERS.length, 15);

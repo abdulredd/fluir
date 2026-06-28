@@ -1,8 +1,12 @@
-import { describe, it } from 'node:test';
+import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { collectChapterVocabIds, vocabItemId, CHAPTERS } from '../js/data/registry.js';
+import { collectChapterVocabIds, vocabItemId, CHAPTERS, preloadAllChapters } from '../js/data/registry.js';
 
 describe('collectChapterVocabIds', () => {
+  before(async () => {
+    await preloadAllChapters();
+  });
+
   it('collects ids from all vocab arrays on a chapter', () => {
     const ch1Ids = collectChapterVocabIds(CHAPTERS[1]);
     assert.ok(ch1Ids.includes('v1_1'), 'chapter 1 vocabulary id');

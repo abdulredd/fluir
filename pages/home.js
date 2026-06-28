@@ -4,6 +4,7 @@ import Store from '../js/store.js';
 import { ALL_CHAPTERS } from '../js/data/registry.js';
 import { isLessonUnlocked } from '../js/chapters/access.js';
 import { getWeekDays, weekStreakHTML } from '../js/streak.js';
+import { escapeHtml } from '../js/utils.js';
 
 const CHAPTERS = ALL_CHAPTERS;
 
@@ -34,7 +35,7 @@ function renderHome(container) {
         </div>
       </div>
 
-      <div class="progress-track mb-6">
+      <div class="progress-track mb-6" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Overall progress">
         <div class="progress-fill progress-fill--purple" style="width:${pct}%"></div>
       </div>
 
@@ -47,9 +48,11 @@ function renderHome(container) {
     </div>
   `;
 
-  container.querySelectorAll('.chapter-card:not(.chapter-card--locked)').forEach(el => {
-    el.addEventListener('click', () => {
-      location.hash = `#/chapter/${el.dataset.id}`;
+  container.querySelectorAll('.chapter-card--clickable').forEach(el => {
+    const activate = () => { location.hash = `#/chapter/${el.dataset.id}`; };
+    el.addEventListener('click', activate);
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
     });
   });
 }
@@ -76,12 +79,12 @@ function chapterCard(ch, progress) {
   const comingSoon = unlocked && !hasData && !started && !complete;
 
   return `
-    <div class="chapter-card ${complete ? 'chapter-card--complete' : ''} ${locked || comingSoon ? 'chapter-card--locked' : ''}"
-         data-id="${ch.id}">
+    <button type="button" class="chapter-card ${complete ? 'chapter-card--complete' : ''} ${locked || comingSoon ? 'chapter-card--locked' : 'chapter-card--clickable'}"
+         data-id="${ch.id}" ${locked || comingSoon ? 'disabled aria-disabled="true"' : ''}>
       <div class="chapter-card__number">${numberContent}</div>
       <div class="chapter-card__body">
-        <div class="chapter-card__title">${ch.title}</div>
-        <div class="chapter-card__meta">${statusText}</div>
+        <div class="chapter-card__title">${escapeHtml(ch.title)}</div>
+        <div class="chapter-card__meta">${escapeHtml(statusText)}</div>
       </div>
       <div class="chapter-card__arrow">
         ${locked || comingSoon
@@ -89,7 +92,7 @@ function chapterCard(ch, progress) {
           : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`
         }
       </div>
-    </div>
+    </button>
   `;
 }
 

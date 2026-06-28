@@ -4,7 +4,6 @@ import Store from '../js/store.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
 import { exportToAnki } from '../js/anki.js';
 import { ALL_CHAPTERS } from '../js/data/registry.js';
-import { isAudioFeatureEnabled } from '../js/audio.js';
 
 function renderSettings(container) {
   const settings    = Store.getSettings();
@@ -18,14 +17,6 @@ function renderSettings(container) {
       <div class="page-head page-head--spaced">
         <h2 class="page-title mb-2">Settings</h2>
       </div>
-
-      ${isAudioFeatureEnabled() ? `
-      <div class="section-label">Audio</div>
-      <div class="card card--spaced">
-        <div class="list-btn__title mb-2">Audio pronunciation</div>
-        <div class="text-xs text-muted">Play audio for vocabulary items</div>
-      </div>
-      ` : ''}
 
       <div class="section-label">Anki export</div>
       <div class="card card--spaced">

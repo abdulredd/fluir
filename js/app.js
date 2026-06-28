@@ -77,6 +77,35 @@ function showToast(message, duration = 2500) {
 
 /* ── Confirm sheet ── */
 
+function mountModalSheet(sheet, backdrop, onDismiss) {
+  const previouslyFocused = document.activeElement;
+  sheet.setAttribute('role', 'dialog');
+  sheet.setAttribute('aria-modal', 'true');
+
+  function dismiss() {
+    document.removeEventListener('keydown', onKeydown);
+    backdrop.remove();
+    sheet.remove();
+    if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
+  }
+
+  function onKeydown(e) {
+    if (e.key === 'Escape') {
+      dismiss();
+      onDismiss?.();
+    }
+  }
+
+  document.addEventListener('keydown', onKeydown);
+  document.body.appendChild(backdrop);
+  document.body.appendChild(sheet);
+
+  const focusable = sheet.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (focusable instanceof HTMLElement) focusable.focus();
+
+  return dismiss;
+}
+
 function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel = 'Cancel', onConfirm, onCancel }) {
   const backdrop = document.createElement('div');
   backdrop.className = 'confirm-overlay';
@@ -84,7 +113,7 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
   sheet.innerHTML = `
-    <div class="confirm-sheet__title">${escapeHtml(title)}</div>
+    <div class="confirm-sheet__title" id="cs-title">${escapeHtml(title)}</div>
     <div class="confirm-sheet__body">${escapeHtml(body)}</div>
     <div class="confirm-sheet__actions">
       <button class="btn btn--danger btn--full" id="cs-confirm">${escapeHtml(confirmLabel)}</button>
@@ -92,17 +121,12 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
     </div>
   `;
 
-  function dismiss() { backdrop.remove(); sheet.remove(); }
+  const dismiss = mountModalSheet(sheet, backdrop, onCancel);
 
   sheet.querySelector('#cs-confirm').addEventListener('click', () => { dismiss(); onConfirm?.(); });
   sheet.querySelector('#cs-cancel').addEventListener('click',  () => { dismiss(); onCancel?.();  });
   backdrop.addEventListener('click', () => { dismiss(); onCancel?.(); });
-
-  document.body.appendChild(backdrop);
-  document.body.appendChild(sheet);
 }
-
-/* ── Choice sheet (N actions) ── */
 
 function showChoiceSheet({ title, body = '', actions = [] }) {
   const backdrop = document.createElement('div');
@@ -111,7 +135,7 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
   sheet.innerHTML = `
-    <div class="confirm-sheet__title">${escapeHtml(title)}</div>
+    <div class="confirm-sheet__title" id="cs-title">${escapeHtml(title)}</div>
     ${body ? `<div class="confirm-sheet__body">${escapeHtml(body)}</div>` : ''}
     <div class="confirm-sheet__actions">
       ${actions.map((a, i) => `
@@ -120,7 +144,7 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
     </div>
   `;
 
-  function dismiss() { backdrop.remove(); sheet.remove(); }
+  const dismiss = mountModalSheet(sheet, backdrop);
 
   sheet.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -130,9 +154,6 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
     });
   });
   backdrop.addEventListener('click', dismiss);
-
-  document.body.appendChild(backdrop);
-  document.body.appendChild(sheet);
 }
 
 /* ── Boot ── */
@@ -158,6 +179,8 @@ function boot() {
   handleRoute();
 }
 
-document.addEventListener('DOMContentLoaded', boot);
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', boot);
+}
 
 export { navigate, showToast, showConfirmSheet, showChoiceSheet };

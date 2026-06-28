@@ -6,7 +6,7 @@
    Run `npm test` — tests/sw.test.js validates every path exists.
    ─────────────────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v62';
+const CACHE_NAME = 'fluir-v63';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -19,12 +19,27 @@ const PRECACHE_ASSETS = [
   '/js/app.js',
   '/js/store.js',
   '/js/utils.js',
+  '/js/sw-register.js',
   '/js/chapters/access.js',
   '/js/streak.js',
   '/js/data/vocab-keys.js',
   '/js/data/registry.js',
-  '/js/audio.js',
   '/js/games.js',
+  '/js/games/index.js',
+  '/js/games/dispatch.js',
+  '/js/games/shared.js',
+  '/js/games/article-picker.js',
+  '/js/games/fill-article.js',
+  '/js/games/matching.js',
+  '/js/games/plural-picker.js',
+  '/js/games/adjective.js',
+  '/js/games/translation.js',
+  '/js/games/conjugation.js',
+  '/js/games/ser-vs-estar.js',
+  '/js/games/number-quiz.js',
+  '/js/games/sentence-completion.js',
+  '/js/games/vocab-picker.js',
+  '/js/training-questions.js',
   '/js/anki.js',
   '/js/data/chapter1.js',
   '/js/data/chapter2.js',

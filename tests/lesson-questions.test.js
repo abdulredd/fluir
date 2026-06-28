@@ -1,9 +1,15 @@
-import { describe, it } from 'node:test';
+import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildQuestions, SUBLESSON_BUILDERS } from '../pages/lesson/questions.js';
-import { CHAPTERS, ALL_CHAPTERS } from '../js/data/registry.js';
+import { CHAPTERS, ALL_CHAPTERS, preloadAllChapters } from '../js/data/registry.js';
+import { ensureBuilderChapter } from '../pages/lesson/builder-registry.js';
 
 describe('SUBLESSON_BUILDERS registry', () => {
+  before(async () => {
+    await preloadAllChapters();
+    await Promise.all(ALL_CHAPTERS.map(meta => ensureBuilderChapter(meta.id)));
+  });
+
   it('has a builder for every sublesson in the catalog', () => {
     const expectedIds = ALL_CHAPTERS.flatMap(meta =>
       CHAPTERS[meta.id].sublessons.map(sl => sl.id),
@@ -22,6 +28,11 @@ describe('SUBLESSON_BUILDERS registry', () => {
 });
 
 describe('buildQuestions', () => {
+  before(async () => {
+    await preloadAllChapters();
+    await Promise.all(ALL_CHAPTERS.map(meta => ensureBuilderChapter(meta.id)));
+  });
+
   it('1-1 mixes article, fill, translation, and matching games', () => {
     const sublesson = CHAPTERS[1].sublessons.find(sl => sl.id === '1-1');
     const types = new Set(buildQuestions(sublesson).map(q => q.type));
@@ -44,17 +55,17 @@ describe('buildQuestions', () => {
     assert.ok(types.has('ser-vs-estar'));
   });
 
-  for (const meta of ALL_CHAPTERS) {
-    const chapter = CHAPTERS[meta.id];
-    for (const sublesson of chapter.sublessons) {
-      it(`returns typed questions for ${sublesson.id} (${sublesson.title})`, () => {
+  it('returns typed questions for every sublesson', () => {
+    for (const meta of ALL_CHAPTERS) {
+      const chapter = CHAPTERS[meta.id];
+      for (const sublesson of chapter.sublessons) {
         const questions = buildQuestions(sublesson);
         assert.ok(questions.length > 0, `${sublesson.id} should produce questions`);
         assert.ok(
           questions.every(q => typeof q.type === 'string' && q.type.length > 0),
           `${sublesson.id} questions must have a type`,
         );
-      });
+      }
     }
-  }
+  });
 });
