@@ -598,7 +598,7 @@ button.chapter-card {
 
 .toast {
   position: fixed;
-  bottom: calc(var(--nav-height) + var(--space-4));
+  bottom: calc(var(--nav-total-height) + var(--space-4));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--bg-panel);
