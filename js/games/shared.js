@@ -1,6 +1,6 @@
 /* ─── Fluir · Game shared helpers ─────────────────────────────────────────── */
 
-import { GENDER_RULES, PLURAL_RULES, ADJ_RULES } from '../data/chapter1.js';
+import { GENDER_RULES, PLURAL_RULES, ADJ_RULES } from '../data/grammar-rules.js';
 import { escapeHtml, shuffle } from '../utils.js';
 import { setHtml } from '../dom.js';
 

@@ -1,62 +1,50 @@
 import { shuffle } from '../../../js/utils.js';
 import { conjugate as conjugateCh5 } from '../../../js/data/chapter5.js';
+import {
+  addMatching,
+  infinitivePair,
+  addConjugationFromTable,
+  addConjugationDrill,
+  verbEnShort,
+} from '../builder-utils.js';
+
+const PRONOUNS_7 = ['yo', 'tú', 'él/ella', 'nosotros', 'ellos'];
+const conjugateCh5Verb = (v, p) => conjugateCh5(v.stem, v.type, p);
 
 function build_7_1(sublesson) {
   const questions = [];
-  /* ir conjugation drill */
-  const conjs = sublesson.conjugations;
-  shuffle(conjs).slice(0, 8).forEach(c => {
-    questions.push({ type: 'conjugation', pronoun: c.pronoun, correctForm: c.form,
-      verb: 'ir', en: c.en, allForms: conjs });
+  addConjugationFromTable(questions, sublesson.conjugations, 8, 'ir');
+  addMatching(questions, sublesson.futureDrills, {
+    rounds: 3,
+    mapPair: d => ({ es: d.sentence, en: d.en }),
   });
-  /* near future drills — matching construction → English */
-  const drills = sublesson.futureDrills;
-  for (let i = 0; i < 3; i++) {
-    const pairs = shuffle(drills).slice(0, 4).map(d => ({ es: d.sentence, en: d.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* vocabulary matching */
-  const vocab = sublesson.vocabulary.filter(v => v.article);
-  const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-  questions.push({ type: 'matching', pairs });
+  addMatching(questions, sublesson.vocabulary.filter(v => v.article));
   return questions;
 }
 
 function build_7_2(sublesson) {
   const questions = [];
-  /* hacer expressions — matching */
-  const hacer = sublesson.hacerExpressions;
-  for (let i = 0; i < 2; i++) {
-    const pairs = shuffle(hacer).slice(0, 4).map(h => ({ es: h.es, en: h.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* tener expressions — matching, multiple rounds */
-  const tener = sublesson.tenerExpressions;
-  for (let i = 0; i < 4; i++) {
-    const pairs = shuffle(tener).slice(0, 4).map(t => ({ es: t.es, en: t.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  addMatching(questions, sublesson.hacerExpressions, { rounds: 2, mapPair: h => ({ es: h.es, en: h.en }) });
+  addMatching(questions, sublesson.tenerExpressions, { rounds: 4, mapPair: t => ({ es: t.es, en: t.en }) });
   return questions;
 }
 
 function build_7_3(sublesson) {
   const questions = [];
-  /* Verbal idioms — matching construction → meaning */
   const idioms = sublesson.idioms;
-  for (let i = 0; i < 3; i++) {
-    const pairs = shuffle(idioms).slice(0, 4).map(id => ({ es: id.construction, en: id.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* Conjugation drill — pick the right form for each idiom */
+  addMatching(questions, idioms, {
+    rounds: 3,
+    mapPair: id => ({ es: id.construction, en: id.en }),
+  });
   idioms.forEach(idiom => {
     const conj = shuffle(idiom.conjugations)[0];
     const allForms = idiom.conjugations.map(c => ({ pronoun: c.pronoun, form: c.form }));
     questions.push({
       type: 'conjugation',
-      pronoun: conj.pronoun,
+      pronoun:     conj.pronoun,
       correctForm: conj.form,
-      verb: idiom.construction,
-      en: `${conj.pronoun} ${idiom.en}`,
+      verb:        idiom.construction,
+      en:          `${conj.pronoun} ${idiom.en}`,
       allForms,
     });
   });
@@ -65,21 +53,12 @@ function build_7_3(sublesson) {
 
 function build_7_4(sublesson) {
   const questions = [];
-  /* New -ar verbs — matching + conjugation */
   const verbs = sublesson.verbs;
-  for (let i = 0; i < 4; i++) {
-    const pairs = shuffle(verbs).slice(0, 4).map(v => ({ es: v.infinitive, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* Conjugation using ch5 conjugate function (all regular -ar) */
-  const pronouns = ['yo','tú','él/ella','nosotros','ellos'];
-  shuffle(verbs).slice(0, 8).forEach(v => {
-    const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
-    const correctForm = conjugateCh5(v.stem, v.type, pronoun);
-    const allForms = pronouns.map(p => ({ pronoun: p, form: conjugateCh5(v.stem, v.type, p) }));
-    const uniqueForms = [...new Map(allForms.map(f => [f.form, f])).values()];
-    questions.push({ type: 'conjugation', pronoun, correctForm, verb: v.infinitive,
-      en: `${pronoun} ${v.en.split('/')[0].replace('to ','').trim()}`, allForms: uniqueForms });
+  addMatching(questions, verbs, { rounds: 4, mapPair: infinitivePair });
+  addConjugationDrill(questions, verbs, 8, {
+    pronouns: PRONOUNS_7,
+    conjugate: conjugateCh5Verb,
+    enFor: (v, p) => `${p} ${verbEnShort(v)}`,
   });
   return questions;
 }

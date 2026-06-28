@@ -1,4 +1,5 @@
 import { shuffle } from '../../../js/utils.js';
+import { addMatching } from '../builder-utils.js';
 
 function build_1_1(sublesson) {
   const questions = [];
@@ -9,8 +10,7 @@ function build_1_1(sublesson) {
     else if (i % 3 === 1) questions.push({ type: 'fill-article',   vocab: v });
     else                  questions.push({ type: 'translation',    vocab: v });
   });
-  const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: `${v.article} ${v.es}`, en: v.en }));
-  questions.push({ type: 'matching', pairs });
+  addMatching(questions, vocab, { mapPair: v => ({ es: `${v.article} ${v.es}`, en: v.en }) });
   return questions;
 }
 
@@ -22,8 +22,7 @@ function build_1_2(sublesson) {
     if (i % 2 === 0) questions.push({ type: 'article-picker',  vocab: vWithIndef });
     else             questions.push({ type: 'plural-picker',   vocab: vWithIndef });
   });
-  const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: `${v.indef} ${v.es}`, en: v.en }));
-  questions.push({ type: 'matching', pairs });
+  addMatching(questions, vocab, { mapPair: v => ({ es: `${v.indef} ${v.es}`, en: v.en }) });
   return questions;
 }
 
@@ -41,8 +40,7 @@ function build_1_3(sublesson) {
   shuffle(adjs).slice(0, 10).forEach((adj, i) => {
     questions.push({ type: 'adjective', noun: nouns[i % nouns.length], adjective: adj });
   });
-  const pairs = shuffle(adjs).slice(0, 4).map(a => ({ es: a.es, en: a.en }));
-  questions.push({ type: 'matching', pairs });
+  addMatching(questions, adjs);
   return questions;
 }
 

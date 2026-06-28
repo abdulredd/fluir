@@ -1,61 +1,36 @@
-import { shuffle } from '../../../js/utils.js';
 import { ALL_VERBS_CH6, conjugateIrr } from '../../../js/data/chapter6.js';
+import {
+  addMatching,
+  infinitivePair,
+  addConjugationDrill,
+  verbEnShort,
+} from '../builder-utils.js';
+
+const PRONOUNS_6 = ['yo', 'tú', 'él/ella', 'nosotros', 'ellos'];
+const PRONOUNS_6_EXTENDED = ['yo', 'tú', 'él/ella', 'nosotros', 'ellos', 'Ud.', 'Uds.'];
+const conjugateIrrVerb = (v, p) => conjugateIrr(v.forms, p);
 
 function build_6_1(sublesson) {
   const questions = [];
-  const pronouns = ['yo','tú','él/ella','nosotros','ellos'];
   const verbs = sublesson.verbs;
-  
-  /* Matching: infinitive → meaning */
-  for (let i = 0; i < 2; i++) {
-    const pairs = shuffle(verbs).slice(0, 4).map(v => ({ es: v.infinitive, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  
-  /* Conjugation: given pronoun, pick the correct irregular form */
-  shuffle(verbs).slice(0, 10).forEach(v => {
-    const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
-    const correctForm = conjugateIrr(v.forms, pronoun);
-    const allForms = pronouns.map(p => ({ pronoun: p, form: conjugateIrr(v.forms, p) }));
-    const uniqueForms = [...new Map(allForms.map(f => [f.form, f])).values()];
-    questions.push({
-      type: 'conjugation',
-      pronoun,
-      correctForm,
-      verb: v.infinitive,
-      en: `${pronoun} ${v.en.split('/')[0].replace('to ','').trim()}`,
-      allForms: uniqueForms,
-    });
+  addMatching(questions, verbs, { rounds: 2, mapPair: infinitivePair });
+  addConjugationDrill(questions, verbs, 10, {
+    pronouns: PRONOUNS_6,
+    conjugate: conjugateIrrVerb,
+    enFor: (v, p) => `${p} ${verbEnShort(v)}`,
   });
   return questions;
 }
 
 function build_6_4(_sublesson) {
   const questions = [];
-  /* Mixed irregular drill — all 24 verbs */
-  const pronouns = ['yo','tú','él/ella','nosotros','ellos','Ud.','Uds.'];
-  const allVerbs = ALL_VERBS_CH6;
-  
-  shuffle(allVerbs).slice(0, 18).forEach(v => {
-    const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
-    const correctForm = conjugateIrr(v.forms, pronoun);
-    const allForms = ['yo','tú','él/ella','nosotros','ellos'].map(p => ({ pronoun: p, form: conjugateIrr(v.forms, p) }));
-    const uniqueForms = [...new Map(allForms.map(f => [f.form, f])).values()];
-    questions.push({
-      type: 'conjugation',
-      pronoun,
-      correctForm,
-      verb: v.infinitive,
-      en: `${pronoun} ${v.en.split('/')[0].replace('to ','').trim()}`,
-      allForms: uniqueForms,
-    });
+  addConjugationDrill(questions, ALL_VERBS_CH6, 18, {
+    pronouns: PRONOUNS_6_EXTENDED,
+    formPronouns: PRONOUNS_6,
+    conjugate: conjugateIrrVerb,
+    enFor: (v, p) => `${p} ${verbEnShort(v)}`,
   });
-  
-  /* Matching: infinitive → meaning, mixed across all groups */
-  for (let i = 0; i < 3; i++) {
-    const pairs = shuffle(allVerbs).slice(0, 4).map(v => ({ es: v.infinitive, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  addMatching(questions, ALL_VERBS_CH6, { rounds: 3, mapPair: infinitivePair });
   return questions;
 }
 

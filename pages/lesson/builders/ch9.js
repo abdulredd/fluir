@@ -1,87 +1,61 @@
-import { shuffle } from '../../../js/utils.js';
+import { addMatching, addSentenceCompletions } from '../builder-utils.js';
 
 function build_9_1(sublesson) {
   const questions = [];
-  /* Negatives — sentence completion */
-  shuffle(sublesson.sentenceCompletionDrills).forEach(d => {
-    questions.push({ type: 'sentence-completion', ...d });
+  addSentenceCompletions(questions, sublesson.sentenceCompletionDrills);
+  questions.push({
+    type: 'matching',
+    pairs: [
+      { es: 'algo', en: 'something' }, { es: 'nada', en: 'nothing' },
+      { es: 'alguien', en: 'someone' }, { es: 'nadie', en: 'no one' },
+    ],
   });
-  /* Affirmative/negative matching pairs */
-  const pairs1 = [
-    { es:'algo', en:'something' }, { es:'nada', en:'nothing' },
-    { es:'alguien', en:'someone' }, { es:'nadie', en:'no one' },
-  ];
-  questions.push({ type: 'matching', pairs: pairs1 });
-  const pairs2 = [
-    { es:'siempre', en:'always' }, { es:'nunca', en:'never' },
-    { es:'también', en:'also' }, { es:'tampoco', en:'neither' },
-  ];
-  questions.push({ type: 'matching', pairs: pairs2 });
-  /* Vocabulary matching */
-  const vocab = sublesson.vocabulary;
-  for (let i = 0; i < 2; i++) {
-    const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  questions.push({
+    type: 'matching',
+    pairs: [
+      { es: 'siempre', en: 'always' }, { es: 'nunca', en: 'never' },
+      { es: 'también', en: 'also' }, { es: 'tampoco', en: 'neither' },
+    ],
+  });
+  addMatching(questions, sublesson.vocabulary, { rounds: 2 });
   return questions;
 }
 
 function build_9_2(sublesson) {
   const questions = [];
-  /* Prepositions — sentence completion */
-  shuffle(sublesson.sentenceCompletionDrills).forEach(d => {
-    questions.push({ type: 'sentence-completion', ...d });
-  });
-  /* Vocabulary matching — verb-phrase prepositions */
-  const vocab = sublesson.vocabulary;
-  for (let i = 0; i < 3; i++) {
-    const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  addSentenceCompletions(questions, sublesson.sentenceCompletionDrills);
+  addMatching(questions, sublesson.vocabulary, { rounds: 3 });
   return questions;
 }
 
 function build_9_3(sublesson) {
   const questions = [];
-  /* Por vs para — sentence completion drills */
-  sublesson.porVsParaDrills.forEach(d => {
-    questions.push({ type: 'sentence-completion', ...d });
+  addSentenceCompletions(questions, sublesson.porVsParaDrills);
+  addSentenceCompletions(questions, sublesson.pronounDrills);
+  questions.push({
+    type: 'matching',
+    pairs: [
+      { es: 'para — recipient', en: 'El regalo es para ella.' },
+      { es: 'para — purpose', en: 'Estudia para aprender.' },
+      { es: 'por — duration', en: 'Corro por una hora.' },
+      { es: 'por — cause', en: 'Triste por el mal clima.' },
+    ],
   });
-  /* Pronoun drills — sentence completion */
-  sublesson.pronounDrills.forEach(d => {
-    questions.push({ type: 'sentence-completion', ...d });
-  });
-  /* Por vs para matching */
-  const pairs = [
-    { es:'para — recipient', en:'El regalo es para ella.' },
-    { es:'para — purpose',   en:'Estudia para aprender.' },
-    { es:'por — duration',   en:'Corro por una hora.' },
-    { es:'por — cause',      en:'Triste por el mal clima.' },
-  ];
-  questions.push({ type: 'matching', pairs });
   return questions;
 }
 
 function build_9_4(sublesson) {
   const questions = [];
-  /* Location prepositions — matching */
-  const locs = sublesson.locationPrepositions;
-  for (let i = 0; i < 4; i++) {
-    const pairs = shuffle(locs).slice(0, 4).map(l => ({ es: l.es, en: l.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* Por expressions — matching */
-  const exprs = sublesson.porExpressions;
-  for (let i = 0; i < 4; i++) {
-    const pairs = shuffle(exprs).slice(0, 4).map(e => ({ es: e.es, en: e.en }));
-    questions.push({ type: 'matching', pairs });
-  }
-  /* Nature vocabulary matching */
+  addMatching(questions, sublesson.locationPrepositions, {
+    rounds: 4,
+    mapPair: l => ({ es: l.es, en: l.en }),
+  });
+  addMatching(questions, sublesson.porExpressions, {
+    rounds: 4,
+    mapPair: e => ({ es: e.es, en: e.en }),
+  });
   if (sublesson.vocabulary?.length) {
-    for (let i = 0; i < 4; i++) {
-      const pairs = shuffle(sublesson.vocabulary).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-      questions.push({ type: 'matching', pairs });
-    }
+    addMatching(questions, sublesson.vocabulary, { rounds: 4 });
   }
   return questions;
 }

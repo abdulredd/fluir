@@ -1,4 +1,5 @@
 import { shuffle } from '../../../js/utils.js';
+import { addMatching } from '../builder-utils.js';
 
 function build_4_1(sublesson) {
   const questions = [];
@@ -21,11 +22,7 @@ function build_4_2(sublesson) {
     const distractors = shuffle(drills.filter(x => x.numeral !== d.numeral)).slice(0, 3).map(x => x.masculine);
     questions.push({ type: 'number-quiz', mode: 'numeral-to-word', numeral: d.numeral, spanish: d.masculine, distractors });
   });
-  const vocab = sublesson.vocabulary;
-  for (let i = 0; i < 2; i++) {
-    const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  addMatching(questions, sublesson.vocabulary, { rounds: 2 });
   return questions;
 }
 
@@ -36,9 +33,7 @@ function build_4_3(sublesson) {
     const distractors = shuffle(drills.filter(x => x.spanish !== d.spanish)).slice(0, 3).map(x => x.spanish);
     questions.push({ type: 'number-quiz', mode: 'numeral-to-word', numeral: d.numeral, spanish: d.spanish, distractors });
   });
-  const vocab = sublesson.vocabulary.filter(v => v.article);
-  const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-  questions.push({ type: 'matching', pairs });
+  addMatching(questions, sublesson.vocabulary.filter(v => v.article));
   return questions;
 }
 
@@ -49,11 +44,7 @@ function build_4_4(sublesson) {
     const distractors = shuffle(drills.filter(x => x.spanish !== d.spanish)).slice(0, 3).map(x => x.spanish);
     questions.push({ type: 'number-quiz', mode: 'time-to-spanish', numeral: d.numeral, spanish: d.spanish, distractors });
   });
-  const vocab = sublesson.vocabulary.filter(v => v.article === 'el' || v.article === 'la');
-  for (let i = 0; i < 2; i++) {
-    const pairs = shuffle(vocab).slice(0, 4).map(v => ({ es: v.es, en: v.en }));
-    questions.push({ type: 'matching', pairs });
-  }
+  addMatching(questions, sublesson.vocabulary.filter(v => v.article === 'el' || v.article === 'la'), { rounds: 2 });
   return questions;
 }
 
