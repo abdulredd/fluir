@@ -2,6 +2,11 @@
 
 #main-content {
   flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 /* ── Topbar meta ── */
@@ -271,8 +276,10 @@
   text-underline-offset: 2px;
 }
 
-.notice-banner__discard:hover {
-  color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .notice-banner__discard:hover {
+    color: var(--text-primary);
+  }
 }
 
 /* ── Lesson intro sublesson rows ── */

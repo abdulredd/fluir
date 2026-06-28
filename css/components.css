@@ -22,9 +22,12 @@
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-.btn:hover  { background: var(--bg-surface); border-color: var(--border-strong); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover  { background: var(--bg-surface); border-color: var(--border-strong); }
+}
 .btn:active { transform: scale(0.97); }
 
 .btn--primary {
@@ -32,7 +35,9 @@
   border-color: var(--color-cyan);
   color: var(--color-cyan);
 }
-.btn--primary:hover { background: #122a30; }
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover { background: #122a30; }
+}
 
 .btn--success {
   background: var(--color-green-bg);
@@ -59,7 +64,9 @@
   color: var(--text-subtle);
   padding-inline: 0 var(--space-3);
 }
-.btn--ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+@media (hover: hover) and (pointer: fine) {
+  .btn--ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+}
 
 .btn--full { width: 100%; }
 
@@ -97,11 +104,14 @@
 .card--interactive {
   cursor: pointer;
   transition: border-color var(--transition-fast), background var(--transition-fast);
+  touch-action: manipulation;
 }
 
-.card--interactive:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-raised);
+@media (hover: hover) and (pointer: fine) {
+  .card--interactive:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-raised);
+  }
 }
 
 .card--interactive:active { transform: scale(0.99); }
@@ -124,6 +134,7 @@
   text-align: left;
   font: inherit;
   color: inherit;
+  touch-action: manipulation;
 }
 
 button.chapter-card {
@@ -138,10 +149,12 @@ button.chapter-card {
   outline-offset: 2px;
 }
 
-.chapter-card:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-raised);
-  text-decoration: none;
+@media (hover: hover) and (pointer: fine) {
+  .chapter-card:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-raised);
+    text-decoration: none;
+  }
 }
 
 .chapter-card:active { transform: scale(0.99); }
@@ -215,11 +228,14 @@ button.chapter-card {
   transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
   margin-bottom: var(--space-3);
   line-height: 1.4;
+  touch-action: manipulation;
 }
 
-.option:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  background: var(--bg-surface);
+@media (hover: hover) and (pointer: fine) {
+  .option:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background: var(--bg-surface);
+  }
 }
 
 .option:active:not(:disabled) { transform: scale(0.99); }
@@ -578,11 +594,14 @@ button.chapter-card {
   font-weight: 500;
   cursor: pointer;
   transition: background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+  touch-action: manipulation;
 }
 
-.segmented-control__option:hover:not(.segmented-control__option--active) {
-  color: var(--text-primary);
-  background: var(--bg-surface);
+@media (hover: hover) and (pointer: fine) {
+  .segmented-control__option:hover:not(.segmented-control__option--active) {
+    color: var(--text-primary);
+    background: var(--bg-surface);
+  }
 }
 
 .segmented-control__option:focus-visible {

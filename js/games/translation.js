@@ -2,7 +2,7 @@
 
 /** @import { LessonQuestion } from '../types.js' */
 
-import { el } from '../dom.js';
+import { el, TEXT_INPUT_ATTRS } from '../dom.js';
 import { spanishTextEquals, accentSpellingNote } from '../utils.js';
 import { stripLeadingArticle } from '../vocab-display.js';
 import { ruleText } from './shared.js';
@@ -44,7 +44,7 @@ export function gameTranslation(container, question, onAnswer) {
         el('div', { className: 'game-text-check' },
           el('input', {
             className: 'text-input', id: 'trans-inp', placeholder: 'los/las + word…',
-            autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
+            ...TEXT_INPUT_ATTRS,
           }),
           el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
         ),
@@ -91,7 +91,7 @@ export function gameTranslation(container, question, onAnswer) {
       el('div', { className: 'game-text-check' },
         el('input', {
           className: 'text-input', id: 'trans-inp', placeholder: 'el/la + word…',
-          autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
+          ...TEXT_INPUT_ATTRS,
         }),
         el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
       ),

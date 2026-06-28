@@ -1,6 +1,6 @@
 /* ─── Fluir · Page UI primitives ─────────────────────────────────────────── */
 
-import { el, clearAndMount, appendChildren, setHtml } from '../js/dom.js';
+import { el, clearAndMount, appendChildren, setHtml, suppressGhostTap } from '../js/dom.js';
 import {
   VOCAB_DIRECTION,
   normalizeVocabDirection,
@@ -159,7 +159,10 @@ function chapterCard(ch, progress, settings, isUnlocked) {
   );
 
   if (!disabled) {
-    const activate = () => { location.hash = `#/chapter/${ch.id}`; };
+    const activate = () => {
+      suppressGhostTap();
+      location.hash = `#/chapter/${ch.id}`;
+    };
     card.addEventListener('click', activate);
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
@@ -186,7 +189,10 @@ function trainingChapterCard(ch, isComplete) {
   );
 
   if (isComplete) {
-    card.addEventListener('click', () => { location.hash = `#/training/${ch.id}`; });
+    card.addEventListener('click', () => {
+      suppressGhostTap();
+      location.hash = `#/training/${ch.id}`;
+    });
   }
 
   return card;

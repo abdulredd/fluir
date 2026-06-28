@@ -2,7 +2,7 @@
 
 /** @import { LessonQuestion } from '../types.js' */
 
-import { el } from '../dom.js';
+import { el, TEXT_INPUT_ATTRS } from '../dom.js';
 import { ruleText, resolveDefiniteArticle, genderHintLabel } from './shared.js';
 import { renderGameShell, bindTextCheck, skipToNext } from './ui.js';
 
@@ -21,7 +21,8 @@ export function gameFillArticle(container, question, onAnswer) {
       el('div', { style: 'display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)' },
         el('input', {
           className: 'text-input', id: 'fill-inp', style: 'width:90px;text-align:center',
-          maxlength: '3', placeholder: '?', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
+          maxlength: '3', placeholder: '?',
+          ...TEXT_INPUT_ATTRS,
         }),
         el('span', { className: 'es-large', text: vocab.es }),
       ),

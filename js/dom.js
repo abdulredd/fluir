@@ -1,5 +1,25 @@
 /* ─── Fluir · DOM helpers ─────────────────────────────────────────────────── */
 
+/** Default attrs for Spanish answer inputs — no auto-capitalize or spell-check. */
+const TEXT_INPUT_ATTRS = {
+  autocomplete: 'off',
+  autocorrect: 'off',
+  autocapitalize: 'off',
+  spellcheck: 'false',
+};
+
+let ghostTapTimer = null;
+
+/** Block stray taps for ~400ms after a screen swap (mobile click-through). */
+function suppressGhostTap() {
+  if (typeof document === 'undefined' || !document.body) return;
+  document.body.classList.add('suppress-ghost-tap');
+  clearTimeout(ghostTapTimer);
+  ghostTapTimer = setTimeout(() => {
+    document.body.classList.remove('suppress-ghost-tap');
+  }, 400);
+}
+
 /**
  * Append string or Node children to a parent.
  * @param {Element} parent
@@ -57,6 +77,7 @@ function el(tag, attrs = {}, ...children) {
  * @param {...(Node|string|null|undefined|(Node|string|null|undefined)[])} children
  */
 function clearAndMount(container, ...children) {
+  suppressGhostTap();
   container.replaceChildren();
   appendChildren(container, ...children);
 }
@@ -83,4 +104,4 @@ function setHtml(node, html) {
   node.innerHTML = html;
 }
 
-export { el, svg, appendChildren, clearAndMount, setHtml };
+export { el, svg, appendChildren, clearAndMount, setHtml, suppressGhostTap, TEXT_INPUT_ATTRS };

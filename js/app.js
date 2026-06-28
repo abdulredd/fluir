@@ -1,7 +1,7 @@
 /* ─── Fluir · App — boot, routing, nav ──────────────────────────────────── */
 
 import Store from './store.js';
-import { el } from './dom.js';
+import { el, suppressGhostTap } from './dom.js';
 import { buildConfirmSheet, buildChoiceSheet } from '../pages/ui.js';
 import { renderHome }     from '../pages/home.js';
 import { renderProgress } from '../pages/progress.js';
@@ -29,6 +29,7 @@ function navigate(hash) {
 }
 
 function handleRoute() {
+  suppressGhostTap();
   const { parts } = parseHash();
   const main = document.getElementById('main-content');
 
@@ -130,11 +131,17 @@ function boot() {
   Store.init();
 
   document.querySelectorAll('.nav-item').forEach(el => {
-    el.addEventListener('click', () => navigate(el.dataset.route));
+    el.addEventListener('click', () => {
+      suppressGhostTap();
+      navigate(el.dataset.route);
+    });
   });
 
   const logo = document.getElementById('topbar-logo');
-  if (logo) logo.addEventListener('click', () => navigate('/'));
+  if (logo) logo.addEventListener('click', () => {
+    suppressGhostTap();
+    navigate('/');
+  });
 
   window.addEventListener('hashchange', () => {
     handleRoute();
