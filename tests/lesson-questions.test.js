@@ -49,6 +49,13 @@ describe('buildQuestions', () => {
     assert.ok(types.has('matching'));
   });
 
+  it('1-2 includes indefinite-plural and plural-definite drills', () => {
+    const sublesson = CHAPTERS[1].sublessons.find(sl => sl.id === '1-2');
+    const questions = buildQuestions(sublesson);
+    assert.ok(questions.some(q => q.type === 'plural-picker' && q.mode === 'indefinite-plural'));
+    assert.ok(questions.some(q => q.type === 'translation' && q.mode === 'plural-definite'));
+  });
+
   it('2-4 includes ser-vs-estar questions', () => {
     const sublesson = CHAPTERS[2].sublessons.find(sl => sl.id === '2-4');
     const types = new Set(buildQuestions(sublesson).map(q => q.type));

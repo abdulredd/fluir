@@ -6,7 +6,7 @@
    Run `npm test` — tests/sw.test.js validates every path exists.
    ─────────────────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v66';
+const CACHE_NAME = 'fluir-v67';
 
 const PRECACHE_ASSETS = [
   '/',

@@ -36,6 +36,7 @@ function mountRuleNavigator(container, {
   badgeEl,
   isFirst,
   isLast,
+  nextLabel,
   lastLabel,
   onBack,
   onPrev,
@@ -51,7 +52,7 @@ function mountRuleNavigator(container, {
     el('button', {
       className: `btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg`.trim(),
       id: 'rule-next',
-      text: lastLabel,
+      text: isLast ? lastLabel : nextLabel,
       onClick: onNext,
     }),
   );
@@ -76,6 +77,7 @@ function runRuleSequence(container, {
   ruleCount,
   getRule,
   getBadgeLabel,
+  nextLabel = 'Next rule →',
   lastLabel = 'Begin Lesson →',
   onBack,
   onFinish,
@@ -94,6 +96,7 @@ function runRuleSequence(container, {
       badgeEl:      ruleBadge(getBadgeLabel(ruleIndex)),
       isFirst:      ruleIndex === 0,
       isLast:       ruleIndex === ruleCount - 1,
+      nextLabel,
       lastLabel,
       ruleCard:     renderRuleCard(getRule(ruleIndex)),
       onBack,

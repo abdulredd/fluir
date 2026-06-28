@@ -3,13 +3,13 @@
 /** @import { LessonQuestion } from '../types.js' */
 
 import { el } from '../dom.js';
-import { ruleText, wrongArticle, shuffle } from './shared.js';
+import { ruleText, wrongArticle, shuffle, resolveDefiniteArticle, genderHintLabel } from './shared.js';
 import { renderGameShell, bindChoiceButtons, skipToNext } from './ui.js';
 
 export function gameArticlePicker(container, question, onAnswer) {
-  const { vocab } = question;
-  const correct   = vocab.article === 'el/la' ? null : vocab.article;
-  const wrong     = correct ? wrongArticle(correct) : null;
+  const { vocab, targetGender } = question;
+  const correct = resolveDefiniteArticle(vocab, targetGender);
+  const wrong   = correct ? wrongArticle(correct) : null;
 
   if (!correct) { skipToNext(container); return; }
 
@@ -21,10 +21,10 @@ export function gameArticlePicker(container, question, onAnswer) {
   const { feedback, choicesEl } = renderGameShell(container, {
     tagLabel: 'Definite article',
     tagClass: 'tag-vocab',
-    prompt: 'Choose the correct article',
+    prompt: targetGender ? 'Choose el or la for the gender shown' : 'Choose the correct article',
     middle: [
       el('div', { className: 'es-large', text: vocab.es }),
-      el('div', { className: 'lesson-translation lesson-translation--loose', text: vocab.en }),
+      el('div', { className: 'lesson-translation lesson-translation--loose', text: vocab.en + genderHintLabel(targetGender) }),
     ],
   });
 

@@ -3,18 +3,18 @@
 /** @import { LessonQuestion } from '../types.js' */
 
 import { el } from '../dom.js';
-import { ruleText } from './shared.js';
+import { ruleText, resolveDefiniteArticle, genderHintLabel } from './shared.js';
 import { renderGameShell, bindTextCheck, skipToNext } from './ui.js';
 
 export function gameFillArticle(container, question, onAnswer) {
-  const { vocab } = question;
-  const correct   = vocab.article === 'el/la' ? null : vocab.article;
+  const { vocab, targetGender } = question;
+  const correct = resolveDefiniteArticle(vocab, targetGender);
   if (!correct) { skipToNext(container); return; }
 
   const { feedback } = renderGameShell(container, {
     tagLabel: 'Fill in the blank',
     tagClass: 'tag-grammar',
-    prompt: 'Type the correct definite article',
+    prompt: targetGender ? 'Type el or la for the gender shown' : 'Type the correct definite article',
     withChoices: false,
     feedbackClass: 'feedback--spaced',
     middle: [
@@ -25,7 +25,7 @@ export function gameFillArticle(container, question, onAnswer) {
         }),
         el('span', { className: 'es-large', text: vocab.es }),
       ),
-      el('div', { className: 'lesson-translation', text: vocab.en }),
+      el('div', { className: 'lesson-translation', text: vocab.en + genderHintLabel(targetGender) }),
       el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
     ],
   });

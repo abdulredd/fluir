@@ -15,7 +15,23 @@ function wrongArticle(correct) {
   if (correct === 'una') return 'un';
   if (correct === 'los') return 'las';
   if (correct === 'las') return 'los';
+  if (correct === 'unos') return 'unas';
+  if (correct === 'unas') return 'unos';
   return correct === 'el' ? 'la' : 'el';
+}
+
+/** @param {object} vocab @param {'m'|'f'|undefined} [targetGender] */
+function resolveDefiniteArticle(vocab, targetGender) {
+  if (vocab.article !== 'el/la') return vocab.article;
+  if (targetGender === 'm') return 'el';
+  if (targetGender === 'f') return 'la';
+  return null;
+}
+
+function genderHintLabel(targetGender) {
+  if (targetGender === 'm') return ' (male)';
+  if (targetGender === 'f') return ' (female)';
+  return '';
 }
 
 function bindNextBtn(container) {
@@ -44,6 +60,8 @@ export {
   ADJ_RULES,
   ruleText,
   wrongArticle,
+  resolveDefiniteArticle,
+  genderHintLabel,
   escapeHtml,
   shuffle,
   bindNextBtn,

@@ -1,34 +1,93 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { renderRuleCard } from '../pages/lesson/rules.js';
-
-function installDom() {
-  const prev = globalThis.document;
-  globalThis.document = {
-    createElement(tag) {
-      const node = {
-        tagName: tag.toUpperCase(),
-        className: '',
-        classList: { _c: new Set(), add(...c) { c.forEach(x => this._c.add(x)); node.className = [...this._c].join(' '); } },
-        textContent: '',
-        childNodes: [],
-        children: [],
-        setAttribute(k, v) { if (k === 'class') node.className = v; },
-        appendChild(c) { node.childNodes.push(c); node.children.push(c); return c; },
-      };
-      return node;
-    },
-    createElementNS(_ns, tag) { return this.createElement(tag); },
-    createTextNode: t => ({ nodeType: 3, textContent: t }),
-  };
-  return () => { globalThis.document = prev; };
-}
+import { renderRuleCard, runRuleSequence } from '../pages/lesson/rules.js';
+import { installDom, mockContainer } from './helpers/dom-stub.js';
 
 function textTree(node) {
   if (!node) return '';
   if (node.nodeType === 3) return node.textContent || '';
   return (node.textContent || '') + (node.childNodes || []).map(textTree).join('');
 }
+
+function ruleSample(i) {
+  return {
+    heading: `Rule ${i}`,
+    body:    `Body ${i}`,
+    examples: [{ es: 'el libro', en: 'the book' }],
+  };
+}
+
+describe('runRuleSequence', () => {
+  let restore;
+
+  before(() => { restore = installDom(); });
+  after(() => { restore?.(); });
+
+  it('shows Next rule on intermediate rules and Begin Lesson on the last', () => {
+    const container = mockContainer();
+    const rules = [ruleSample(1), ruleSample(2), ruleSample(3)];
+
+    runRuleSequence(container, {
+      ruleCount: rules.length,
+      getRule:       (i) => rules[i],
+      getBadgeLabel: () => 'Badge',
+      onBack:        () => {},
+      onFinish:      () => {},
+    });
+
+    const next = () => container.querySelector('#rule-next');
+
+    assert.equal(next().textContent, 'Next rule →');
+    assert.ok(!next().className.includes('btn--primary'));
+
+    next().click();
+    assert.equal(next().textContent, 'Next rule →');
+
+    next().click();
+    assert.equal(next().textContent, 'Begin Lesson →');
+    assert.ok(next().className.includes('btn--primary'));
+  });
+
+  it('calls onFinish when advancing past the last rule', () => {
+    const container = mockContainer();
+    const rules = [ruleSample(1), ruleSample(2)];
+    let finished = false;
+
+    runRuleSequence(container, {
+      ruleCount: rules.length,
+      getRule:       (i) => rules[i],
+      getBadgeLabel: () => 'Badge',
+      onBack:        () => {},
+      onFinish:      () => { finished = true; },
+    });
+
+    const next = () => container.querySelector('#rule-next');
+    next().click();
+    assert.equal(next().textContent, 'Begin Lesson →');
+    next().click();
+    assert.equal(finished, true);
+  });
+
+  it('accepts custom next and last labels', () => {
+    const container = mockContainer();
+    const rules = [ruleSample(1), ruleSample(2)];
+
+    runRuleSequence(container, {
+      ruleCount: rules.length,
+      getRule:       (i) => rules[i],
+      getBadgeLabel: () => 'Badge',
+      nextLabel:     'Continue →',
+      lastLabel:     'Back to questions →',
+      onBack:        () => {},
+      onFinish:      () => {},
+    });
+
+    const next = () => container.querySelector('#rule-next');
+    assert.equal(next().textContent, 'Continue →');
+    next().click();
+    assert.equal(next().textContent, 'Back to questions →');
+  });
+});
 
 describe('renderRuleCard', () => {
   let restore;

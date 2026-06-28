@@ -3,14 +3,44 @@
 /** @import { LessonQuestion } from '../types.js' */
 
 import { el } from '../dom.js';
-import { ruleText, shuffle, PLURAL_RULES } from './shared.js';
+import { ruleText, shuffle, PLURAL_RULES, wrongArticle } from './shared.js';
 import { renderGameShell, bindChoiceButtons, skipToNext } from './ui.js';
 
 export function gamePluralPicker(container, question, onAnswer) {
-  const { vocab } = question;
+  const { vocab, mode } = question;
   const correct = vocab.plural;
 
   if (!correct) { skipToNext(container); return; }
+
+  if (mode === 'indefinite-plural') {
+    const masc = vocab.gender === 'm';
+    const correctArt = masc ? 'unos' : 'unas';
+    const wrongArt = wrongArticle(correctArt);
+    const correctLabel = `${correctArt} ${correct}`;
+
+    const options = shuffle([
+      { label: correctLabel, isCorrect: true },
+      { label: `${wrongArt} ${correct}`, isCorrect: false },
+    ]);
+
+    const { feedback, choicesEl } = renderGameShell(container, {
+      tagLabel: 'Indefinite plural',
+      tagClass: 'tag-grammar',
+      prompt: 'Choose unos or unas',
+      middle: [
+        el('div', { className: 'es-large', text: vocab.plural }),
+        el('div', { className: 'lesson-translation lesson-translation--loose', text: `some ${vocab.en}` }),
+      ],
+    });
+
+    bindChoiceButtons(container, choicesEl, feedback, options, {
+      feedbackHtml: ok => ok
+        ? `✓ Correct — <em>${correctLabel}</em>`
+        : `✗ <em>${correctLabel}</em> — ${masc ? 'Masculine plural → unos' : 'Feminine plural → unas'}`,
+      onAnswer: ok => onAnswer(ok, question),
+    });
+    return;
+  }
 
   const endsVowel = /[aeiouáéíóú]$/i.test(vocab.es);
   const wrong = endsVowel ? vocab.es + 'es' : vocab.es + 's';
