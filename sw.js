@@ -1,6 +1,6 @@
 /* ─── Fluir · Service Worker ────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v50';
+const CACHE_NAME = 'fluir-v51';
 
 const STATIC_ASSETS = [
   '/',
@@ -13,6 +13,7 @@ const STATIC_ASSETS = [
   '/js/store.js',
   '/js/chapters/access.js',
   '/js/data/vocab-keys.js',
+  '/js/audio.js',
   '/js/games.js',
   '/js/anki.js',
   '/js/data/chapter1.js',

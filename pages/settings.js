@@ -4,6 +4,7 @@ import Store from '../js/store.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
 import { exportToAnki } from '../js/anki.js';
 import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
+import { isAudioFeatureEnabled } from '../js/audio.js';
 
 function renderSettings(container) {
   const settings    = Store.getSettings();
@@ -19,22 +20,13 @@ function renderSettings(container) {
         <h2 style="font-family:var(--font-serif);color:var(--color-purple);font-weight:normal;margin-bottom:var(--space-2)">Settings</h2>
       </div>
 
+      ${isAudioFeatureEnabled() ? `
       <div class="section-label">Audio</div>
       <div class="card" style="margin-bottom:var(--space-5)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)">
-          <div>
-            <div style="font-size:var(--text-sm);color:var(--text-bright)">Audio pronunciation</div>
-            <div style="font-size:var(--text-xs);color:var(--text-muted)">Play audio for vocabulary items</div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="audio-toggle" ${settings.audioEnabled ? 'checked' : ''}>
-            <span class="toggle__track"></span>
-          </label>
-        </div>
-        <div style="font-size:var(--text-xs);color:var(--text-muted);padding:var(--space-3);background:var(--bg-panel);border-radius:var(--radius-sm)">
-          Audio source: <span style="color:var(--color-cyan)">To be configured</span> — options include Web Speech API, Google TTS, or pre-generated MP3s.
-        </div>
+        <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:var(--space-2)">Audio pronunciation</div>
+        <div style="font-size:var(--text-xs);color:var(--text-muted)">Play audio for vocabulary items</div>
       </div>
+      ` : ''}
 
       <div class="section-label">Anki export</div>
       <div class="card" style="margin-bottom:var(--space-5)">
@@ -95,11 +87,6 @@ function renderSettings(container) {
 
     </div>
   `;
-
-  document.getElementById('audio-toggle')?.addEventListener('change', e => {
-    Store.saveSetting('audioEnabled', e.target.checked);
-    showToast(e.target.checked ? 'Audio enabled' : 'Audio disabled');
-  });
 
   document.getElementById('unlock-all-toggle')?.addEventListener('change', e => {
     Store.saveSetting('unlockAll', e.target.checked);
