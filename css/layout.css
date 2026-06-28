@@ -1,11 +1,11 @@
 /* ─── Fluir · Layout ────────────────────────────────────────────────────── */
 
-/* ── App shell: topbar | scrollable main | bottom nav ── */
+/* ── App shell: topbar + scrollable main (nav is a sibling on body) ── */
 
 #app {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   max-width: var(--max-width);
@@ -18,7 +18,7 @@
 
 .topbar {
   flex: none;
-  height: var(--topbar-total-height);
+  min-height: var(--topbar-height);
   padding-top: var(--safe-top);
   padding-left: calc(var(--space-4) + var(--safe-left));
   padding-right: calc(var(--space-4) + var(--safe-right));
@@ -75,10 +75,10 @@
 
 .bottom-nav {
   flex: none;
-  height: var(--nav-total-height);
-  padding-bottom: var(--safe-bottom);
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding: var(--space-1) var(--safe-left) var(--safe-bottom-capped) var(--safe-right);
   background: var(--bg-panel);
   border-top: 1px solid var(--border-muted);
   display: flex;
@@ -90,8 +90,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: var(--space-2) var(--space-4);
+  gap: 2px;
+  padding: var(--space-1) var(--space-3);
   color: var(--text-muted);
   text-decoration: none;
   font-size: 10px;

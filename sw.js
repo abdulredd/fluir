@@ -6,7 +6,7 @@
    Run `npm test` — tests/sw.test.js validates every path exists.
    ─────────────────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v113';
+const CACHE_NAME = 'fluir-v114';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -102,11 +102,12 @@ const PRECACHE_ASSETS = [
   '/manifest.json',
 ];
 
-/** HTML + JS: network-first so deploys propagate while online; cache is offline fallback. */
+/** HTML + JS + CSS: network-first so deploys propagate while online; cache is offline fallback. */
 function isNetworkFirst(url) {
   const { pathname } = new URL(url);
   if (pathname === '/' || pathname.endsWith('.html')) return true;
   if (pathname.endsWith('.js')) return true;
+  if (pathname.endsWith('.css')) return true;
   return false;
 }
 

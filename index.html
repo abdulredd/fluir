@@ -40,8 +40,10 @@
     <!-- Main content — pages render here -->
     <main id="main-content"></main>
 
-    <!-- Bottom nav -->
-    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+  </div>
+
+  <!-- Bottom nav — direct child of body so it always sits on the screen bottom -->
+  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
 
       <button class="nav-item active" data-route="/" aria-label="Home">
         <svg viewBox="0 0 24 24">
@@ -79,9 +81,7 @@
         Settings
       </button>
 
-    </nav>
-
-  </div>
+  </nav>
 
   <!-- Toast notification -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
