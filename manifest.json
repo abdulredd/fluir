@@ -1,7 +1,7 @@
 {
-  "name": "Fluir — Spanish Step by Step",
+  "name": "Fluir — Easy Spanish Step-by-Step",
   "short_name": "Fluir",
-  "description": "A companion app for Complete Spanish Step-by-Step by Barbara Bregstein",
+  "description": "A companion app for Easy Spanish Step-by-Step by Barbara Bregstein",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

@@ -342,7 +342,6 @@ const SUBLESSON_3 = {
 const CHAPTER_1 = {
   id: 1,
   title: 'Nouns, Articles, and Adjectives',
-  unlocked: true,
   sublessons: [SUBLESSON_1, SUBLESSON_2, SUBLESSON_3],
   genderRules: GENDER_RULES,
   pluralRules:  PLURAL_RULES,

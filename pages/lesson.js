@@ -30,6 +30,7 @@ import {
   gameVocabPicker,
 } from '../js/games.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
+import { VOCAB_KEYS, collectChapterVocabIds } from '../js/data/vocab-keys.js';
 
 const CHAPTERS = { 1: CHAPTER_1, 2: CHAPTER_2, 3: CHAPTER_3, 4: CHAPTER_4, 5: CHAPTER_5, 6: CHAPTER_6, 7: CHAPTER_7, 8: CHAPTER_8, 9: CHAPTER_9, 10: CHAPTER_10, 11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15 };
 
@@ -54,12 +55,6 @@ function renderChapterIntro(container, chapter) {
   const score       = progress.lessonScores[chapter.id];
   const savedState  = Store.getLessonState(chapter.id);
   const hasResume   = savedState && !complete && savedState.sessionTotal > 0;
-  const VOCAB_KEYS = [
-    'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
-    'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
-    'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
-    'readingVocab',
-  ];
   const vocabCount = chapter.sublessons.reduce((n, s) =>
     n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0);
 
@@ -1460,9 +1455,7 @@ function renderLessonComplete(container, chapter, score) {
   Store.recordStudySession();
   Store.clearLessonState(chapter.id);
 
-  const allVocabIds = chapter.sublessons.flatMap(sl =>
-    [...(sl.vocabulary || []), ...(sl.adjectives || [])].map(v => v.id)
-  );
+  const allVocabIds = collectChapterVocabIds(chapter);
   Store.addToAnkiQueue(allVocabIds);
 
   const grade      = pct >= 90 ? '¡Excelente!' : pct >= 70 ? '¡Bien hecho!' : pct >= 50 ? '¡Buen esfuerzo!' : '¡Sigue practicando!';

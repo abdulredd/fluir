@@ -9,6 +9,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from './store.js';
+import { VOCAB_KEYS, vocabItemId } from './data/vocab-keys.js';
 import CHAPTER_1  from './data/chapter1.js';
 import CHAPTER_2  from './data/chapter2.js';
 import CHAPTER_3  from './data/chapter3.js';
@@ -31,13 +32,6 @@ const CHAPTERS = {
   11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15,
 };
 
-const VOCAB_KEYS = [
-  'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
-  'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
-  'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
-  'readingVocab',
-];
-
 /* ── sql.js and JSZip are loaded via CDN script tags in index.html ── */
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -45,10 +39,9 @@ const VOCAB_KEYS = [
    ════════════════════════════════════════════════════════════════════════════ */
 
 function normalizeItem(raw, chapterId, arrayKey) {
-  /* Verbs use `infinitive` as the Spanish term */
   const es = raw.es || raw.infinitive || '';
-  /* Generate a stable id if the item doesn't have one */
-  const id = raw.id || `${chapterId}_${arrayKey}_${es.replace(/\s+/g, '_')}`;
+  const id = vocabItemId(raw, chapterId, arrayKey);
+  if (!id) return null;
   return {
     id,
     es,
@@ -88,7 +81,7 @@ async function exportToAnki(scope = { chapterIds: 'all' }) {
         if (!arr?.length) return;
         arr.forEach(raw => {
           const card = normalizeItem(raw, cid, key);
-          if (!card.es) return; /* skip items with no Spanish term */
+          if (!card?.es) return;
           if (queue.pending.includes(card.id) || scope.forceAll) {
             allCards.push({ ...card, chapterTitle: chapter.title });
           }

@@ -353,7 +353,6 @@ const SUBLESSON_12_4 = {
 const CHAPTER_12 = {
   id: 12,
   title: 'Reflexive Verbs',
-  unlocked: false,
   sublessons: [SUBLESSON_12_1, SUBLESSON_12_2, SUBLESSON_12_3, SUBLESSON_12_4],
 };
 

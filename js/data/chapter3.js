@@ -380,7 +380,6 @@ const SUBLESSON_3_4 = {
 const CHAPTER_3 = {
   id: 3,
   title: 'Hay, Interrogative Words, Days, and Months',
-  unlocked: false,
   sublessons: [SUBLESSON_3_1, SUBLESSON_3_2, SUBLESSON_3_3, SUBLESSON_3_4],
 };
 

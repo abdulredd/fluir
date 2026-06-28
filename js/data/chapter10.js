@@ -341,7 +341,6 @@ const SUBLESSON_10_4 = {
 const CHAPTER_10 = {
   id: 10,
   title: 'The Indirect Object',
-  unlocked: false,
   sublessons: [SUBLESSON_10_1, SUBLESSON_10_2, SUBLESSON_10_3, SUBLESSON_10_4],
 };
 

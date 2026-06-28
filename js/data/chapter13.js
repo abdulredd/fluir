@@ -373,7 +373,6 @@ function subjunctiveFromYo(yoForm, type, pronoun) {
 const CHAPTER_13 = {
   id: 13,
   title: 'The Present Subjunctive',
-  unlocked: false,
   sublessons: [SUBLESSON_13_1, SUBLESSON_13_2, SUBLESSON_13_3, SUBLESSON_13_4],
 };
 

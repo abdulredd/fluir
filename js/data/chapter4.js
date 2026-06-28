@@ -363,7 +363,6 @@ const SUBLESSON_4_4 = {
 const CHAPTER_4 = {
   id: 4,
   title: 'Numbers, Dates, and Time',
-  unlocked: false,
   sublessons: [SUBLESSON_4_1, SUBLESSON_4_2, SUBLESSON_4_3, SUBLESSON_4_4],
 };
 

@@ -20,6 +20,8 @@ import CHAPTER_13, { subjunctiveFromYo } from '../js/data/chapter13.js';
 import CHAPTER_14, { conjugatePreterit } from '../js/data/chapter14.js';
 import CHAPTER_15, { conjugateImperfect } from '../js/data/chapter15.js';
 import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
+import { VOCAB_KEYS } from '../js/data/vocab-keys.js';
+import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/access.js';
 import {
   gameArticlePicker,
   gameFillArticle,
@@ -36,13 +38,6 @@ import {
 const CHAPTERS = { 1: CHAPTER_1, 2: CHAPTER_2, 3: CHAPTER_3, 4: CHAPTER_4, 5: CHAPTER_5, 6: CHAPTER_6, 7: CHAPTER_7, 8: CHAPTER_8, 9: CHAPTER_9, 10: CHAPTER_10, 11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15 };
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-
-const VOCAB_KEYS = [
-  'vocabulary', 'adjectives', 'verbs', 'idioms', 'tenerExpressions', 'hacerExpressions',
-  'locationPrepositions', 'porExpressions', 'becomeExpressions', 'movementVerbs',
-  'reciprocalVerbs', 'impersonalExpressions', 'emotionVerbs', 'commandVerbs', 'conjunctions',
-  'readingVocab',
-];
 
 const VOCAB_KEY_LABELS = {
   vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
@@ -68,7 +63,7 @@ function renderTraining(container, chapterId) {
   const chapter  = CHAPTERS[chapterId];
   const progress = Store.getProgress();
   const settings = Store.getSettings();
-  const complete = progress.chaptersComplete.includes(chapterId) || !!settings.unlockAllPractice;
+  const complete = isPracticeUnlocked(chapterId, progress, settings);
 
   if (!chapter) {
     container.innerHTML = `
@@ -109,9 +104,7 @@ function renderTraining(container, chapterId) {
 function renderTrainingHub(container) {
   const progress  = Store.getProgress();
   const settings  = Store.getSettings();
-  const completed = settings.unlockAllPractice
-    ? ALL_CHAPTERS.map(ch => ch.id)
-    : (progress.chaptersComplete || []);
+  const completed = practiceUnlockedChapterIds(ALL_CHAPTERS, progress, settings);
 
   container.innerHTML = `
     <div class="page active">

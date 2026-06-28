@@ -363,7 +363,6 @@ function conjugateImperfect(stem, type, pronoun) {
 const CHAPTER_15 = {
   id: 15,
   title: 'The Imperfect Tense',
-  unlocked: false,
   sublessons: [SUBLESSON_15_1, SUBLESSON_15_2, SUBLESSON_15_3, SUBLESSON_15_4],
 };
 

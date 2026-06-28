@@ -443,7 +443,6 @@ function conjugatePreterit(stem, type, pronoun) {
 const CHAPTER_14 = {
   id: 14,
   title: 'The Preterit Tense',
-  unlocked: false,
   sublessons: [SUBLESSON_14_1, SUBLESSON_14_2, SUBLESSON_14_3, SUBLESSON_14_4],
 };
 

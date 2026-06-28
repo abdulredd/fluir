@@ -304,7 +304,6 @@ const SUBLESSON_8_4 = {
 const CHAPTER_8 = {
   id: 8,
   title: 'Adjectives and Adverbs',
-  unlocked: false,
   sublessons: [SUBLESSON_8_1, SUBLESSON_8_2, SUBLESSON_8_3, SUBLESSON_8_4],
 };
 

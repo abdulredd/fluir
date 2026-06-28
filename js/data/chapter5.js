@@ -283,7 +283,6 @@ function conjugate(stem, type, pronoun) {
 const CHAPTER_5 = {
   id: 5,
   title: 'Regular Verbs',
-  unlocked: false,
   sublessons: [SUBLESSON_5_1, SUBLESSON_5_2, SUBLESSON_5_3, SUBLESSON_5_4],
 };
 

@@ -361,7 +361,6 @@ const SUBLESSON_2_4 = {
 const CHAPTER_2 = {
   id: 2,
   title: 'Estar, Ser, and Subject Pronouns',
-  unlocked: false,
   sublessons: [SUBLESSON_2_1, SUBLESSON_2_2, SUBLESSON_2_3, SUBLESSON_2_4],
 };
 

@@ -261,7 +261,6 @@ const ALL_VERBS_CH6 = [
 const CHAPTER_6 = {
   id: 6,
   title: 'Irregular Verbs',
-  unlocked: false,
   sublessons: [SUBLESSON_6_1, SUBLESSON_6_2, SUBLESSON_6_3, SUBLESSON_6_4],
 };
 

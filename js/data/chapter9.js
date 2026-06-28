@@ -365,7 +365,6 @@ const SUBLESSON_9_4 = {
 const CHAPTER_9 = {
   id: 9,
   title: 'Negatives and Prepositions',
-  unlocked: false,
   sublessons: [SUBLESSON_9_1, SUBLESSON_9_2, SUBLESSON_9_3, SUBLESSON_9_4],
 };
 

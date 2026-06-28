@@ -79,11 +79,9 @@ function showToast(message, duration = 2500) {
 function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel = 'Cancel', onConfirm, onCancel }) {
   const backdrop = document.createElement('div');
   backdrop.className = 'confirm-overlay';
-  backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:400;';
 
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
-  sheet.style.zIndex = '401';
   sheet.innerHTML = `
     <div class="confirm-sheet__title">${title}</div>
     <div class="confirm-sheet__body">${body}</div>
@@ -108,11 +106,9 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
 function showChoiceSheet({ title, body = '', actions = [] }) {
   const backdrop = document.createElement('div');
   backdrop.className = 'confirm-overlay';
-  backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:400;';
 
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
-  sheet.style.zIndex = '401';
   sheet.innerHTML = `
     <div class="confirm-sheet__title">${title}</div>
     ${body ? `<div class="confirm-sheet__body">${body}</div>` : ''}
@@ -141,6 +137,8 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
 /* ── Boot ── */
 
 function boot() {
+  Store.init();
+
   /* nav click handlers */
   document.querySelectorAll('.nav-item').forEach(el => {
     el.addEventListener('click', () => navigate(el.dataset.route));

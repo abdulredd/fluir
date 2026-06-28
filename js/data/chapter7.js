@@ -307,7 +307,6 @@ const SUBLESSON_7_4 = {
 const CHAPTER_7 = {
   id: 7,
   title: 'Ir and the Future',
-  unlocked: false,
   sublessons: [SUBLESSON_7_1, SUBLESSON_7_2, SUBLESSON_7_3, SUBLESSON_7_4],
 };
 

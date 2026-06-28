@@ -337,7 +337,6 @@ const SUBLESSON_11_4 = {
 const CHAPTER_11 = {
   id: 11,
   title: 'The Direct Object',
-  unlocked: false,
   sublessons: [SUBLESSON_11_1, SUBLESSON_11_2, SUBLESSON_11_3, SUBLESSON_11_4],
 };
 
