@@ -15,7 +15,7 @@ import {
 } from '../js/vocab-display.js';
 
 const yo = { es: 'yo', en: 'I', gender: 'n', rule: 'pronoun', article: '' };
-const perro = { article: 'el', es: 'perro', en: 'dog', plural: 'perros', gender: 'm' };
+const perro = { article: 'el', es: 'perro', en: 'the dog', plural: 'perros', gender: 'm' };
 const jardin = { article: 'un', indef: 'un', es: 'jardín', en: 'garden', plural: 'jardines', gender: 'm' };
 const amarillo = { es: 'amarillo', en: 'yellow', endsO: true };
 const azul = { es: 'azul', en: 'blue', endsO: false };
@@ -39,6 +39,12 @@ describe('vocab display', () => {
     assert.equal(vocabBrowseCategory(perro), 'nouns');
     assert.equal(vocabBrowseCategory({ rule: 'ends_o', es: 'enfermo', en: 'sick', article: '' }), 'adjectives');
     assert.equal(vocabBrowseCategory({ rule: 'ends_o', es: 'arquitecto', article: 'el' }), 'nouns');
+    assert.equal(vocabBrowseCategory({ rule: 'phrase', es: 'azul marino' }), 'adjectives');
+    assert.equal(vocabBrowseCategory({ rule: 'phrase', es: 'de la mañana' }), 'phrases');
+    assert.equal(vocabBrowseCategory({ rule: 'invariable', es: 'feliz' }), 'adjectives');
+    assert.equal(vocabBrowseCategory({ rule: 'invariable', es: 'relajante' }), 'adjectives');
+    assert.equal(vocabBrowseCategory({ rule: 'invariable', es: 'mi' }), 'adjectives');
+    assert.equal(vocabBrowseCategory({ rule: 'invariable', es: 'todavía' }), 'adverbs');
     assert.equal(vocabBrowseSectionLabel('pronouns'), 'Pronouns');
   });
 
@@ -78,6 +84,29 @@ describe('vocab display', () => {
     assert.equal(face.sub, 'los patios');
   });
 
+  it('chapter 4 nouns keep "the" in English and el/la on Spanish browse cards', () => {
+    const menu = {
+      id: 't4_16', es: 'menú', en: 'the menu', gender: 'm', rule: 'masc_irreg',
+      article: 'el', plural: 'menús',
+    };
+    const { front, back } = vocabFaces(menu, VOCAB_DIRECTION.ES_EN, 'vocabulary');
+    assert.equal(front.text, 'el menú');
+    assert.equal(back.text, 'the menu');
+  });
+
+  it('days and months drop "the" in English browse cards', () => {
+    const lunes = {
+      id: 'd3_1', es: 'lunes', en: 'the Monday', gender: 'm', rule: 'masc_irreg', article: 'el',
+    };
+    const enero = {
+      id: 'd3_8', es: 'enero', en: 'the January', gender: 'm', rule: 'ends_o', article: '',
+    };
+    const { front, back } = vocabFaces(lunes, VOCAB_DIRECTION.ES_EN, 'vocabulary');
+    assert.equal(front.text, 'el lunes');
+    assert.equal(back.text, 'Monday');
+    assert.equal(englishDisplay(enero).text, 'January');
+  });
+
   it('shows masculine and feminine adjective forms', () => {
     const face = adjectiveSpanishDisplay(amarillo);
     assert.equal(face.text, 'amarillo');
@@ -93,12 +122,12 @@ describe('vocab display', () => {
   it('Spanish-first puts Spanish on the front', () => {
     const { front, back } = vocabFaces(perro, VOCAB_DIRECTION.ES_EN, 'vocabulary');
     assert.equal(front.text, 'el perro');
-    assert.equal(back.text, 'dog');
+    assert.equal(back.text, 'the dog');
   });
 
   it('English-first puts English on the front and Spanish on the back', () => {
     const { front, back } = vocabFaces(perro, VOCAB_DIRECTION.EN_ES, 'vocabulary');
-    assert.equal(front.text, 'dog');
+    assert.equal(front.text, 'the dog');
     assert.equal(back.text, 'el perro');
     assert.equal(back.sub, 'los perros');
   });

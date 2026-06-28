@@ -19,17 +19,14 @@ export function gameMatching(container, question, onAnswer) {
   const spShuffled = shuffle(pairs);
   const enShuffled = shuffle(pairs);
 
-  const colSp = el('div', { id: 'col-sp', style: 'display:flex;flex-direction:column;gap:var(--space-2)' });
-  const colEn = el('div', { id: 'col-en', style: 'display:flex;flex-direction:column;gap:var(--space-2)' });
+  const grid = el('div', { className: 'game-matching-grid' });
 
   renderGameShell(container, {
     tagLabel: 'Matching',
     tagClass: 'tag-grammar',
     prompt: 'Match each Spanish word to its English meaning',
     withChoices: false,
-    middle: el('div', {
-      style: 'display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4)',
-    }, colSp, colEn),
+    middle: grid,
   });
 
   const feedback = container.querySelector('#feedback');
@@ -85,6 +82,8 @@ export function gameMatching(container, question, onAnswer) {
     });
   }
 
-  spShuffled.forEach(p => colSp.appendChild(makeBtn(p.es, p.es, 'sp')));
-  enShuffled.forEach(p => colEn.appendChild(makeBtn(p.en, p.es, 'en')));
+  for (let i = 0; i < total; i++) {
+    grid.appendChild(makeBtn(spShuffled[i].es, spShuffled[i].es, 'sp'));
+    grid.appendChild(makeBtn(enShuffled[i].en, enShuffled[i].es, 'en'));
+  }
 }

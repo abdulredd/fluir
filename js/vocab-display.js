@@ -24,19 +24,64 @@ const INVARIABLE_PREPOSITIONS = new Set([
 /** Adverbs / indefinite words tagged invariable in later chapters. */
 const INVARIABLE_ADVERBS = new Set([
   'nada', 'nadie', 'nunca', 'jamás', 'algo', 'alguien', 'siempre', 'también', 'tampoco',
-  'a veces', 'cada', 'bastante',
+  'a veces', 'bastante', 'todavía', 'aún', 'ya', 'apenas',
 ]);
 
-/** Adjectives that live in the vocabulary array (chapter 3). */
-const VOCAB_ARRAY_ADJECTIVES = new Set([
-  'amable', 'dulce', 'elegante', 'emocionante', 'especial', 'fiel', 'libre', 'suave',
+/** Invariable adjectives in the vocabulary array (ends in -e, -z, etc.). */
+const INVARIABLE_ADJECTIVES = new Set([
+  'amable', 'dulce', 'elegante', 'emocionante', 'especial', 'fiel', 'libre', 'relajante', 'suave',
+  'feliz', 'triste', 'joven', 'azul', 'gris', 'marrón', 'fácil', 'difícil',
 ]);
+
+/** Possessive and determiner adjectives stored as invariable vocabulary. */
+const POSSESSIVE_ADJECTIVES = new Set([
+  'mi', 'mis', 'tu', 'tus', 'su', 'sus',
+  'nuestro', 'nuestra', 'nuestros', 'nuestras',
+  'vuestro', 'vuestra', 'vuestros', 'vuestras',
+]);
+
+const DETERMINER_ADJECTIVES = new Set([
+  'todo', 'toda', 'todos', 'todas', 'cada', 'otro', 'otra', 'otros', 'otras',
+]);
+
+/** Phrase-pattern time/preposition chunks — not compound adjectives. */
+function isPhraseChunk(es) {
+  return /\sde\s/.test(es)
+    || /^(de|a|en)\s/.test(es);
+}
 
 /** Month names stored without an article in chapter data. */
 const MONTH_NAMES = new Set([
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ]);
+
+/** Weekday names — Spanish uses el lunes, but English is "Monday", not "the Monday". */
+const DAY_NAMES = new Set([
+  'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo',
+]);
+
+/** Season names — English drops the article on browse cards. */
+const SEASON_NAMES = new Set(['verano', 'otoño', 'invierno', 'primavera']);
+
+/**
+ * Spanish lemma without a leading article.
+ * @param {object} item
+ */
+function vocabLemma(item) {
+  return (item.es || '').replace(/^(el|la|los|las|un|una)\s+/i, '').trim();
+}
+
+/** English labels that should not lead with "the" on browse cards. */
+function englishSkipsArticle(item) {
+  const lemma = vocabLemma(item);
+  return MONTH_NAMES.has(lemma) || DAY_NAMES.has(lemma) || SEASON_NAMES.has(lemma);
+}
+
+/** Strip a leading "the" when English does not use an article for this word. */
+function stripLeadingEnglishArticle(text) {
+  return text.replace(/^the\s+/i, '').trim();
+}
 
 /** Stable section order when splitting the mixed `vocabulary` bucket. */
 const BROWSE_SECTION_ORDER = [
@@ -118,7 +163,9 @@ function vocabBrowseCategory(item) {
   if (rule === 'estar_conj' || rule === 'ser_conj') return 'verb-forms';
   if (rule === 'adverb') return 'adverbs';
   if (rule === 'conjunction') return 'conjunctions';
-  if (rule === 'phrase') return 'phrases';
+  if (rule === 'phrase') {
+    return isPhraseChunk(item.es || '') ? 'phrases' : 'adjectives';
+  }
   if (NOUN_VOCAB_RULES.has(rule)) {
     return isVocabArrayNoun(item) ? 'nouns' : 'adjectives';
   }
@@ -130,7 +177,8 @@ function vocabBrowseCategory(item) {
     if (INVARIABLE_PREPOSITIONS.has(es)) return 'prepositions';
     if (es === 'hay' || es === 'no hay') return 'expressions';
     if (INVARIABLE_ADVERBS.has(es)) return 'adverbs';
-    if (VOCAB_ARRAY_ADJECTIVES.has(es)) return 'adjectives';
+    if (POSSESSIVE_ADJECTIVES.has(es) || DETERMINER_ADJECTIVES.has(es)) return 'adjectives';
+    if (INVARIABLE_ADJECTIVES.has(es)) return 'adjectives';
     return 'other';
   }
 
@@ -264,7 +312,9 @@ function spanishDisplay(item, arrayKey) {
  * @returns {{ text: string, sub: string, lang: 'es'|'en' }}
  */
 function englishDisplay(item) {
-  return { text: item.en || '', sub: '', lang: 'en' };
+  let text = item.en || '';
+  if (englishSkipsArticle(item)) text = stripLeadingEnglishArticle(text);
+  return { text, sub: '', lang: 'en' };
 }
 
 /**
@@ -302,6 +352,7 @@ export {
   definitePluralArticle,
   adjectiveMasculineForm,
   adjectiveFeminineForm,
+  stripLeadingArticle,
   nounSpanishDisplay,
   adjectiveSpanishDisplay,
   spanishDisplay,

@@ -17,9 +17,7 @@ function sentenceWithBlanks(sentence) {
       }));
     }
   });
-  return el('div', {
-    style: 'font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-2);line-height:1.6',
-  }, ...nodes);
+  return el('div', { className: 'game-sentence-display' }, ...nodes);
 }
 
 export function gameSentenceCompletion(container, question, onAnswer) {
@@ -31,7 +29,7 @@ export function gameSentenceCompletion(container, question, onAnswer) {
     tagStyle: 'margin-bottom:var(--space-3);background:var(--color-cyan-bg);color:var(--color-cyan);border-color:var(--color-cyan)',
     prompt: 'Choose the correct option to complete the sentence',
     choicesStyle: 'display:flex;flex-direction:column;gap:var(--space-2)',
-    middle: el('div', { className: 'card lesson-translation lesson-translation--loose' },
+    middle: el('div', { className: 'card lesson-translation--loose' },
       sentenceWithBlanks(sentence),
       el('div', { className: 'lesson-translation', text: en }),
     ),
@@ -44,8 +42,8 @@ export function gameSentenceCompletion(container, question, onAnswer) {
       optionStyle: 'text-align:left',
       feedbackHtml: ok => {
         const completed = fills
-          ? fills.reduce((s, f) => s.replace('___', `<em class="game-fill-em">${f}</em>`), sentence)
-          : sentence.replace(/___/g, `<em class="game-fill-em">${answer}</em>`);
+          ? fills.reduce((s, f) => s.replace('___', `<span class="game-fill-em">${f}</span>`), sentence)
+          : sentence.replace(/___/g, `<span class="game-fill-em">${answer}</span>`);
         const ruleHtml = rule
           ? `<div style="font-size:var(--text-xs);color:var(--color-cyan);margin-top:6px;font-style:italic">${rule}</div>`
           : '';

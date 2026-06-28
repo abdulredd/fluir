@@ -5,12 +5,12 @@ import { loadChapter, ALL_CHAPTERS, collectChapterVocabBrowseSections } from '..
 import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/access.js';
 import { renderGame, renderUnknownGame } from '../js/games/dispatch.js';
 import {
-  pickTrainingQuestion,
-  prepareTrainingPool,
   gameTypesForPickerFromPool,
   pickRandomGameType,
+  createTrainingSession,
+  generateTrainingQuestion,
+  prepareTrainingPool,
 } from '../js/training-questions.js';
-import { prepareQuestions } from './lesson/questions.js';
 import { vocabBrowseHint } from '../js/vocab-display.js';
 import { el, clearAndMount } from '../js/dom.js';
 import {
@@ -167,8 +167,8 @@ function renderVocabBrowser(container, chapter) {
 async function renderGameTypePicker(container, chapter, sublessons) {
   clearAndMount(container, loadingPage('Loading drills…'));
 
-  const pool    = await prepareTrainingPool(sublessons);
-  const options = gameTypesForPickerFromPool(pool);
+  await prepareTrainingPool(sublessons);
+  const options = gameTypesForPickerFromPool(sublessons);
   const slNames = sublessons.map(s => s.title).join(' · ');
 
   if (!options.length) {
@@ -219,10 +219,10 @@ async function renderGameTypePicker(container, chapter, sublessons) {
 function startTrainingSession(container, chapter, sublessons, gameType) {
   let sessionCorrect = 0;
   let sessionTotal   = 0;
+  const coverageSession = createTrainingSession();
 
   async function nextQuestion() {
-    await Promise.all(sublessons.map(sl => prepareQuestions(sl)));
-    const q = pickTrainingQuestion(sublessons, gameType);
+    const q = generateTrainingQuestion(sublessons, gameType, coverageSession);
     if (!q) {
       clearAndMount(container,
         el('div', { className: 'page active' },
@@ -292,4 +292,4 @@ function renderTrainingQuestion(container, chapter, sublessons, gameType, q, ses
   }
 }
 
-export { renderTraining, pickTrainingQuestion };
+export { renderTraining, generateTrainingQuestion };

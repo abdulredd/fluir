@@ -4,8 +4,15 @@
 
 import { el } from '../dom.js';
 import { spanishTextEquals, accentSpellingNote } from '../utils.js';
+import { stripLeadingArticle } from '../vocab-display.js';
 import { ruleText } from './shared.js';
 import { renderGameShell, bindTextCheck, skipToNext } from './ui.js';
+
+/** English prompt for article + noun drills — avoid "the the …". */
+function englishArticlePrompt(en) {
+  const text = en.trim();
+  return /^the\b/i.test(text) ? text : `the ${text}`;
+}
 
 function bindTranslationCheck(container, feedback, { input, checkBtn, correct, feedbackHtml, onAnswer }) {
   bindTextCheck(container, feedback, {
@@ -70,7 +77,8 @@ export function gameTranslation(container, question, onAnswer) {
     ? vocab.en
     : vocab.en + genderHint;
 
-  const correct = `${vocab.article} ${vocab.es}`;
+  const word = stripLeadingArticle(vocab.es);
+  const correct = `${vocab.article} ${word}`;
 
   const { feedback } = renderGameShell(container, {
     tagLabel: 'Translate',
@@ -79,7 +87,7 @@ export function gameTranslation(container, question, onAnswer) {
     withChoices: false,
     feedbackClass: 'feedback--spaced',
     middle: [
-      el('div', { className: 'es-large es-large--cyan es-large--loose', text: `the ${displayEn}` }),
+      el('div', { className: 'es-large es-large--cyan es-large--loose', text: englishArticlePrompt(displayEn) }),
       el('div', { className: 'game-text-check' },
         el('input', {
           className: 'text-input', id: 'trans-inp', placeholder: 'el/la + word…',

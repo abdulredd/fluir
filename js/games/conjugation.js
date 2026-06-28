@@ -25,11 +25,8 @@ export function gameConjugationPicker(container, question, onAnswer) {
       'Choose the correct form of ',
       el('em', { style: 'color:var(--color-purple)', text: verb }),
     ),
-    middle: el('div', { className: 'lesson-translation lesson-translation--loose' },
-      el('div', {
-        style: 'font-family:var(--font-serif);font-size:var(--text-2xl);color:var(--color-amber);margin-bottom:var(--space-1)',
-        text: pronoun,
-      }),
+    middle: el('div', { className: 'lesson-translation--loose' },
+      el('div', { className: 'es-large es-large--tight', text: pronoun }),
       el('div', { className: 'lesson-translation', text: en }),
     ),
   });

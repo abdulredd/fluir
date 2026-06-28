@@ -46,8 +46,8 @@ describe('gameTypesForPickerFromPool', () => {
   });
 
   it('lists only types present in the chapter pool plus Random', async () => {
-    const pool = await prepareTrainingPool(CHAPTERS[1].sublessons);
-    const options = gameTypesForPickerFromPool(pool);
+    await prepareTrainingPool(CHAPTERS[1].sublessons);
+    const options = gameTypesForPickerFromPool(CHAPTERS[1].sublessons);
     const ids = options.map(o => o.id);
 
     assert.ok(ids.includes('random'));
@@ -57,14 +57,14 @@ describe('gameTypesForPickerFromPool', () => {
   });
 
   it('includes vocab-picker when the pool has those questions', async () => {
-    const pool = await prepareTrainingPool([CHAPTERS[2].sublessons[0]]);
-    const ids = gameTypesForPickerFromPool(pool).map(o => o.id);
+    await prepareTrainingPool([CHAPTERS[2].sublessons[0]]);
+    const ids = gameTypesForPickerFromPool([CHAPTERS[2].sublessons[0]]).map(o => o.id);
     assert.ok(ids.includes('vocab-picker'));
   });
 
   it('pickRandomGameType chooses only from available non-random options', async () => {
-    const pool = await prepareTrainingPool(CHAPTERS[1].sublessons);
-    const options = gameTypesForPickerFromPool(pool);
+    await prepareTrainingPool(CHAPTERS[1].sublessons);
+    const options = gameTypesForPickerFromPool(CHAPTERS[1].sublessons);
     const picked = pickRandomGameType(options);
     assert.notEqual(picked, 'random');
     assert.ok(options.some(o => o.id === picked));

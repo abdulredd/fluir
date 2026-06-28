@@ -244,11 +244,11 @@ const SUBLESSON_4_3 = {
   ],
 
   vocabulary: [
-    { id:'dt4_1',  es:'la fecha',     en:'the date',       gender:'f', rule:'ends_a',    article:'la', plural:'las fechas',    ex:'¿Cuál es la fecha de hoy?',       exEn:'What is today\'s date?' },
+    { id:'dt4_1',  es:'fecha',        en:'the date',       gender:'f', rule:'ends_a',    article:'la', plural:'las fechas',    ex:'¿Cuál es la fecha de hoy?',       exEn:'What is today\'s date?' },
     { id:'dt4_2',  es:'hoy',          en:'today',          gender:'n', rule:'adverb',    article:'',   plural:'',              ex:'Hoy es el cinco de mayo.',        exEn:'Today is May 5.' },
     { id:'dt4_3',  es:'mañana',       en:'tomorrow',       gender:'n', rule:'adverb',    article:'',   plural:'',              ex:'Mañana es el seis de mayo.',      exEn:'Tomorrow is May 6.' },
-    { id:'dt4_4',  es:'el nacimiento',en:'the birth',      gender:'m', rule:'masc_irreg',article:'el', plural:'',              ex:'¿Cuál es la fecha de nacimiento?', exEn:'What is the date of birth?' },
-    { id:'dt4_5',  es:'el primero',   en:'the first (of the month)', gender:'m', rule:'ends_o', article:'el', plural:'', ex:'Hoy es el primero de junio.', exEn:'Today is June 1.' },
+    { id:'dt4_4',  es:'nacimiento',   en:'the birth',      gender:'m', rule:'masc_irreg',article:'el', plural:'',              ex:'¿Cuál es la fecha de nacimiento?', exEn:'What is the date of birth?' },
+    { id:'dt4_5',  es:'primero',      en:'first (of the month)', gender:'m', rule:'ends_o', article:'el', plural:'', ex:'Hoy es el primero de junio.', exEn:'Today is June 1.' },
   ],
 };
 
@@ -321,9 +321,9 @@ const SUBLESSON_4_4 = {
   ],
 
   vocabulary: [
-    { id:'t4_1',  es:'la hora',          en:'the hour / time',   gender:'f', rule:'ends_a',    article:'la', plural:'las horas',      ex:'¿Qué hora es?',                   exEn:'What time is it?' },
-    { id:'t4_2',  es:'el cuarto',        en:'a quarter (15 min)',gender:'m', rule:'ends_o',     article:'el', plural:'',               ex:'Son las seis y cuarto.',           exEn:'It is 6:15.' },
-    { id:'t4_3',  es:'la media',         en:'half (30 min)',      gender:'f', rule:'ends_a',    article:'la', plural:'',               ex:'Son las ocho y media.',            exEn:'It is 8:30.' },
+    { id:'t4_1',  es:'hora',             en:'the hour / time',   gender:'f', rule:'ends_a',    article:'la', plural:'las horas',      ex:'¿Qué hora es?',                   exEn:'What time is it?' },
+    { id:'t4_2',  es:'cuarto',           en:'a quarter (15 min)',gender:'m', rule:'ends_o',     article:'el', plural:'',               ex:'Son las seis y cuarto.',           exEn:'It is 6:15.' },
+    { id:'t4_3',  es:'media',            en:'half (30 min)',      gender:'f', rule:'ends_a',    article:'la', plural:'',               ex:'Son las ocho y media.',            exEn:'It is 8:30.' },
     { id:'t4_4',  es:'menos',            en:'minus / to (time)', gender:'n', rule:'adverb',     article:'',   plural:'',               ex:'Son las tres menos diez.',         exEn:'It is 2:50.' },
     { id:'t4_5',  es:'de la mañana',     en:'in the morning (a.m.)', gender:'n', rule:'phrase', article:'', plural:'',                ex:'Son las dos de la mañana.',        exEn:'It is two in the morning.' },
     { id:'t4_6',  es:'de la tarde',      en:'in the afternoon (p.m.)', gender:'n', rule:'phrase', article:'', plural:'',             ex:'Es la una de la tarde.',           exEn:'It is one in the afternoon.' },
@@ -335,17 +335,17 @@ const SUBLESSON_4_4 = {
     { id:'t4_12', es:'temprano',         en:'early',             gender:'n', rule:'adverb',     article:'',   plural:'',               ex:'Es temprano.',                     exEn:'It is early.' },
     { id:'t4_13', es:'tarde',            en:'late',              gender:'n', rule:'adverb',     article:'',   plural:'',               ex:'Es tarde.',                        exEn:'It is late.' },
     /* Restaurant vocabulary from reading */
-    { id:'t4_14', es:'el camarero',      en:'the waiter',        gender:'m', rule:'ends_o',     article:'el', plural:'los camareros',  ex:'Hay cinco camareros excelentes.',  exEn:'There are five excellent waiters.' },
-    { id:'t4_15', es:'la mesa',          en:'the table',         gender:'f', rule:'ends_a',     article:'la', plural:'las mesas',      ex:'Hay dieciocho mesas.',             exEn:'There are eighteen tables.' },
-    { id:'t4_16', es:'el menú',          en:'the menu',          gender:'m', rule:'masc_irreg', article:'el', plural:'los menús',      ex:'¿Qué hay en el menú?',             exEn:'What is there on the menu?' },
-    { id:'t4_17', es:'el plato',         en:'the plate / dish',  gender:'m', rule:'ends_o',     article:'el', plural:'los platos',     ex:'El plato del día es excelente.',   exEn:'The dish of the day is excellent.' },
-    { id:'t4_18', es:'el postre',        en:'the dessert',       gender:'m', rule:'ends_e',     article:'el', plural:'los postres',    ex:'Hay torta y helado para el postre.', exEn:'There is cake and ice cream for dessert.' },
-    { id:'t4_19', es:'la propina',       en:'the tip',           gender:'f', rule:'ends_a',     article:'la', plural:'las propinas',   ex:'La propina es para el camarero.',  exEn:'The tip is for the waiter.' },
-    { id:'t4_20', es:'la servilleta',    en:'the napkin',        gender:'f', rule:'ends_a',     article:'la', plural:'las servilletas',ex:'La servilleta está en la mesa.',   exEn:'The napkin is on the table.' },
-    { id:'t4_21', es:'el tenedor',       en:'the fork',          gender:'m', rule:'masc_irreg', article:'el', plural:'los tenedores',  ex:'El tenedor está en la mesa.',      exEn:'The fork is on the table.' },
-    { id:'t4_22', es:'el cuchillo',      en:'the knife',         gender:'m', rule:'ends_o',     article:'el', plural:'los cuchillos',  ex:'El cuchillo está en la mesa.',     exEn:'The knife is on the table.' },
-    { id:'t4_23', es:'la cuchara',       en:'the spoon',         gender:'f', rule:'ends_a',     article:'la', plural:'las cucharas',   ex:'La cuchara está en la mesa.',      exEn:'The spoon is on the table.' },
-    { id:'t4_24', es:'el vaso',          en:'the glass',         gender:'m', rule:'ends_o',     article:'el', plural:'los vasos',      ex:'Hay dos vasos en la mesa.',        exEn:'There are two glasses on the table.' },
+    { id:'t4_14', es:'camarero',         en:'the waiter',        gender:'m', rule:'ends_o',     article:'el', plural:'los camareros',  ex:'Hay cinco camareros excelentes.',  exEn:'There are five excellent waiters.' },
+    { id:'t4_15', es:'mesa',             en:'the table',         gender:'f', rule:'ends_a',     article:'la', plural:'las mesas',      ex:'Hay dieciocho mesas.',             exEn:'There are eighteen tables.' },
+    { id:'t4_16', es:'menú',             en:'the menu',          gender:'m', rule:'masc_irreg', article:'el', plural:'los menús',      ex:'¿Qué hay en el menú?',             exEn:'What is there on the menu?' },
+    { id:'t4_17', es:'plato',            en:'the plate / dish',  gender:'m', rule:'ends_o',     article:'el', plural:'los platos',     ex:'El plato del día es excelente.',   exEn:'The dish of the day is excellent.' },
+    { id:'t4_18', es:'postre',           en:'the dessert',       gender:'m', rule:'ends_e',     article:'el', plural:'los postres',    ex:'Hay torta y helado para el postre.', exEn:'There is cake and ice cream for dessert.' },
+    { id:'t4_19', es:'propina',          en:'the tip',           gender:'f', rule:'ends_a',     article:'la', plural:'las propinas',   ex:'La propina es para el camarero.',  exEn:'The tip is for the waiter.' },
+    { id:'t4_20', es:'servilleta',       en:'the napkin',        gender:'f', rule:'ends_a',     article:'la', plural:'las servilletas',ex:'La servilleta está en la mesa.',   exEn:'The napkin is on the table.' },
+    { id:'t4_21', es:'tenedor',          en:'the fork',          gender:'m', rule:'masc_irreg', article:'el', plural:'los tenedores',  ex:'El tenedor está en la mesa.',      exEn:'The fork is on the table.' },
+    { id:'t4_22', es:'cuchillo',         en:'the knife',         gender:'m', rule:'ends_o',     article:'el', plural:'los cuchillos',  ex:'El cuchillo está en la mesa.',     exEn:'The knife is on the table.' },
+    { id:'t4_23', es:'cuchara',          en:'the spoon',         gender:'f', rule:'ends_a',     article:'la', plural:'las cucharas',   ex:'La cuchara está en la mesa.',      exEn:'The spoon is on the table.' },
+    { id:'t4_24', es:'vaso',             en:'the glass (cup)',         gender:'m', rule:'ends_o',     article:'el', plural:'los vasos',      ex:'Hay dos vasos en la mesa.',        exEn:'There are two glasses on the table.' },
   ],
 };
 

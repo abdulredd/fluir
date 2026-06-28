@@ -1,11 +1,16 @@
 /* ─── Fluir · Training question picker ─────────────────────────────────────
-   Reuses lesson question builders — one random question per round.
+   Practice generates fresh questions from full source pools (see js/training/).
    ─────────────────────────────────────────────────────────────────────────── */
 
 /** @import { Sublesson, LessonQuestion } from './types.js' */
 
 import { shuffle } from './utils.js';
-import { buildQuestions, prepareQuestions } from '../pages/lesson/questions.js';
+import { prepareQuestions } from '../pages/lesson/questions.js';
+import { availablePracticeTypes } from './training/lesson-types.js';
+import {
+  createTrainingSession,
+  generateTrainingQuestion,
+} from './training/generate-question.js';
 
 /** Every drill type Practice can offer (subset shown per chapter). */
 const TRAINING_GAME_TYPES = [
@@ -24,22 +29,20 @@ const TRAINING_GAME_TYPES = [
 ];
 
 /**
- * Load builders and build the full question pool for these sublessons.
+ * Ensure sublesson builders are loaded (for picker / legacy callers).
  * @param {Sublesson[]} sublessons
- * @returns {Promise<LessonQuestion[]>}
  */
 async function prepareTrainingPool(sublessons) {
   await Promise.all(sublessons.map(sl => prepareQuestions(sl)));
-  return sublessons.flatMap(sl => buildQuestions(sl));
 }
 
 /**
- * Picker options available for this pool — only types that exist, plus Random.
- * @param {LessonQuestion[]} pool
+ * Picker options available for these sublessons — only types each lesson builder wires.
+ * @param {Sublesson[]} sublessons
  */
-function gameTypesForPickerFromPool(pool) {
-  if (!pool.length) return [];
-  const types = new Set(pool.map(q => q.type));
+function gameTypesForPickerFromPool(sublessons) {
+  const types = new Set(availablePracticeTypes(sublessons));
+  if (!types.size) return [];
   return TRAINING_GAME_TYPES.filter(gt => gt.id === 'random' || types.has(gt.id));
 }
 
@@ -54,23 +57,14 @@ function pickRandomGameType(options) {
 }
 
 /**
- * Pick one training question of the requested game type from sublessons.
+ * @deprecated Lesson-style replay — use generateTrainingQuestion for practice.
  * @param {Sublesson[]} sublessons
  * @param {string} gameType
  * @returns {LessonQuestion|null}
  */
 function pickTrainingQuestion(sublessons, gameType) {
-  const pool = sublessons.flatMap(sl => buildQuestions(sl));
-  if (!pool.length) return null;
-
-  if (gameType === 'random') {
-    return shuffle(pool)[0];
-  }
-
-  const matching = pool.filter(q => q.type === gameType);
-  if (matching.length) return shuffle(matching)[0];
-
-  return null;
+  const session = createTrainingSession();
+  return generateTrainingQuestion(sublessons, gameType, session);
 }
 
 export {
@@ -79,4 +73,7 @@ export {
   gameTypesForPickerFromPool,
   pickRandomGameType,
   pickTrainingQuestion,
+  createTrainingSession,
+  generateTrainingQuestion,
+  availablePracticeTypes,
 };

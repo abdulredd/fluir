@@ -5,22 +5,35 @@
 import { el } from '../dom.js';
 import { renderGameShell, bindChoiceButtons } from './ui.js';
 
+const VERB_FORMS = {
+  estar: ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'],
+  ser: ['soy', 'eres', 'es', 'somos', 'sois', 'son'],
+};
+
+/** Blank only conjugated forms of the target verb (keeps ser/estar in mixed sentences). */
+export function blankTargetVerbForms(sentence, verb) {
+  let display = sentence;
+  for (const form of VERB_FORMS[verb]) {
+    const re = new RegExp(`(^|\\s)(${form})(?=\\s|[.,?!;:]|$)`, 'gi');
+    display = display.replace(re, '$1___');
+  }
+  return display;
+}
+
+/** Highlight the conjugated target-verb form in the full sentence (for feedback). */
+export function highlightTargetVerbForm(sentence, verb) {
+  for (const form of VERB_FORMS[verb]) {
+    const re = new RegExp(`(^|\\s)(${form})(?=\\s|[.,?!;:]|$)`, 'i');
+    if (re.test(sentence)) {
+      return sentence.replace(re, '$1<span class="game-fill-em">$2</span>');
+    }
+  }
+  return sentence;
+}
+
 export function gameSerVsEstar(container, question, onAnswer) {
   const { sentence, verb, use, en } = question;
-
-  const verbForms = {
-    estar: ['estoy','estás','está','estamos','estáis','están'],
-    ser:   ['soy','eres','es','somos','sois','son'],
-  };
-  const allForms = [...verbForms.estar, ...verbForms.ser];
-  let displaySentence = sentence;
-  allForms.forEach(f => {
-    if (sentence.includes(` ${f} `)) {
-      displaySentence = sentence.replace(` ${f} `, ` ___ `);
-    } else if (sentence.startsWith(`${f.charAt(0).toUpperCase()}${f.slice(1)} `)) {
-      displaySentence = sentence.replace(`${f.charAt(0).toUpperCase()}${f.slice(1)} `, `___ `);
-    }
-  });
+  const displaySentence = blankTargetVerbForms(sentence, verb);
 
   const USE_LABELS = {
     location: 'Estar — location', health: 'Estar — health', mood: 'Estar — changing mood/condition',
@@ -39,14 +52,11 @@ export function gameSerVsEstar(container, question, onAnswer) {
     tagLabel: 'Ser vs Estar',
     tagClass: 'tag-grammar',
     tagStyle: 'margin-bottom:var(--space-3);background:var(--color-purple-bg);color:var(--color-purple);border-color:var(--color-purple)',
-    prompt: 'Which verb completes this sentence?',
+    prompt: 'Ser or estar? Choose the verb — not the conjugated form.',
     withChoices: false,
     middle: [
-      el('div', { className: 'card lesson-translation lesson-translation--loose' },
-        el('div', {
-          style: 'font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-2);line-height:1.4',
-          text: displaySentence,
-        }),
+      el('div', { className: 'card lesson-translation--loose' },
+        el('div', { className: 'game-sentence-display', text: displaySentence }),
         el('div', { className: 'lesson-translation', text: en }),
       ),
       choicesGrid,
@@ -58,7 +68,11 @@ export function gameSerVsEstar(container, question, onAnswer) {
     {
       optionClasses: [],
       optionStyle: 'text-align:center;font-family:var(--font-serif);font-size:var(--text-xl)',
-      feedbackHtml: ok => `${ok ? '✓' : '✗'} <em>${verb}</em> — ${label}`,
+      feedbackHtml: ok => {
+        const completed = highlightTargetVerbForm(sentence, verb);
+        const ruleHtml = `<div style="font-size:var(--text-xs);color:var(--color-purple);margin-top:6px;font-style:italic">${verb} — ${label}</div>`;
+        return `${ok ? '✓' : '✗'} ${completed}${ruleHtml}`;
+      },
       onAnswer: ok => onAnswer(ok, question),
     },
   );
