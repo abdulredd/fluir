@@ -151,8 +151,8 @@ const SUBLESSON_2_2 = {
     { id:'v2_21', es:'bueno',    en:'good',                   gender:'m', rule:'ends_o',     article:'', plural:'buenos', ex:'La comida está buena.',       exEn:'The meal tastes good.' },
     { id:'v2_22', es:'guapo',    en:'handsome',               gender:'m', rule:'ends_o',     article:'', plural:'guapos', ex:'Él está guapo.',              exEn:'He looks handsome.' },
     { id:'v2_23', es:'hermoso',  en:'beautiful',              gender:'m', rule:'ends_o',     article:'', plural:'hermosos', ex:'Ella está hermosa hoy.',    exEn:'She looks beautiful today.' },
-    { id:'v2_24', es:'acá',      en:'here',                   gender:'n', rule:'adverb',     article:'', plural:'', ex:'Ven acá, por favor.',           exEn:'Come here, please.' },
-    { id:'v2_25', es:'allá',     en:'there',                  gender:'n', rule:'adverb',     article:'', plural:'', ex:'Ellos están allá.',             exEn:'They are over there.' },
+    { id:'v2_24', es:'acá',      en:'here (Latin America)',                   gender:'n', rule:'adverb',     article:'', plural:'', ex:'Ven acá, por favor.',           exEn:'Come here, please.' },
+    { id:'v2_25', es:'allá',     en:'there (distant)',                  gender:'n', rule:'adverb',     article:'', plural:'', ex:'Ellos están allá.',             exEn:'They are over there.' },
   ],
 
   /* Exercise 2.1 — estar fill-in with use labels */
@@ -377,9 +377,9 @@ const SUBLESSON_2_4 = {
 
   /* Household vocabulary from the reading "La casa" */
   vocabulary: [
-    { id:'h2_1',  es:'alcoba',    en:'the bedroom',         gender:'f', rule:'ends_a',    article:'la', plural:'alcobas',    ex:'Mi alcoba es azul y blanca.',      exEn:'My bedroom is blue and white.' },
+    { id:'h2_1',  es:'alcoba',    en:'the bedroom (traditional)',         gender:'f', rule:'ends_a',    article:'la', plural:'alcobas',    ex:'Mi alcoba es azul y blanca.',      exEn:'My bedroom is blue and white.' },
     { id:'h2_2',  es:'alfombra',  en:'the rug',             gender:'f', rule:'ends_a',    article:'la', plural:'alfombras',  ex:'La alfombra es roja.',             exEn:'The rug is red.' },
-    { id:'h2_3',  es:'bolígrafo', en:'the ballpoint pen',   gender:'m', rule:'ends_o',    article:'el', plural:'bolígrafos', ex:'El bolígrafo está en la mesa.',    exEn:'The pen is on the table.' },
+    { id:'h2_3',  es:'bolígrafo', en:'the ballpoint pen (Spain)',   gender:'m', rule:'ends_o',    article:'el', plural:'bolígrafos', ex:'El bolígrafo está en la mesa.',    exEn:'The pen is on the table.' },
     { id:'h2_4',  es:'cocina',    en:'the kitchen',         gender:'f', rule:'ends_a',    article:'la', plural:'cocinas',    ex:'La cocina es amplia.',             exEn:'The kitchen is spacious.' },
     { id:'h2_5',  es:'comedor',   en:'the dining room',     gender:'m', rule:'masc_irreg',article:'el', plural:'comedores',  ex:'El comedor es sencillo.',          exEn:'The dining room is simple.' },
     { id:'h2_6',  es:'cortina',   en:'the curtain',         gender:'f', rule:'ends_a',    article:'la', plural:'cortinas',   ex:'Las cortinas son gruesas.',        exEn:'The curtains are thick.' },

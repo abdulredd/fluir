@@ -46,6 +46,14 @@ describe('vocabulary English browse labels', () => {
     }
   });
 
+  it('disambiguates regional synonyms in English only', () => {
+    const boligrafo = { es: 'bolígrafo', en: 'the ballpoint pen (Spain)' };
+    const lapicero = { es: 'lapicero', en: 'the ballpoint pen (Latin America)' };
+    assert.notEqual(englishDisplay(boligrafo).text, englishDisplay(lapicero).text);
+    assert.match(englishDisplay(boligrafo).text, /Spain/);
+    assert.match(englishDisplay(lapicero).text, /Latin America/);
+  });
+
   it('does not put Spanish words in English disambiguation labels', async () => {
     const bad = [];
 

@@ -76,7 +76,7 @@ const SUBLESSON_1 = {
     { id:'v1_1',  es:'amigo',    en:'the friend (m)',         gender:'m', rule:'ends_o',      article:'el',    plural:'amigos',       ex:'El amigo es simpático.',         exEn:'The friend is nice.' },
     { id:'v1_2',  es:'banco',    en:'the bank',               gender:'m', rule:'ends_o',      article:'el',    plural:'bancos',       ex:'El banco es grande.',            exEn:'The bank is big.' },
     { id:'v1_3',  es:'baño',     en:'the bathroom',           gender:'m', rule:'ends_o',      article:'el',    plural:'baños',        ex:'El baño es pequeño.',            exEn:'The bathroom is small.' },
-    { id:'v1_4',  es:'carro',    en:'the car',                gender:'m', rule:'ends_o',      article:'el',    plural:'carros',       ex:'El carro es rojo.',              exEn:'The car is red.' },
+    { id:'v1_4',  es:'carro',    en:'the car (Latin America)',                gender:'m', rule:'ends_o',      article:'el',    plural:'carros',       ex:'El carro es rojo.',              exEn:'The car is red.' },
     { id:'v1_5',  es:'gato',     en:'the cat',                gender:'m', rule:'ends_o',      article:'el',    plural:'gatos',        ex:'El gato es negro.',              exEn:'The cat is black.' },
     { id:'v1_6',  es:'hermano',  en:'the brother',            gender:'m', rule:'ends_o',      article:'el',    plural:'hermanos',     ex:'El hermano es joven.',           exEn:'The brother is young.' },
     { id:'v1_7',  es:'libro',    en:'the book',               gender:'m', rule:'ends_o',      article:'el',    plural:'libros',       ex:'El libro blanco es interesante.',exEn:'The white book is interesting.' },
