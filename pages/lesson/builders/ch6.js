@@ -16,11 +16,6 @@ function build_6_1(sublesson) {
       shuffle(verbs).slice(0, 10).forEach(v => {
         const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
         const correctForm = conjugateIrr(v.forms, pronoun);
-        /* Build distractor pool from other verbs' same pronoun forms */
-        const distractorForms = verbs
-          .filter(x => x.infinitive !== v.infinitive)
-          .map(x => conjugateIrr(x.forms, pronoun))
-          .filter(f => f !== correctForm);
         const allForms = pronouns.map(p => ({ pronoun: p, form: conjugateIrr(v.forms, p) }));
         const uniqueForms = [...new Map(allForms.map(f => [f.form, f])).values()];
         questions.push({
@@ -35,7 +30,7 @@ function build_6_1(sublesson) {
   return questions;
 }
 
-function build_6_4(sublesson) {
+function build_6_4(_sublesson) {
   const questions = [];
   /* Mixed irregular drill — all 24 verbs */
       const pronouns = ['yo','tú','él/ella','nosotros','ellos','Ud.','Uds.'];

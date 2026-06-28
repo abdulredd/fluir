@@ -63,7 +63,7 @@ function build_5_3(sublesson) {
   return questions;
 }
 
-function build_5_4(sublesson) {
+function build_5_4(_sublesson) {
   const questions = [];
   /* Mixed drill — all verbs, all pronouns */
       const pronouns = ['yo','tú','él/ella','nosotros','ellos','Ud.','Uds.'];

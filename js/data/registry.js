@@ -3,6 +3,8 @@
    Adding chapter 16: one new chapter file + one import line here.
    ─────────────────────────────────────────────────────────────────────────── */
 
+/** @import { Chapter, ChapterMeta } from './types.js' */
+
 import CHAPTER_1 from './chapter1.js';
 import CHAPTER_2 from './chapter2.js';
 import CHAPTER_3 from './chapter3.js';
@@ -25,6 +27,7 @@ import {
   collectChapterVocabIds,
 } from './vocab-keys.js';
 
+/** @type {Record<number, Chapter>} */
 const CHAPTERS = {
   1: CHAPTER_1,
   2: CHAPTER_2,

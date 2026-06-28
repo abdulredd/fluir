@@ -22,6 +22,28 @@ describe('SUBLESSON_BUILDERS registry', () => {
 });
 
 describe('buildQuestions', () => {
+  it('1-1 mixes article, fill, translation, and matching games', () => {
+    const sublesson = CHAPTERS[1].sublessons.find(sl => sl.id === '1-1');
+    const types = new Set(buildQuestions(sublesson).map(q => q.type));
+    assert.ok(types.has('article-picker'));
+    assert.ok(types.has('fill-article'));
+    assert.ok(types.has('translation'));
+    assert.ok(types.has('matching'));
+  });
+
+  it('1-3 includes adjective agreement and matching', () => {
+    const sublesson = CHAPTERS[1].sublessons.find(sl => sl.id === '1-3');
+    const types = new Set(buildQuestions(sublesson).map(q => q.type));
+    assert.ok(types.has('adjective'));
+    assert.ok(types.has('matching'));
+  });
+
+  it('2-4 includes ser-vs-estar questions', () => {
+    const sublesson = CHAPTERS[2].sublessons.find(sl => sl.id === '2-4');
+    const types = new Set(buildQuestions(sublesson).map(q => q.type));
+    assert.ok(types.has('ser-vs-estar'));
+  });
+
   for (const meta of ALL_CHAPTERS) {
     const chapter = CHAPTERS[meta.id];
     for (const sublesson of chapter.sublessons) {

@@ -28,7 +28,7 @@ function navigate(hash) {
 }
 
 function handleRoute() {
-  const { path, parts } = parseHash();
+  const { parts } = parseHash();
   const main = document.getElementById('main-content');
 
   /* parametric routes */

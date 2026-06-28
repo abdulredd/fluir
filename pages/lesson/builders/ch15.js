@@ -36,8 +36,6 @@ function build_15_2(sublesson) {
       }
       /* Signal words matching — preterit vs imperfect */
       const signals = sublesson.signalWords;
-      const imperfectSignals = signals.filter(s => s.tense === 'imperfect');
-      const preteritSignals  = signals.filter(s => s.tense === 'preterit');
       for (let i = 0; i < 2; i++) {
         const sample = shuffle(signals).slice(0, 4);
         const pairs = sample.map(s => ({ es: s.es, en: `${s.en} → ${s.tense}` }));

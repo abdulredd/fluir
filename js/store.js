@@ -1,5 +1,7 @@
 /* ─── Fluir · Store — localStorage abstraction ──────────────────────────── */
 
+/** @import { LessonState } from './types.js' */
+
 const SCHEMA_VERSION = 1;
 const SCHEMA_KEY     = 'fluir_schema_version';
 const MAX_STUDY_DATES = 120;
@@ -233,6 +235,7 @@ const Store = {
     return this.set(KEYS.SETTINGS, settings);
   },
 
+  /** @param {number|string} chapterId @param {Partial<LessonState>} state */
   saveLessonState(chapterId, state) {
     const all = this.get(KEYS.LESSON_STATE) || {};
     all[chapterId] = {
@@ -246,6 +249,7 @@ const Store = {
     return this.set(KEYS.LESSON_STATE, all);
   },
 
+  /** @param {number|string} chapterId @returns {LessonState|null} */
   getLessonState(chapterId) {
     const all   = this.get(KEYS.LESSON_STATE) || {};
     const state = all[chapterId];

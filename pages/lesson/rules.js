@@ -1,23 +1,10 @@
 /* ─── Fluir · Lesson rule cards ──────────────────────────────────────────── */
 
+/** @import { Chapter, Sublesson, SessionScore, Rule, LessonApi } from '../../js/types.js' */
+
 import { escapeHtml } from '../../js/utils.js';
 
-/**
- * @typedef {object} RuleExample
- * @property {string} es
- * @property {string} en
- * @property {string} [note]
- */
-
-/**
- * @typedef {object} Rule
- * @property {string} heading
- * @property {string} body
- * @property {RuleExample[]} examples
- * @property {string} [tip]
- */
-
-/** Render one rule card (heading, body, examples, optional tip). */
+/** @param {Rule} rule */
 function renderRuleCard(rule) {
   return `
     <div class="card rule-card">
@@ -132,6 +119,7 @@ function runRuleSequence(container, {
   showRule();
 }
 
+/** @param {Element} container @param {Chapter} chapter @param {LessonApi} api */
 function reviewAllRules(container, chapter, api) {
   const entries = [];
   chapter.sublessons.forEach((sl, sIdx) => {
@@ -155,6 +143,7 @@ function reviewAllRules(container, chapter, api) {
   });
 }
 
+/** @param {Element} container @param {Chapter} chapter @param {Sublesson} sublesson @param {number} subIndex @param {SessionScore} sessionScore @param {LessonApi} api @param {object} [options] */
 function renderRuleCards(container, chapter, sublesson, subIndex, sessionScore, api, options = {}) {
   const onExit     = options.onExit     || (() => api.renderChapterIntro(container, chapter));
   const onComplete = options.onComplete || (() => api.buildQuestionQueue(container, chapter, sublesson, subIndex, sessionScore));

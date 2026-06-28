@@ -1,5 +1,7 @@
 /* ─── Fluir · Lesson flow factory ──────────────────────────────────────────── */
 
+/** @import { Chapter, Sublesson, SessionScore, LessonQuestion, LessonApi } from '../../js/types.js' */
+
 import Store from '../../js/store.js';
 import { CHAPTERS } from '../../js/data/registry.js';
 import { buildQuestions } from './questions.js';
@@ -8,16 +10,8 @@ import { runQuestions as runQuestionsView, renderLessonComplete, renderUnknownCh
 import { renderChapterIntro as renderChapterIntroView } from './intro.js';
 
 /**
- * @typedef {object} LessonApi
- * @property {(container: Element, chapter: object) => void} renderChapterIntro
- * @property {(container: Element, chapter: object) => void} reviewAllRules
- * @property {(container: Element, chapter: object, sublesson: object, subIndex: number, sessionScore: object, options?: object) => void} renderRuleCards
- * @property {(container: Element, chapter: object, sublesson: object, subIndex: number, sessionScore: object, resumeFromQ?: number, autoSkipRules?: boolean) => void} buildQuestionQueue
- * @property {(container: Element, chapter: object, subIndex: number, sessionScore: object, skipRules?: boolean, autoSkipRules?: boolean) => void} startSubLesson
- * @property {(container: Element, chapter: object, sublesson: object, subIndex: number, questions: object[], qIndex: number, score: object, autoSkipRules?: boolean) => void} runQuestions
+ * @returns {{ renderLesson: (container: Element, chapterId: number|string) => void }}
  */
-
-/** @returns {{ renderLesson: (container: Element, chapterId: number|string) => void }} */
 function createLessonFlow() {
   /** @type {LessonApi} */
   const api = {

@@ -50,9 +50,6 @@ function build_7_3(sublesson) {
       /* Conjugation drill — pick the right form for each idiom */
       idioms.forEach(idiom => {
         const conj = shuffle(idiom.conjugations)[0];
-        const distractorForms = idioms
-          .filter(x => x.construction !== idiom.construction)
-          .map(x => shuffle(x.conjugations)[0].form);
         const allForms = idiom.conjugations.map(c => ({ pronoun: c.pronoun, form: c.form }));
         questions.push({
           type: 'conjugation',

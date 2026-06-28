@@ -1,5 +1,4 @@
 import { shuffle } from '../../../js/utils.js';
-import { conjugate as conjugateCh5 } from '../../../js/data/chapter5.js';
 import { conjugateIrr } from '../../../js/data/chapter6.js';
 
 function build_10_1(sublesson) {

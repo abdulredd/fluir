@@ -1,10 +1,13 @@
 /* ─── Fluir · Chapter intro screen ─────────────────────────────────────────── */
 
+/** @import { Chapter, LessonApi } from '../../js/types.js' */
+
 import Store from '../../js/store.js';
 import { VOCAB_KEYS } from '../../js/data/registry.js';
 import { showConfirmSheet } from '../../js/app.js';
 import { scoreTierClass } from '../../js/utils.js';
 
+/** @param {Element} container @param {Chapter} chapter @param {LessonApi} api */
 function renderChapterIntro(container, chapter, api) {
   const progress    = Store.getProgress();
   const complete    = progress.chaptersComplete.includes(chapter.id);

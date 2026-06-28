@@ -311,4 +311,4 @@ function triggerDownload(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
-export { exportToAnki };
+export { exportToAnki, normalizeItem, createSchema };

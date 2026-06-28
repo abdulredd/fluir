@@ -5,6 +5,8 @@
      onAnswer  — callback(isCorrect, question)
    ─────────────────────────────────────────────────────────────────────────── */
 
+/** @import { LessonQuestion } from './types.js' */
+
 import { GENDER_RULES, PLURAL_RULES, ADJ_RULES } from './data/chapter1.js';
 import { shuffle } from './utils.js';
 
@@ -22,12 +24,6 @@ function wrongArticle(correct) {
   if (correct === 'los') return 'las';
   if (correct === 'las') return 'los';
   return correct === 'el' ? 'la' : 'el';
-}
-
-function feedbackHTML(isCorrect, message) {
-  const cls = isCorrect ? 'correct' : 'wrong';
-  const icon = isCorrect ? '✓' : '✗';
-  return `<div class="feedback show ${cls}">${icon} ${message}</div>`;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -59,7 +55,7 @@ function gameArticlePicker(container, question, onAnswer) {
   `;
 
   const choicesEl = container.querySelector('#choices');
-  opts.forEach((opt, i) => {
+  opts.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'option';
     btn.style.fontFamily = 'var(--font-serif)';
@@ -319,7 +315,7 @@ function gameAdjectiveAgreement(container, question, onAnswer) {
   const { noun, adjective } = question;
 
   function getForm(adj, gender, number) {
-    let base = adj.endsO ? adj.es.slice(0,-1) : adj.es;
+    const base = adj.endsO ? adj.es.slice(0,-1) : adj.es;
     let form;
     if (adj.endsO) {
       form = gender === 'f' ? base + 'a' : base + 'o';
@@ -534,14 +530,11 @@ function gameSerVsEstar(container, question, onAnswer) {
   };
   const allForms = [...verbForms.estar, ...verbForms.ser];
   let displaySentence = sentence;
-  let foundForm = '';
   allForms.forEach(f => {
     if (sentence.includes(` ${f} `)) {
       displaySentence = sentence.replace(` ${f} `, ` ___ `);
-      foundForm = f;
     } else if (sentence.startsWith(`${f.charAt(0).toUpperCase()}${f.slice(1)} `)) {
       displaySentence = sentence.replace(`${f.charAt(0).toUpperCase()}${f.slice(1)} `, `___ `);
-      foundForm = f;
     }
   });
 
@@ -700,7 +693,7 @@ function gameSentenceCompletion(container, question, onAnswer) {
 
   /* Build display sentence with styled blanks */
   let displaySentence = sentence;
-  (fills || [answer]).forEach(fill => {
+  (fills || [answer]).forEach(() => {
     displaySentence = displaySentence.replace('___',
       `<span style="display:inline-block;min-width:60px;border-bottom:2px solid var(--color-amber);color:var(--color-amber);text-align:center;font-family:var(--font-serif);padding:0 4px">___</span>`);
   });

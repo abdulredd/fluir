@@ -8,13 +8,6 @@
      4-4  Telling Time
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* ── Utility: Spanish number words ── */
-
-const ONES = ['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve',
-  'diez','once','doce','trece','catorce','quince','dieciséis','diecisiete',
-  'dieciocho','diecinueve'];
-const TENS = ['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
-
 /* ════════════════════════════════════════════════════════════════════════════
    SUB-LESSON 4-1 — Cardinal Numbers
    ════════════════════════════════════════════════════════════════════════════ */

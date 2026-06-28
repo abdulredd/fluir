@@ -1,5 +1,7 @@
 /* ─── Fluir · Sublesson question builder registry ──────────────────────────── */
 
+/** @import { Sublesson, SublessonBuilder, LessonQuestion } from '../../js/types.js' */
+
 import { builders as ch1 } from './builders/ch1.js';
 import { builders as ch2 } from './builders/ch2.js';
 import { builders as ch3 } from './builders/ch3.js';
@@ -17,11 +19,8 @@ import { builders as ch14 } from './builders/ch14.js';
 import { builders as ch15 } from './builders/ch15.js';
 
 /**
- * @typedef {object} LessonQuestion
- * @property {string} type
+ * @type {Record<string, SublessonBuilder>}
  */
-
-/** @type {Record<string, (sublesson: object) => LessonQuestion[]>} */
 const SUBLESSON_BUILDERS = {
   ...ch1, ...ch2, ...ch3, ...ch4, ...ch5,
   ...ch6, ...ch7, ...ch8, ...ch9, ...ch10,

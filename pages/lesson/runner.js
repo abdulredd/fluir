@@ -1,5 +1,7 @@
 /* ─── Fluir · Lesson question runner ─────────────────────────────────────── */
 
+/** @import { Chapter, Sublesson, SessionScore, LessonQuestion, LessonApi } from '../../js/types.js' */
+
 import Store from '../../js/store.js';
 import { collectChapterVocabIds } from '../../js/data/registry.js';
 import { setupQuestionAudio } from '../../js/audio.js';
@@ -18,6 +20,17 @@ import {
   gameVocabPicker,
 } from '../../js/games.js';
 
+/**
+ * @param {Element} container
+ * @param {Chapter} chapter
+ * @param {Sublesson} sublesson
+ * @param {number} subIndex
+ * @param {LessonQuestion[]} questions
+ * @param {number} qIndex
+ * @param {SessionScore} score
+ * @param {boolean} autoSkipRules
+ * @param {LessonApi} api
+ */
 function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score, autoSkipRules, api) {
   if (qIndex >= questions.length) {
     api.startSubLesson(container, chapter, subIndex + 1, score, false, autoSkipRules);
@@ -109,6 +122,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
   setupQuestionAudio(gameContent, q);
 }
 
+/** @param {Element} container @param {Chapter} chapter @param {SessionScore} score */
 function renderLessonComplete(container, chapter, score) {
   const pct = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
   Store.recordChapterComplete(chapter.id, pct);

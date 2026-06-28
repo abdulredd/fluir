@@ -1,12 +1,14 @@
 /* ─── Fluir · Lesson question queue ──────────────────────────────────────── */
 
+/** @import { Sublesson, LessonQuestion } from '../../js/types.js' */
+
 import { shuffle } from '../../js/utils.js';
 import { SUBLESSON_BUILDERS } from './builder-registry.js';
 
 /**
  * Build the full question queue for a sublesson (pure — no DOM or Store).
- * @param {object} sublesson
- * @returns {import('./builder-registry.js').LessonQuestion[]}
+ * @param {Sublesson} sublesson
+ * @returns {LessonQuestion[]}
  */
 function buildQuestions(sublesson) {
   const builder = SUBLESSON_BUILDERS[sublesson.id];
