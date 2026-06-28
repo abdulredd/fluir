@@ -116,7 +116,7 @@ function renderChapterIntro(container, chapter, api) {
 
   function completeLabel(subIndex) {
     const best = Store.getSublessonBest(chapter.id, subIndex);
-    return best ? `Complete · ${best.best}%` : 'Complete';
+    return best ? `Complete · Best score: ${best.best}%` : 'Complete';
   }
 
   function rowSubtitle(sl, i) {
@@ -163,7 +163,7 @@ function renderChapterIntro(container, chapter, api) {
     el('button', {
       className: 'btn btn--ghost btn--full',
       id: 'rules-btn',
-      text: 'Review chapter rules',
+      text: 'Review chapter grammar rules',
       onClick: () => api.reviewAllRules(container, chapter),
     }),
   );
@@ -171,7 +171,6 @@ function renderChapterIntro(container, chapter, api) {
   mountPage(container, [
     el('div', { className: 'page-header' },
       backButton('back-btn', () => history.back()),
-      complete ? el('span', { className: 'status-badge status-badge--complete', text: 'Complete' }) : null,
     ),
     el('div', { className: 'page-kicker', text: `Chapter ${chapter.id}` }),
     el('h2', { className: 'page-title', text: chapter.title }),
@@ -179,12 +178,16 @@ function renderChapterIntro(container, chapter, api) {
       className: 'text-muted text-sm page-lead',
       text: `${vocabCount} vocabulary items · ${chapter.sublessons.length} lessons`,
     }),
-    score ? el('div', { className: 'card score-card' },
-      el('div', {},
-        el('div', { className: 'text-sm text-bright', text: 'Best score' }),
-        el('div', { className: 'text-muted text-xs', text: `${score.attempts} attempt${score.attempts !== 1 ? 's' : ''}` }),
+    score?.best != null ? el('div', { className: 'card score-card score-card--chapter' },
+      el('div', { className: 'score-card__label', text: 'Chapter complete' }),
+      el('div', { className: 'score-card__row' },
+        el('div', { className: 'text-sm text-bright', text: 'Best chapter score' }),
+        el('div', { className: `score-card__value ${scoreTierClass(score.best)}`, text: `${score.best}%` }),
       ),
-      el('div', { className: `score-card__value ${scoreTierClass(score.best)}`, text: `${score.best}%` }),
+      el('div', {
+        className: 'text-muted text-xs score-card__meta',
+        text: `${score.attempts} attempt${score.attempts !== 1 ? 's' : ''}`,
+      }),
     ) : null,
     hasResume ? el('div', { className: 'notice-banner notice-banner--cyan' },
       el('div', { className: 'notice-banner__label', text: 'In progress' }),
@@ -206,7 +209,7 @@ function renderChapterIntro(container, chapter, api) {
       el('div', { className: 'notice-banner__title', text: `Up next — ${nextSublesson.title}` }),
       el('div', {
         className: 'notice-banner__meta',
-        text: 'Pick the next lesson below, or review chapter rules first.',
+        text: 'Pick the next lesson below, or review chapter grammar rules first.',
       }),
     ) : null,
     sectionLabel('Lessons'),

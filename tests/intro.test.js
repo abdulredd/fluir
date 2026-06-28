@@ -80,7 +80,7 @@ describe('renderChapterIntro', () => {
     return row.querySelector('.card-row__main')?.children[1]?.textContent;
   }
 
-  it('always shows Review chapter rules and no legacy resume buttons', () => {
+  it('always shows Review chapter grammar rules and no legacy resume buttons', () => {
     const container = mockContainer();
     Store.saveLessonState(1, {
       subIndex: 1, activeSubIndex: 0, qIndex: 2,
@@ -114,9 +114,9 @@ describe('renderChapterIntro', () => {
 
     assert.match(rowIcon(rows[0]).className, /sublesson-row__icon--done/);
     assert.match(rowIcon(rows[0]).className, /sublesson-row__icon--current/);
-    assert.equal(rowSubtitle(rows[0]), 'Complete · 88% · reviewing again');
+    assert.equal(rowSubtitle(rows[0]), 'Complete · Best score: 88% · reviewing again');
     assert.match(rowIcon(rows[1]).className, /sublesson-row__icon--done/);
-    assert.equal(rowSubtitle(rows[1]), 'Complete · 83%');
+    assert.equal(rowSubtitle(rows[1]), 'Complete · Best score: 83%');
     assert.match(container.textContent, /In progress/);
     assert.match(container.textContent, /Question 2 of 2 · 1 correct so far/);
   });
@@ -131,7 +131,7 @@ describe('renderChapterIntro', () => {
     });
 
     renderChapterIntro(container, mockChapter(), mockApi());
-    assert.equal(rowSubtitle(sublessonRows(container)[0]), 'Complete · 90%');
+    assert.equal(rowSubtitle(sublessonRows(container)[0]), 'Complete · Best score: 90%');
   });
 
   it('shows all lessons complete after the chapter is finished', () => {
@@ -144,13 +144,17 @@ describe('renderChapterIntro', () => {
     renderChapterIntro(container, mockChapter(), mockApi());
     const rows = sublessonRows(container);
 
+    assert.match(container.textContent, /Chapter complete/);
+    assert.match(container.textContent, /Best chapter score/);
+    assert.match(container.textContent, /1 attempt/);
+
     rows.forEach((row, i) => {
       assert.match(rowIcon(row).className, /sublesson-row__icon--done/);
-      assert.match(rowSubtitle(row), /^Complete · \d+%$/);
+      assert.match(rowSubtitle(row), /^Complete · Best score: \d+%$/);
     });
-    assert.equal(rowSubtitle(rows[0]), 'Complete · 90%');
-    assert.equal(rowSubtitle(rows[1]), 'Complete · 83%');
-    assert.equal(rowSubtitle(rows[2]), 'Complete · 80%');
+    assert.equal(rowSubtitle(rows[0]), 'Complete · Best score: 90%');
+    assert.equal(rowSubtitle(rows[1]), 'Complete · Best score: 83%');
+    assert.equal(rowSubtitle(rows[2]), 'Complete · Best score: 80%');
   });
 
   it('shows a discard control on the in-progress banner', () => {
@@ -196,7 +200,7 @@ describe('renderChapterIntro', () => {
 
     renderChapterIntro(container, mockChapter(), api);
     assert.equal(container.querySelector('#discard-progress-btn'), null);
-    assert.equal(rowSubtitle(sublessonRows(container)[0]), 'Complete · 88%');
+    assert.equal(rowSubtitle(sublessonRows(container)[0]), 'Complete · Best score: 88%');
   });
 
   it('opens a choice sheet when tapping the in-progress lesson row', () => {
