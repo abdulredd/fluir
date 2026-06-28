@@ -127,8 +127,17 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
   backdrop.addEventListener('click', dismiss);
 }
 
+function syncAppHeight() {
+  if (typeof window === 'undefined') return;
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${Math.round(height)}px`);
+}
+
 function boot() {
   Store.init();
+  syncAppHeight();
+  window.addEventListener('resize', syncAppHeight);
+  window.visualViewport?.addEventListener('resize', syncAppHeight);
 
   document.querySelectorAll('.nav-item').forEach(el => {
     el.addEventListener('click', () => {

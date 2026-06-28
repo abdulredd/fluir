@@ -77,6 +77,7 @@
   --max-width:      480px;
   --nav-height:     56px;
   --topbar-height:  56px;
+  --app-height:     100dvh;
 
   /* iPhone safe areas (requires viewport-fit=cover in index.html) */
   --safe-top:    env(safe-area-inset-top, 0px);
@@ -91,8 +92,6 @@
 @media (display-mode: standalone) {
   :root {
     --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-    --safe-top:    max(env(safe-area-inset-top, 0px), 47px);
-    --nav-total-height:    calc(var(--nav-height) + var(--safe-bottom));
-    --topbar-total-height: calc(var(--topbar-height) + var(--safe-top));
+    --nav-total-height: calc(var(--nav-height) + var(--safe-bottom));
   }
 }

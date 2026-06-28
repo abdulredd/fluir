@@ -7,9 +7,9 @@
 #app {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
+  right: 0;
+  height: var(--app-height, 100dvh);
   max-width: var(--max-width);
   margin-inline: auto;
   display: flex;
@@ -81,10 +81,15 @@
 /* ── Bottom nav ── */
 
 .bottom-nav {
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
   min-height: var(--nav-height);
-  padding-top: 0;
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
@@ -93,6 +98,7 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+  box-sizing: border-box;
 }
 
 .nav-item {
