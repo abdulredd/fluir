@@ -9,15 +9,20 @@
   max-width: var(--max-width);
   margin: 0 auto;
   position: relative;
+  padding-top: var(--topbar-total-height);
 }
 
 /* ── Topbar ── */
 
 .topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--max-width);
   z-index: 100;
-  min-height: var(--topbar-height);
+  height: var(--topbar-total-height);
   padding-top: var(--safe-top);
   padding-left: calc(var(--space-4) + var(--safe-left));
   padding-right: calc(var(--space-4) + var(--safe-right));
@@ -26,7 +31,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
 }
 
 .topbar__logo {
