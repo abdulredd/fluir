@@ -1,8 +1,14 @@
-/* ─── Fluir · Service Worker ────────────────────────────────────────────── */
+/* ─── Fluir · Service Worker ──────────────────────────────────────────────
+   Precache checklist — add new deploy assets here AND bump CACHE_NAME:
+   • css/pages.css, css/components.css, …
+   • js/* modules (app, store, data, pages, lesson builders)
+   • vendor sql-wasm / jszip, icons, manifest
+   Run `npm test` — tests/sw.test.js validates every path exists.
+   ─────────────────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'fluir-v61';
+const CACHE_NAME = 'fluir-v62';
 
-const STATIC_ASSETS = [
+const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/css/tokens.css',
@@ -70,35 +76,87 @@ const STATIC_ASSETS = [
   '/manifest.json',
 ];
 
+/** HTML + JS: network-first so deploys propagate while online; cache is offline fallback. */
+function isNetworkFirst(url) {
+  const { pathname } = new URL(url);
+  if (pathname === '/' || pathname.endsWith('.html')) return true;
+  if (pathname.endsWith('.js')) return true;
+  return false;
+}
+
+function isCacheable(response) {
+  return response && response.status === 200 && response.type === 'basic';
+}
+
+async function putInCache(request, response) {
+  if (!isCacheable(response)) return;
+  const cache = await caches.open(CACHE_NAME);
+  await cache.put(request, response);
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    await putInCache(request, response.clone());
+    return response;
+  } catch (err) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    if (request.mode === 'navigate') {
+      const shell = await caches.match('/index.html');
+      if (shell) return shell;
+    }
+    throw err;
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  await putInCache(request, response.clone());
+  return response;
+}
+
+async function precacheAll(cache, urls) {
+  const results = await Promise.allSettled(
+    urls.map(url => cache.add(url))
+  );
+  results.forEach((result, i) => {
+    if (result.status === 'rejected') {
+      console.warn('[Fluir SW] precache failed:', urls[i], result.reason);
+    }
+  });
+}
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(cache => precacheAll(cache, PRECACHE_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys()
+      .then(keys => Promise.all(
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    ).then(() => self.clients.claim())
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        return response;
-      });
-    })
+    isNetworkFirst(event.request.url)
+      ? networkFirst(event.request)
+      : cacheFirst(event.request)
   );
 });
