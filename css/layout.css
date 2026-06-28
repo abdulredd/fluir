@@ -1,39 +1,39 @@
 /* ─── Fluir · Layout ────────────────────────────────────────────────────── */
 
-/* ── App shell ── */
+/* ── App shell ──
+   Pin the whole shell to the viewport so chrome stays at the edges.
+   Only #main-content scrolls — never the page body. */
 
 #app {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: var(--max-width);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  height: 100dvh;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  position: relative;
   overflow: hidden;
   overscroll-behavior: none;
+  background: var(--bg-panel);
 }
 
 /* ── Topbar ── */
 
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   z-index: 100;
-  width: 100%;
-  max-width: var(--max-width);
-  margin-inline: auto;
-  height: var(--topbar-total-height);
+  min-height: var(--topbar-height);
+  padding-top: var(--safe-top);
+  padding-left: calc(var(--space-4) + var(--safe-left));
+  padding-right: calc(var(--space-4) + var(--safe-right));
+  padding-bottom: 0;
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border-muted);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--safe-top);
-  padding-left: calc(var(--space-4) + var(--safe-left));
-  padding-right: calc(var(--space-4) + var(--safe-right));
 }
 
 .topbar__logo {
@@ -81,23 +81,18 @@
 /* ── Bottom nav ── */
 
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   z-index: 100;
-  width: 100%;
-  max-width: var(--max-width);
-  margin-inline: auto;
-  height: var(--nav-total-height);
+  min-height: var(--nav-height);
+  padding-top: 0;
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
   background: var(--bg-panel);
   border-top: 1px solid var(--border-muted);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding-bottom: var(--safe-bottom);
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
 }
 
 .nav-item {
