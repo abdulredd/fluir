@@ -25,7 +25,7 @@ import { bindNextBtn, showNextBtn, feedbackCorrect, feedbackWrong } from './shar
  */
 function renderGameShell(container, opts) {
   const typeTag = el('div', {
-    className: `game-type-tag ${opts.tagClass || 'tag-vocab'}`,
+    className: `game-type-tag ${opts.tagClass || 'tag-grammar'}`,
     text: opts.tagLabel,
   });
   if (opts.tagStyle) typeTag.style.cssText = opts.tagStyle;

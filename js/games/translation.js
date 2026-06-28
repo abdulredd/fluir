@@ -28,7 +28,7 @@ export function gameTranslation(container, question, onAnswer) {
 
     const { feedback } = renderGameShell(container, {
       tagLabel: 'Translate',
-      tagClass: 'tag-vocab',
+      tagClass: 'tag-grammar',
       prompt: 'Translate to Spanish (plural article + noun)',
       withChoices: false,
       feedbackClass: 'feedback--spaced',
@@ -74,7 +74,7 @@ export function gameTranslation(container, question, onAnswer) {
 
   const { feedback } = renderGameShell(container, {
     tagLabel: 'Translate',
-    tagClass: 'tag-vocab',
+    tagClass: 'tag-grammar',
     prompt: 'Translate to Spanish (article + noun)',
     withChoices: false,
     feedbackClass: 'feedback--spaced',

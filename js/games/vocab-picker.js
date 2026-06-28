@@ -13,7 +13,7 @@ export function gameVocabPicker(container, question, onAnswer) {
 
   const { feedback, choicesEl } = renderGameShell(container, {
     tagLabel: 'Translate',
-    tagClass: 'tag-vocab',
+    tagClass: 'tag-grammar',
     prompt: 'Which Spanish word means…',
     middle: el('div', { className: 'es-large es-large--cyan es-large--loose', text: vocab.en }),
   });

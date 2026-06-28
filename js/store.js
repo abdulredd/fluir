@@ -297,11 +297,13 @@ const Store = {
   },
 
   getSettings() {
-    return this.get(KEYS.SETTINGS) || {
-      audioEnabled:   true,
-      audioSource:    'webspeech',
-      newCardsPerDay: 10,
+    const defaults = {
+      audioEnabled:       true,
+      audioSource:        'webspeech',
+      newCardsPerDay:     10,
+      vocabCardDirection: 'es-en',
     };
+    return { ...defaults, ...(this.get(KEYS.SETTINGS) || {}) };
   },
 
   saveSetting(key, value) {

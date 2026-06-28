@@ -275,3 +275,17 @@ describe('clearAll', () => {
     assert.equal(localStorage.getItem(SCHEMA_KEY), null);
   });
 });
+
+describe('settings', () => {
+  it('defaults vocabCardDirection and persists changes', () => {
+    assert.equal(Store.getSettings().vocabCardDirection, 'es-en');
+    Store.saveSetting('vocabCardDirection', 'en-es');
+    assert.equal(Store.getSettings().vocabCardDirection, 'en-es');
+  });
+
+  it('merges defaults when stored settings omit newer keys', () => {
+    Store.set(KEYS.SETTINGS, { audioEnabled: false });
+    assert.equal(Store.getSettings().audioEnabled, false);
+    assert.equal(Store.getSettings().vocabCardDirection, 'es-en');
+  });
+});

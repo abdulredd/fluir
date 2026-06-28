@@ -20,7 +20,7 @@ export function gameArticlePicker(container, question, onAnswer) {
 
   const { feedback, choicesEl } = renderGameShell(container, {
     tagLabel: 'Definite article',
-    tagClass: 'tag-vocab',
+    tagClass: 'tag-grammar',
     prompt: targetGender ? 'Choose el or la for the gender shown' : 'Choose the correct article',
     middle: [
       el('div', { className: 'es-large', text: vocab.es }),

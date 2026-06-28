@@ -148,7 +148,7 @@ describe('renderChapterIntro', () => {
     assert.match(container.textContent, /Best chapter score/);
     assert.match(container.textContent, /1 attempt/);
 
-    rows.forEach((row, i) => {
+    rows.forEach((row) => {
       assert.match(rowIcon(row).className, /sublesson-row__icon--done/);
       assert.match(rowSubtitle(row), /^Complete · Best score: \d+%$/);
     });

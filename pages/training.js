@@ -1,11 +1,17 @@
 /* ─── Fluir · Training Grounds ────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
-import { loadChapter, ALL_CHAPTERS, VOCAB_KEYS } from '../js/data/registry.js';
+import { loadChapter, ALL_CHAPTERS, collectChapterVocabBrowseSections } from '../js/data/registry.js';
 import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/access.js';
 import { renderGame, renderUnknownGame } from '../js/games/dispatch.js';
-import { pickTrainingQuestion } from '../js/training-questions.js';
+import {
+  pickTrainingQuestion,
+  prepareTrainingPool,
+  gameTypesForPickerFromPool,
+  pickRandomGameType,
+} from '../js/training-questions.js';
 import { prepareQuestions } from './lesson/questions.js';
+import { vocabBrowseHint } from '../js/vocab-display.js';
 import { el, clearAndMount } from '../js/dom.js';
 import {
   mountPage,
@@ -19,17 +25,9 @@ import {
   iconChevronRight,
   emptyState,
   quizHeader,
+  vocabCard,
+  vocabDirectionControl,
 } from './ui.js';
-
-const VOCAB_KEY_LABELS = {
-  vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
-  tenerExpressions: 'Tener Expressions', hacerExpressions: 'Hacer Expressions',
-  locationPrepositions: 'Prepositions', porExpressions: 'Por Expressions',
-  becomeExpressions: 'Become Expressions', movementVerbs: 'Movement Verbs',
-  reciprocalVerbs: 'Reciprocal Verbs', impersonalExpressions: 'Impersonal Expressions',
-  emotionVerbs: 'Emotion Verbs', commandVerbs: 'Command Verbs',
-  conjunctions: 'Conjunctions', readingVocab: 'Reading Vocabulary',
-};
 
 async function renderTraining(container, chapterId) {
   if (chapterId === null) {
@@ -105,7 +103,7 @@ function renderTrainingMenu(container, chapter) {
       className: 'text-muted text-sm page-lead',
       text: 'Free practice — no scoring. Drill whatever you want, as many times as you want.',
     }),
-    el('div', { className: 'mb-6' },
+    el('div', { className: 'list-btn-group training-menu__browse' },
       listButton('Browse vocabulary', () => renderVocabBrowser(container, chapter), {
         id: 'browse-vocab-btn',
         meta: `All words from Chapter ${chapter.id}`,
@@ -114,97 +112,79 @@ function renderTrainingMenu(container, chapter) {
       }),
     ),
     sectionLabel('Practice'),
-    el('div', { id: 'sublesson-list', className: 'mb-6' },
+    el('div', { id: 'sublesson-list', className: 'list-btn-group training-menu__practice' },
       ...chapter.sublessons.map((sl, i) =>
-        listButton(sl.title, () => renderGameTypePicker(container, chapter, [sl]), {
+        listButton(sl.title, () => { void renderGameTypePicker(container, chapter, [sl]); }, {
           id: `sl-btn-${i}`,
           meta: sl.subtitle,
           className: 'list-btn--stack',
         }),
       ),
-      listButton('All lessons mixed', () => renderGameTypePicker(container, chapter, chapter.sublessons), {
+      listButton('All lessons mixed', () => { void renderGameTypePicker(container, chapter, chapter.sublessons); }, {
         id: 'sl-btn-all',
         meta: `Everything from Chapter ${chapter.id}`,
-        metaClass: 'list-btn__meta--amber',
-        className: 'btn--amber',
+        className: 'list-btn--stack',
       }),
     ),
   ]);
 }
 
 function renderVocabBrowser(container, chapter) {
-  const totalCount = chapter.sublessons.reduce((n, s) =>
-    n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0);
+  const direction = Store.getSettings().vocabCardDirection;
+  const sections = collectChapterVocabBrowseSections(chapter);
+  const totalCount = sections.reduce((n, s) => n + s.items.length, 0);
 
-  const sections = chapter.sublessons.flatMap(sl => {
-    const groups = VOCAB_KEYS
-      .filter(k => sl[k]?.length)
-      .map(k => el('div', { className: 'vocab-group' },
-        sectionLabel(VOCAB_KEY_LABELS[k], { tight: true }),
-        el('div', { className: 'vocab-grid' },
-          ...sl[k].map(item => vocabCardEl(item)),
-        ),
-      ));
-    if (!groups.length) return [];
-    return [el('div', { className: 'vocab-section' },
-      el('div', { className: 'vocab-section__title', text: sl.title }),
-      el('div', { className: 'vocab-section__subtitle', text: sl.subtitle }),
-      ...groups,
-    )];
-  });
+  const sectionEls = sections.map(section => el('div', { className: 'vocab-section' },
+    sectionLabel(section.label),
+    el('div', { className: 'vocab-grid' },
+      ...section.items.map(item => vocabCard(item, { direction, arrayKey: section.arrayKey })),
+    ),
+  ));
 
   mountPage(container, [
     el('div', { className: 'page-header' },
       backButton('vocab-back', () => renderTrainingMenu(container, chapter)),
     ),
     el('div', { className: 'page-kicker page-kicker--tight', text: `Chapter ${chapter.id} · ${totalCount} items` }),
-    el('h2', { className: 'page-title page-title--amber mb-2', text: 'Vocabulary' }),
-    el('p', { className: 'text-muted text-sm page-lead', text: 'Tap a card to see the translation.' }),
-    ...sections,
+    el('h2', { className: 'page-title page-title--amber', text: 'Vocabulary' }),
+    el('div', { className: 'vocab-browser__intro' },
+      el('p', { className: 'text-muted text-sm', text: vocabBrowseHint(direction) }),
+      el('div', { className: 'vocab-direction-bar' },
+        sectionLabel('Show first', { tight: true }),
+        vocabDirectionControl({
+          value: direction,
+          onChange: (next) => {
+            Store.saveSetting('vocabCardDirection', next);
+            renderVocabBrowser(container, chapter);
+          },
+        }),
+      ),
+    ),
+    ...sectionEls,
   ]);
 }
 
-function vocabCardEl(item) {
-  const word = item.article
-    ? `${item.article} ${item.es || item.infinitive || ''}`
-    : (item.es || item.infinitive || '');
-  const sub = item.plural
-    ? `pl: ${item.plural}`
-    : (item.rule ? item.rule.replace(/<[^>]+>/g, '').trim().slice(0, 40) : '');
+async function renderGameTypePicker(container, chapter, sublessons) {
+  clearAndMount(container, loadingPage('Loading drills…'));
 
-  return el('div', {
-    className: 'vocab-card',
-    dataset: { flipped: 'false' },
-    onClick: ({ currentTarget }) => {
-      currentTarget.dataset.flipped = currentTarget.dataset.flipped === 'true' ? 'false' : 'true';
-    },
-  },
-    el('div', { className: 'vocab-card__front' },
-      el('span', { className: 'vocab-card__es', text: word }),
-      sub ? el('span', { className: 'vocab-card__sub', text: sub }) : null,
-    ),
-    el('div', { className: 'vocab-card__back' },
-      el('span', { className: 'vocab-card__en', text: item.en || '' }),
-    ),
-  );
-}
-
-const GAME_TYPES = [
-  { id: 'article-picker',       label: 'Article picker',      desc: 'Choose el or la',             tag: 'tag-vocab'   },
-  { id: 'fill-article',         label: 'Fill in the blank',   desc: 'Type the article',            tag: 'tag-grammar' },
-  { id: 'matching',             label: 'Matching pairs',      desc: 'Match word to meaning',       tag: 'tag-vocab'   },
-  { id: 'translation',          label: 'Translation',         desc: 'English → Spanish',           tag: 'tag-vocab'   },
-  { id: 'plural-picker',        label: 'Plural builder',      desc: 'Choose the plural form',      tag: 'tag-grammar' },
-  { id: 'adjective',            label: 'Adjective agreement', desc: 'Masculine, feminine, plural', tag: 'tag-grammar' },
-  { id: 'conjugation',          label: 'Conjugation',         desc: 'Pick the correct verb form',  tag: 'tag-grammar' },
-  { id: 'ser-vs-estar',         label: 'Ser vs Estar',        desc: 'Choose the right "to be"',    tag: 'tag-grammar' },
-  { id: 'number-quiz',          label: 'Number quiz',         desc: 'Numeral → Spanish word',      tag: 'tag-grammar' },
-  { id: 'sentence-completion',  label: 'Sentence completion', desc: 'Fill the blank in context',   tag: 'tag-grammar' },
-  { id: 'random',               label: 'Random mix',          desc: 'Surprise me',                 tag: null          },
-];
-
-function renderGameTypePicker(container, chapter, sublessons) {
+  const pool    = await prepareTrainingPool(sublessons);
+  const options = gameTypesForPickerFromPool(pool);
   const slNames = sublessons.map(s => s.title).join(' · ');
+
+  if (!options.length) {
+    clearAndMount(container,
+      pageWithEmptyState('No practice drills', {
+        onBack: () => renderTrainingMenu(container, chapter),
+        body:   'This selection has no questions yet.',
+      }),
+    );
+    return;
+  }
+
+  const drillCount = options.filter(gt => gt.id !== 'random').length;
+  const lead = drillCount === 1
+    ? '1 drill type is available for this selection.'
+    : `${drillCount} drill types are available for this selection.`;
 
   mountPage(container, [
     el('div', { className: 'page-header' },
@@ -212,16 +192,14 @@ function renderGameTypePicker(container, chapter, sublessons) {
       el('span', { className: 'training-context', text: slNames }),
     ),
     el('h3', { className: 'page-title page-title--amber mb-2', text: 'Choose a game type' }),
-    el('p', { className: 'text-muted text-sm mb-5', text: `All game types use your Chapter ${chapter.id} vocabulary.` }),
+    el('p', { className: 'text-muted text-sm mb-5', text: lead }),
     el('div', { className: 'game-type-list', id: 'game-type-list' },
-      ...GAME_TYPES.map(gt =>
+      ...options.map(gt =>
         el('button', {
           className: 'btn btn--full list-btn',
           id: `gt-${gt.id}`,
           onClick: () => {
-            const gameType = gt.id === 'random'
-              ? GAME_TYPES[Math.floor(Math.random() * (GAME_TYPES.length - 1))].id
-              : gt.id;
+            const gameType = gt.id === 'random' ? pickRandomGameType(options) : gt.id;
             startTrainingSession(container, chapter, sublessons, gameType);
           },
         },
@@ -257,7 +235,7 @@ function startTrainingSession(container, chapter, sublessons, gameType) {
               id: 'no-content-back',
               style: 'margin-top:var(--space-4)',
               text: 'Back',
-              onClick: () => renderTrainingMenu(container, chapter),
+              onClick: () => { void renderGameTypePicker(container, chapter, sublessons); },
             }),
           }),
         ),
@@ -272,7 +250,7 @@ function startTrainingSession(container, chapter, sublessons, gameType) {
         sessionTotal++;
       },
       onNext: () => nextQuestion(),
-      onQuit: () => renderTrainingMenu(container, chapter),
+      onExit: () => { void renderGameTypePicker(container, chapter, sublessons); },
     });
   }
 
@@ -290,9 +268,9 @@ function renderTrainingQuestion(container, chapter, sublessons, gameType, q, ses
     quizHeader({
       backBtn: el('button', {
         className: 'btn btn--ghost btn--sm',
-        id: 'quit-btn',
-        text: 'Quit',
-        onClick: session.onQuit,
+        id: 'exit-btn',
+        text: 'Exit',
+        onClick: session.onExit,
       }),
       actions: [
         el('span', { className: 'text-xs quiz-score', text: `${session.correct} correct` }),

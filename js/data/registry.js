@@ -10,6 +10,8 @@ import {
   VOCAB_KEYS,
   vocabItemId,
   collectChapterVocabIds,
+  collectChapterVocabByKey,
+  collectChapterVocabBrowseSections,
 } from './vocab-keys.js';
 
 /** @type {Record<number, Chapter>} */
@@ -68,6 +70,8 @@ export {
   VOCAB_KEYS,
   vocabItemId,
   collectChapterVocabIds,
+  collectChapterVocabByKey,
+  collectChapterVocabBrowseSections,
   loadChapter,
   preloadAllChapters,
 };

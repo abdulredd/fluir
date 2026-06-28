@@ -24,7 +24,7 @@ export function gameMatching(container, question, onAnswer) {
 
   renderGameShell(container, {
     tagLabel: 'Matching',
-    tagClass: 'tag-vocab',
+    tagClass: 'tag-grammar',
     prompt: 'Match each Spanish word to its English meaning',
     withChoices: false,
     middle: el('div', {

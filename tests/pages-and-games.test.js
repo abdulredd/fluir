@@ -167,12 +167,55 @@ describe('page UI primitives', () => {
 
   it('vocabCard toggles flip state on click', async () => {
     const { vocabCard } = await import('../pages/ui.js');
-    const card = vocabCard({ article: 'el', es: 'perro', en: 'dog', plural: 'perros' });
+    const card = vocabCard(
+      { article: 'el', es: 'perro', en: 'dog', plural: 'perros', gender: 'm' },
+      { arrayKey: 'vocabulary' },
+    );
     assert.equal(card.dataset.flipped, 'false');
+    assert.match(card.querySelector('.vocab-card__prompt').textContent, /el perro/);
     card.dispatchEvent({ type: 'click', currentTarget: card });
     assert.equal(card.dataset.flipped, 'true');
+    assert.equal(card.getAttribute('aria-expanded'), 'true');
     card.dispatchEvent({ type: 'click', currentTarget: card });
     assert.equal(card.dataset.flipped, 'false');
+  });
+
+  it('vocabCard English-first shows English on the front in prompt color', async () => {
+    const { vocabCard } = await import('../pages/ui.js');
+    const card = vocabCard(
+      { article: 'el', es: 'perro', en: 'dog', plural: 'perros', gender: 'm' },
+      { direction: 'en-es', arrayKey: 'vocabulary' },
+    );
+    const front = card.querySelector('.vocab-card__prompt');
+    assert.ok(front);
+    assert.match(front.textContent, /dog/);
+    card.dispatchEvent({ type: 'click', currentTarget: card });
+    const back = card.querySelector('.vocab-card__answer');
+    assert.ok(back);
+    assert.match(back.textContent, /perro/);
+  });
+
+  it('vocabCard shows adjective gender forms on the Spanish side', async () => {
+    const { vocabCard } = await import('../pages/ui.js');
+    const card = vocabCard(
+      { es: 'amarillo', en: 'yellow', endsO: true },
+      { arrayKey: 'adjectives' },
+    );
+    assert.match(card.querySelector('.vocab-card__prompt').textContent, /amarillo/);
+    assert.match(card.querySelector('.vocab-card__sub').textContent, /amarilla/);
+  });
+
+  it('vocabDirectionControl marks the active option', async () => {
+    const { vocabDirectionControl } = await import('../pages/ui.js');
+    let chosen = 'es-en';
+    const control = vocabDirectionControl({
+      value: 'en-es',
+      onChange: (v) => { chosen = v; },
+    });
+    const active = control.querySelector('.segmented-control__option--active');
+    assert.match(active.textContent, /English/);
+    control.querySelectorAll('.segmented-control__option')[0].click();
+    assert.equal(chosen, 'es-en');
   });
 
   it('mountQuizPage exposes the game content slot', async () => {
