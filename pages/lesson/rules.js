@@ -2,83 +2,76 @@
 
 /** @import { Chapter, Sublesson, SessionScore, Rule, LessonApi } from '../../js/types.js' */
 
-import { escapeHtml } from '../../js/utils.js';
+import { el, clearAndMount } from '../../js/dom.js';
+import { backButton } from '../ui.js';
 
-/** @param {Rule} rule */
+/** @param {Rule} rule @returns {Element} */
 function renderRuleCard(rule) {
-  return `
-    <div class="card rule-card">
-      <h3 class="rule-card__heading">${escapeHtml(rule.heading)}</h3>
-      <p class="rule-card__body">${escapeHtml(rule.body)}</p>
-
-      <div class="rule-card__examples">
-        ${rule.examples.map(ex => `
-          <div class="rule-card__example">
-            <span class="rule-card__es">${escapeHtml(ex.es)}</span>
-            <span class="rule-card__en">${escapeHtml(ex.en)}${ex.note ? ` · <em class="rule-card__note">${escapeHtml(ex.note)}</em>` : ''}</span>
-          </div>
-        `).join('')}
-      </div>
-
-      ${rule.tip ? `
-        <div class="rule-card__tip">${escapeHtml(rule.tip)}</div>
-      ` : ''}
-    </div>
-  `;
+  return el('div', { className: 'card rule-card' },
+    el('h3', { className: 'rule-card__heading', text: rule.heading }),
+    el('p', { className: 'rule-card__body', text: rule.body }),
+    el('div', { className: 'rule-card__examples' },
+      ...rule.examples.map(ex =>
+        el('div', { className: 'rule-card__example' },
+          el('span', { className: 'rule-card__es', text: ex.es }),
+          el('span', { className: 'rule-card__en' },
+            ex.en,
+            ex.note ? el('span', {}, ' · ', el('em', { className: 'rule-card__note', text: ex.note })) : null,
+          ),
+        ),
+      ),
+    ),
+    rule.tip ? el('div', { className: 'rule-card__tip', text: rule.tip }) : null,
+  );
 }
 
-function ruleBadgeHTML(label) {
-  return `<div class="rule-badge">${escapeHtml(label)}</div>`;
+/** @param {string} label */
+function ruleBadge(label) {
+  return el('div', { className: 'rule-badge', text: label });
 }
 
 function mountRuleNavigator(container, {
   ruleIndex,
   ruleCount,
-  badgeHTML,
+  badgeEl,
   isFirst,
   isLast,
   lastLabel,
   onBack,
   onPrev,
   onNext,
+  ruleCard,
 }) {
   const ruleProg = Math.round(((ruleIndex + 1) / ruleCount) * 100);
 
-  container.innerHTML = `
-    <div class="page active rule-view">
-      <div class="rule-view__header">
-        <button class="btn btn--ghost btn--sm" id="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-        <span class="text-xs text-muted">${ruleIndex + 1} of ${ruleCount} rules</span>
-      </div>
+  const nav = el('div', { className: 'rule-view__nav' },
+    isFirst
+      ? el('div', { className: 'btn btn--full btn--lg btn--invisible' })
+      : el('button', { className: 'btn btn--full btn--lg', id: 'rule-prev', text: '← Prev rule', onClick: onPrev }),
+    el('button', {
+      className: `btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg`.trim(),
+      id: 'rule-next',
+      text: lastLabel,
+      onClick: onNext,
+    }),
+  );
 
-      <div class="progress-track rule-view__progress">
-        <div class="progress-fill" style="width:${Math.max(ruleProg, 3)}%"></div>
-      </div>
-
-      ${badgeHTML}
-
-      <div id="rule-card-slot"></div>
-
-      <div class="rule-view__nav">
-        ${isFirst
-          ? `<div class="btn btn--full btn--lg btn--invisible"></div>`
-          : `<button class="btn btn--full btn--lg" id="rule-prev">← Prev rule</button>`
-        }
-        <button class="btn ${isLast ? 'btn--primary' : ''} btn--full btn--lg" id="rule-next">
-          ${escapeHtml(lastLabel)}
-        </button>
-      </div>
-    </div>
-  `;
-
-  container.querySelector('#back-btn').addEventListener('click', onBack);
-  container.querySelector('#rule-prev')?.addEventListener('click', onPrev);
-  container.querySelector('#rule-next').addEventListener('click', onNext);
+  clearAndMount(container,
+    el('div', { className: 'page active rule-view' },
+      el('div', { className: 'rule-view__header' },
+        backButton('back-btn', onBack),
+        el('span', { className: 'text-xs text-muted', text: `${ruleIndex + 1} of ${ruleCount} rules` }),
+      ),
+      el('div', { className: 'progress-track rule-view__progress' },
+        el('div', { className: 'progress-fill', style: `width:${Math.max(ruleProg, 3)}%` }),
+      ),
+      badgeEl,
+      el('div', { id: 'rule-card-slot' }, ruleCard),
+      nav,
+    ),
+  );
 }
 
-/**
- * Shared prev/next rule viewer used by chapter review and per-sublesson teach-first flow.
- */
 function runRuleSequence(container, {
   ruleCount,
   getRule,
@@ -95,25 +88,18 @@ function runRuleSequence(container, {
       return;
     }
 
-    const isLast  = ruleIndex === ruleCount - 1;
-    const isFirst = ruleIndex === 0;
-
     mountRuleNavigator(container, {
       ruleIndex,
       ruleCount,
-      badgeHTML: ruleBadgeHTML(getBadgeLabel(ruleIndex)),
-      isFirst,
-      isLast,
+      badgeEl:      ruleBadge(getBadgeLabel(ruleIndex)),
+      isFirst:      ruleIndex === 0,
+      isLast:       ruleIndex === ruleCount - 1,
       lastLabel,
+      ruleCard:     renderRuleCard(getRule(ruleIndex)),
       onBack,
-      onPrev: () => { ruleIndex--; showRule(); },
-      onNext: () => {
-        ruleIndex++;
-        showRule();
-      },
+      onPrev:       () => { ruleIndex--; showRule(); },
+      onNext:       () => { ruleIndex++; showRule(); },
     });
-
-    container.querySelector('#rule-card-slot').innerHTML = renderRuleCard(getRule(ruleIndex));
   }
 
   showRule();

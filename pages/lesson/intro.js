@@ -5,7 +5,10 @@
 import Store from '../../js/store.js';
 import { VOCAB_KEYS } from '../../js/data/registry.js';
 import { showConfirmSheet } from '../../js/app.js';
-import { scoreTierClass, escapeHtml } from '../../js/utils.js';
+import { scoreTierClass } from '../../js/utils.js';
+import { el, appendChildren } from '../../js/dom.js';
+import { iconCheck, iconChevronRight } from '../../js/icons.js';
+import { mountPage, backButton, sectionLabel } from '../ui.js';
 
 /** @param {Element} container @param {Chapter} chapter @param {LessonApi} api */
 function renderChapterIntro(container, chapter, api) {
@@ -21,117 +24,135 @@ function renderChapterIntro(container, chapter, api) {
   const resumeQIndex    = hasResume ? (savedState.qIndex   || 0) : 0;
   const resumeQTotal    = hasResume && savedState.questions ? savedState.questions.length : 0;
 
-  container.innerHTML = `
-    <div class="page active">
-      <div class="page-header">
-        <button class="btn btn--ghost btn--sm" id="back-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Back
-        </button>
-        ${complete ? `<span class="status-badge status-badge--complete">Complete</span>` : ''}
-      </div>
-
-      <div class="page-kicker">Chapter ${chapter.id}</div>
-      <h2 class="page-title">${escapeHtml(chapter.title)}</h2>
-      <p class="text-muted text-sm page-lead">${vocabCount} vocabulary items · ${chapter.sublessons.length} lessons</p>
-
-      ${score ? `
-        <div class="card score-card">
-          <div>
-            <div class="text-sm text-bright">Best score</div>
-            <div class="text-muted text-xs">${score.attempts} attempt${score.attempts !== 1 ? 's' : ''}</div>
-          </div>
-          <div class="score-card__value ${scoreTierClass(score.best)}">${score.best}%</div>
-        </div>
-      ` : ''}
-
-      ${hasResume ? `
-        <div class="notice-banner notice-banner--cyan">
-          <div class="notice-banner__label">In progress</div>
-          <div class="notice-banner__title">Lesson ${savedState.subIndex + 1} — ${escapeHtml(resumeSubLesson?.title || '')}</div>
-          <div class="notice-banner__meta">Question ${resumeQIndex + 1} of ${resumeQTotal} · ${savedState.sessionCorrect} correct so far</div>
-        </div>
-      ` : ''}
-
-      <div class="section-label">Lessons</div>
-      ${chapter.sublessons.map((sl, i) => {
-        const isDone    = hasResume && i < savedState.subIndex;
-        const isCurrent = hasResume && i === savedState.subIndex;
-        const iconClass = isDone ? 'sublesson-row__icon--done' : isCurrent ? 'sublesson-row__icon--current' : '';
-        return `
-          <button type="button" class="card sublesson-row" data-sub="${i}">
-            <div class="sublesson-row__icon ${iconClass}">
-              ${isDone ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : i + 1}
-            </div>
-            <div class="card-row__main">
-              <div class="text-sm text-bright">${escapeHtml(sl.title)}</div>
-              <div class="text-muted text-xs">${escapeHtml(isDone ? 'Complete' : isCurrent ? 'Resume here' : sl.subtitle)}</div>
-            </div>
-            <svg class="sublesson-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        `;
-      }).join('')}
-
-      <div class="page-actions">
-        ${hasResume ? `
-          <button class="btn btn--primary btn--full btn--lg" id="resume-btn">Resume lesson →</button>
-          <button class="btn btn--ghost btn--full" id="start-btn">Start over from the beginning</button>
-        ` : `
-          <button class="btn btn--primary btn--full btn--lg" id="start-btn">
-            ${complete ? 'Study Again' : 'Begin Lesson'}
-          </button>
-          <button class="btn btn--ghost btn--full" id="rules-btn">Review chapter rules</button>
-        `}
-      </div>
-    </div>
-  `;
-
-  container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
-
-  container.querySelector('#start-btn').addEventListener('click', () => {
-    Store.clearLessonState(chapter.id);
-    api.startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true);
-  });
-
-  container.querySelectorAll('[data-sub]').forEach(el => {
-    el.addEventListener('click', () => {
-      const targetSub = parseInt(el.dataset.sub);
-      if (hasResume && savedState.subIndex !== targetSub) {
-        const lessonName = chapter.sublessons[savedState.subIndex]?.title || `Lesson ${savedState.subIndex + 1}`;
-        showConfirmSheet({
-          title:        'Unsaved progress',
-          body:         `You're in the middle of "${lessonName}." Starting a different lesson will lose your progress.`,
-          confirmLabel: 'Start new lesson',
-          cancelLabel:  'Go back',
-          onConfirm:    () => {
-            Store.clearLessonState(chapter.id);
-            api.startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
-          },
-        });
-        return;
-      }
-      Store.clearLessonState(chapter.id);
-      api.startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
-    });
-  });
-
-  container.querySelector('#rules-btn')?.addEventListener('click', () => {
-    Store.clearLessonState(chapter.id);
-    api.reviewAllRules(container, chapter);
-  });
-
-  container.querySelector('#resume-btn')?.addEventListener('click', () => {
-    const sublesson = chapter.sublessons[savedState.subIndex];
-    if (!sublesson) return;
-    const questions = savedState.questions || [];
-    const qIndex    = savedState.qIndex    || 0;
-    const score     = { correct: savedState.sessionCorrect, total: savedState.sessionTotal };
-    if (questions.length > 0) {
-      api.runQuestions(container, chapter, sublesson, savedState.subIndex, questions, qIndex, score);
-    } else {
-      api.buildQuestionQueue(container, chapter, sublesson, savedState.subIndex, score);
+  function startSublesson(targetSub) {
+    if (hasResume && savedState.subIndex !== targetSub) {
+      const lessonName = chapter.sublessons[savedState.subIndex]?.title || `Lesson ${savedState.subIndex + 1}`;
+      showConfirmSheet({
+        title:        'Unsaved progress',
+        body:         `You're in the middle of "${lessonName}." Starting a different lesson will lose your progress.`,
+        confirmLabel: 'Start new lesson',
+        cancelLabel:  'Go back',
+        onConfirm:    () => {
+          Store.clearLessonState(chapter.id);
+          api.startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
+        },
+      });
+      return;
     }
+    Store.clearLessonState(chapter.id);
+    api.startSubLesson(container, chapter, targetSub, { correct: 0, total: 0 }, true);
+  }
+
+  const sublessonRows = chapter.sublessons.map((sl, i) => {
+    const isDone    = hasResume && i < savedState.subIndex;
+    const isCurrent = hasResume && i === savedState.subIndex;
+    const iconClass = isDone ? 'sublesson-row__icon--done' : isCurrent ? 'sublesson-row__icon--current' : '';
+    const arrow = iconChevronRight();
+    arrow.classList.add('sublesson-row__arrow');
+
+    return el('button', {
+      type: 'button',
+      className: 'card sublesson-row',
+      onClick: () => startSublesson(i),
+    },
+      el('div', { className: `sublesson-row__icon ${iconClass}` },
+        isDone ? iconCheck(14) : String(i + 1),
+      ),
+      el('div', { className: 'card-row__main' },
+        el('div', { className: 'text-sm text-bright', text: sl.title }),
+        el('div', {
+          className: 'text-muted text-xs',
+          text: isDone ? 'Complete' : isCurrent ? 'Resume here' : sl.subtitle,
+        }),
+      ),
+      arrow,
+    );
   });
+
+  const pageActions = el('div', { className: 'page-actions' });
+
+  if (hasResume) {
+    appendChildren(pageActions,
+      el('button', {
+        className: 'btn btn--primary btn--full btn--lg',
+        id: 'resume-btn',
+        text: 'Resume lesson →',
+        onClick: () => {
+          const sublesson = chapter.sublessons[savedState.subIndex];
+          if (!sublesson) return;
+          const questions = savedState.questions || [];
+          const qIndex    = savedState.qIndex    || 0;
+          const sc     = { correct: savedState.sessionCorrect, total: savedState.sessionTotal };
+          if (questions.length > 0) {
+            api.runQuestions(container, chapter, sublesson, savedState.subIndex, questions, qIndex, sc);
+          } else {
+            api.buildQuestionQueue(container, chapter, sublesson, savedState.subIndex, sc);
+          }
+        },
+      }),
+      el('button', {
+        className: 'btn btn--ghost btn--full',
+        id: 'start-btn',
+        text: 'Start over from the beginning',
+        onClick: () => {
+          Store.clearLessonState(chapter.id);
+          api.startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true);
+        },
+      }),
+    );
+  } else {
+    appendChildren(pageActions,
+      el('button', {
+        className: 'btn btn--primary btn--full btn--lg',
+        id: 'start-btn',
+        text: complete ? 'Study Again' : 'Begin Lesson',
+        onClick: () => {
+          Store.clearLessonState(chapter.id);
+          api.startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true);
+        },
+      }),
+      el('button', {
+        className: 'btn btn--ghost btn--full',
+        id: 'rules-btn',
+        text: 'Review chapter rules',
+        onClick: () => {
+          Store.clearLessonState(chapter.id);
+          api.reviewAllRules(container, chapter);
+        },
+      }),
+    );
+  }
+
+  mountPage(container, [
+    el('div', { className: 'page-header' },
+      backButton('back-btn', () => history.back()),
+      complete ? el('span', { className: 'status-badge status-badge--complete', text: 'Complete' }) : null,
+    ),
+    el('div', { className: 'page-kicker', text: `Chapter ${chapter.id}` }),
+    el('h2', { className: 'page-title', text: chapter.title }),
+    el('p', {
+      className: 'text-muted text-sm page-lead',
+      text: `${vocabCount} vocabulary items · ${chapter.sublessons.length} lessons`,
+    }),
+    score ? el('div', { className: 'card score-card' },
+      el('div', {},
+        el('div', { className: 'text-sm text-bright', text: 'Best score' }),
+        el('div', { className: 'text-muted text-xs', text: `${score.attempts} attempt${score.attempts !== 1 ? 's' : ''}` }),
+      ),
+      el('div', { className: `score-card__value ${scoreTierClass(score.best)}`, text: `${score.best}%` }),
+    ) : null,
+    hasResume ? el('div', { className: 'notice-banner notice-banner--cyan' },
+      el('div', { className: 'notice-banner__label', text: 'In progress' }),
+      el('div', { className: 'notice-banner__title', text: `Lesson ${savedState.subIndex + 1} — ${resumeSubLesson?.title || ''}` }),
+      el('div', {
+        className: 'notice-banner__meta',
+        text: `Question ${resumeQIndex + 1} of ${resumeQTotal} · ${savedState.sessionCorrect} correct so far`,
+      }),
+    ) : null,
+    sectionLabel('Lessons'),
+    ...sublessonRows,
+    pageActions,
+  ]);
 }
 
 export { renderChapterIntro };

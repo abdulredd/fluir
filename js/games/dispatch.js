@@ -2,6 +2,7 @@
 
 /** @import { LessonQuestion } from '../types.js' */
 
+import { el, clearAndMount } from '../dom.js';
 import { escapeHtml } from '../utils.js';
 import {
   gameArticlePicker,
@@ -50,16 +51,25 @@ function renderGame(container, question, onAnswer) {
 
 function renderUnknownGame(container, question) {
   console.error('[Fluir] Unknown question type:', question?.type, question);
-  container.innerHTML = `
-    <div class="empty-state empty-state--padded">
-      <div class="empty-state__title">Question unavailable</div>
-      <div class="empty-state__body">This question type (${escapeHtml(question?.type || 'unknown')}) is not supported. Tap Next to continue.</div>
-      <button class="btn btn--primary" id="unknown-next" style="margin-top:var(--space-4)">Next →</button>
-    </div>
-  `;
-  container.querySelector('#unknown-next')?.addEventListener('click', () => {
-    container.dispatchEvent(new CustomEvent('game:next'));
+
+  const nextBtn = el('button', {
+    className: 'btn btn--primary',
+    id: 'unknown-next',
+    style: 'margin-top:var(--space-4)',
+    text: 'Next →',
+    onClick: () => container.dispatchEvent(new CustomEvent('game:next')),
   });
+
+  clearAndMount(container,
+    el('div', { className: 'empty-state empty-state--padded' },
+      el('div', { className: 'empty-state__title', text: 'Question unavailable' }),
+      el('div', {
+        className: 'empty-state__body',
+        html: `This question type (${escapeHtml(question?.type || 'unknown')}) is not supported. Tap Next to continue.`,
+      }),
+      nextBtn,
+    ),
+  );
 }
 
 export { renderGame, renderUnknownGame, GAME_RENDERERS, KNOWN_GAME_TYPES };

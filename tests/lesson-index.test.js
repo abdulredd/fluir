@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it, beforeEach, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 
 function createMockStorage() {
@@ -11,23 +11,56 @@ function createMockStorage() {
   };
 }
 
-function mockContainer() {
-  const stubBtn = { addEventListener() {}, click() {} };
-  return {
-    innerHTML: '',
-    querySelector(sel) {
-      if (sel === '#start-btn' || sel === '#back-btn' || sel === '#rules-btn' || sel === '#resume-btn') {
-        return stubBtn;
-      }
-      return null;
-    },
-    querySelectorAll() { return []; },
+function installDom() {
+  const prev = globalThis.document;
+
+  function createElement(tag) {
+    const node = {
+      tagName: tag.toUpperCase(),
+      nodeType: 1,
+      className: '',
+      classList: { _c: new Set(), add(...c) { c.forEach(x => this._c.add(x)); node.className = [...this._c].join(' '); } },
+      textContent: '',
+      childNodes: [],
+      children: [],
+      style: { cssText: '' },
+      dataset: {},
+      setAttribute() {},
+      appendChild(c) { node.childNodes.push(c); node.children.push(c); return c; },
+      replaceChildren(...nodes) { node.childNodes = []; node.children = []; nodes.forEach(n => node.appendChild(n)); },
+      querySelector() { return null; },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+    return node;
+  }
+
+  globalThis.document = {
+    createElement,
+    createElementNS: (_ns, tag) => createElement(tag),
+    createTextNode: t => ({ nodeType: 3, textContent: t }),
+    addEventListener() {},
+    getElementById: () => null,
   };
+  return () => { globalThis.document = prev; };
+}
+
+function mockContainer() {
+  return globalThis.document.createElement('div');
 }
 
 describe('lesson routing', () => {
   let Store;
   let createLessonFlow;
+  let restoreDom;
+
+  before(() => {
+    restoreDom = installDom();
+  });
+
+  after(() => {
+    restoreDom?.();
+  });
 
   beforeEach(async () => {
     globalThis.localStorage = createMockStorage();

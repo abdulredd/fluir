@@ -2,11 +2,13 @@
 
 /** @import { LessonQuestion } from '../types.js' */
 
+import { el } from '../dom.js';
 import {
   shuffle,
-  bindNextBtn,
   showNextBtn,
+  feedbackCorrect,
 } from './shared.js';
+import { renderGameShell } from './ui.js';
 
 export function gameMatching(container, question, onAnswer) {
   const { pairs } = question;
@@ -17,36 +19,24 @@ export function gameMatching(container, question, onAnswer) {
   const spShuffled = shuffle(pairs);
   const enShuffled = shuffle(pairs);
 
-  container.innerHTML = `
-    <div class="game-type-tag tag-vocab">Matching</div>
-    <div class="game-prompt">Match each Spanish word to its English meaning</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4)">
-      <div id="col-sp" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
-      <div id="col-en" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
-    </div>
-    <div class="feedback" id="feedback" aria-live="polite"></div>
-    <button class="btn btn--primary" class="game-next-btn" id="next-btn">Next →</button>
-  `;
+  const colSp = el('div', { id: 'col-sp', style: 'display:flex;flex-direction:column;gap:var(--space-2)' });
+  const colEn = el('div', { id: 'col-en', style: 'display:flex;flex-direction:column;gap:var(--space-2)' });
 
-  function makeBtn(text, key, side) {
-    const btn = document.createElement('button');
-    btn.className = 'option';
-    btn.classList.add('option--compact');
-    btn.classList.add('option--sm');
-    btn.dataset.key  = key;
-    btn.dataset.side = side;
-    btn.textContent  = text;
-    btn.addEventListener('click', () => handleMatch(btn));
-    return btn;
-  }
+  renderGameShell(container, {
+    tagLabel: 'Matching',
+    tagClass: 'tag-vocab',
+    prompt: 'Match each Spanish word to its English meaning',
+    withChoices: false,
+    middle: el('div', {
+      style: 'display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4)',
+    }, colSp, colEn),
+  });
 
-  spShuffled.forEach(p => container.querySelector('#col-sp').appendChild(makeBtn(p.es, p.es, 'sp')));
-  enShuffled.forEach(p => container.querySelector('#col-en').appendChild(makeBtn(p.en, p.es, 'en')));
+  const feedback = container.querySelector('#feedback');
 
   function handleMatch(btn) {
     if (btn.classList.contains('correct') || btn.classList.contains('matched')) return;
     if (!selected) {
-      if (selected) selected.classList.remove('reveal');
       btn.classList.add('reveal');
       selected = btn;
       return;
@@ -71,9 +61,7 @@ export function gameMatching(container, question, onAnswer) {
       selected = null;
       matched++;
       if (matched === total) {
-        const fb = container.querySelector('#feedback');
-        fb.textContent = '✓ All matched!';
-        fb.className = 'feedback show correct';
+        feedbackCorrect(feedback, '✓ All matched!');
         showNextBtn(container);
         onAnswer(true, question);
       }
@@ -81,12 +69,22 @@ export function gameMatching(container, question, onAnswer) {
       selected.classList.remove('reveal');
       selected.classList.add('wrong');
       btn.classList.add('wrong');
-      const s = selected, b = btn;
+      const s = selected;
+      const b = btn;
       selected = null;
       setTimeout(() => { s.classList.remove('wrong'); b.classList.remove('wrong'); }, 600);
     }
   }
 
-  bindNextBtn(container);
-}
+  function makeBtn(text, key, side) {
+    return el('button', {
+      className: 'option option--compact option--sm',
+      text,
+      dataset: { key, side },
+      onClick: ({ currentTarget }) => handleMatch(currentTarget),
+    });
+  }
 
+  spShuffled.forEach(p => colSp.appendChild(makeBtn(p.es, p.es, 'sp')));
+  enShuffled.forEach(p => colEn.appendChild(makeBtn(p.en, p.es, 'en')));
+}

@@ -2,6 +2,7 @@
 
 import { GENDER_RULES, PLURAL_RULES, ADJ_RULES } from '../data/chapter1.js';
 import { escapeHtml, shuffle } from '../utils.js';
+import { setHtml } from '../dom.js';
 
 function ruleText(ruleKey, rules = GENDER_RULES) {
   return rules[ruleKey] || 'Learn this word with its article.';
@@ -29,7 +30,7 @@ function showNextBtn(container) {
 }
 
 function setFeedback(fb, html, kind) {
-  fb.innerHTML = html;
+  setHtml(fb, html);
   fb.className = `feedback show ${kind}`;
   fb.setAttribute('aria-live', 'polite');
 }

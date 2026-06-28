@@ -8,6 +8,8 @@ import { buildQuestions, prepareQuestions } from './questions.js';
 import { reviewAllRules as reviewAllRulesView, renderRuleCards as renderRuleCardsView } from './rules.js';
 import { runQuestions as runQuestionsView, renderLessonComplete, renderUnknownChapter } from './runner.js';
 import { renderChapterIntro as renderChapterIntroView } from './intro.js';
+import { el, clearAndMount } from '../../js/dom.js';
+import { emptyState, loadingPage } from '../ui.js';
 
 /**
  * @returns {{ renderLesson: (container: Element, chapterId: number|string) => void }}
@@ -32,17 +34,22 @@ function createLessonFlow() {
       const questions = buildQuestions(sublesson);
 
       if (!questions.length) {
-        container.innerHTML = `
-          <div class="page active">
-            <div class="empty-state empty-state--padded">
-              <div class="empty-state__title">No questions for this lesson</div>
-              <div class="empty-state__body">${sublesson.title} has no quiz content yet.</div>
-              <button class="btn btn--primary" id="empty-back" style="margin-top:var(--space-4)">Back to chapter</button>
-            </div>
-          </div>`;
-        container.querySelector('#empty-back')?.addEventListener('click', () => {
-          api.renderChapterIntro(container, chapter);
-        });
+        clearAndMount(container,
+          el('div', { className: 'page active' },
+            emptyState({
+              title: 'No questions for this lesson',
+              body:  `${sublesson.title} has no quiz content yet.`,
+              padded: true,
+              action: el('button', {
+                className: 'btn btn--primary',
+                id: 'empty-back',
+                style: 'margin-top:var(--space-4)',
+                text: 'Back to chapter',
+                onClick: () => api.renderChapterIntro(container, chapter),
+              }),
+            }),
+          ),
+        );
         return;
       }
 
@@ -82,12 +89,7 @@ function createLessonFlow() {
       renderUnknownChapter(container, chapterId);
       return;
     }
-    container.innerHTML = `
-      <div class="page active">
-        <div class="empty-state empty-state--padded">
-          <div class="empty-state__title">Loading chapter…</div>
-        </div>
-      </div>`;
+    clearAndMount(container, loadingPage('Loading chapter…'));
     const chapter = await loadChapter(id);
     if (!chapter) {
       renderUnknownChapter(container, id);

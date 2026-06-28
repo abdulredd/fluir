@@ -2,13 +2,9 @@
 
 /** @import { LessonQuestion } from '../types.js' */
 
-import {
-  escapeHtml,
-  shuffle,
-  bindNextBtn,
-  showNextBtn,
-  ADJ_RULES,
-} from './shared.js';
+import { el } from '../dom.js';
+import { shuffle, ADJ_RULES } from './shared.js';
+import { renderGameShell, bindChoiceButtons } from './ui.js';
 
 export function gameAdjectiveAgreement(container, question, onAnswer) {
   const { noun, adjective } = question;
@@ -33,47 +29,29 @@ export function gameAdjectiveAgreement(container, question, onAnswer) {
     ? getForm(adjective, noun.gender === 'f' ? 'm' : 'f', noun.number || 'sg')
     : correctForm + (correctForm.endsWith('s') ? '' : 's');
 
-  const article   = noun.gender === 'm' ? 'el' : 'la';
-  const opts      = shuffle([correctForm, wrongForm]);
+  const article = noun.gender === 'm' ? 'el' : 'la';
+  const labels  = shuffle([correctForm, wrongForm]);
 
-  container.innerHTML = `
-    <div class="game-type-tag tag-grammar">Adjective agreement</div>
-    <div class="game-prompt">Choose the correct adjective form</div>
-    <div class="es-large">${article} ${noun.es} ___</div>
-    <div class="lesson-translation lesson-translation lesson-translation--loose">the ${noun.en} · ${adjective.en}</div>
-    <div id="choices"></div>
-    <div class="feedback" id="feedback" aria-live="polite"></div>
-    <button class="btn btn--primary" class="game-next-btn" id="next-btn">Next →</button>
-  `;
-
-  const choicesEl = container.querySelector('#choices');
-  opts.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option';
-    btn.classList.add('option--serif-lg');
-    btn.textContent      = opt;
-    btn.addEventListener('click', () => {
-      const isCorrect = opt === correctForm;
-      container.querySelectorAll('.option').forEach(b => {
-        b.disabled = true;
-        if (b.textContent === correctForm) b.classList.add('correct');
-        else if (b === btn && !isCorrect) b.classList.add('wrong');
-      });
-      const fb = container.querySelector('#feedback');
-      if (isCorrect) {
-        fb.innerHTML = `✓ Correct — <em>${escapeHtml(article)} ${escapeHtml(noun.es)} ${escapeHtml(correctForm)}</em>`;
-        fb.className = 'feedback show correct';
-      } else {
-        const rule = adjective.endsO ? ADJ_RULES.a_fem : ADJ_RULES.invariable;
-        fb.innerHTML = `✗ <em>${escapeHtml(article)} ${escapeHtml(noun.es)} ${escapeHtml(correctForm)}</em> — ${escapeHtml(rule)}`;
-        fb.className = 'feedback show wrong';
-      }
-      showNextBtn(container);
-      onAnswer(isCorrect, question);
-    });
-    choicesEl.appendChild(btn);
+  const { feedback, choicesEl } = renderGameShell(container, {
+    tagLabel: 'Adjective agreement',
+    tagClass: 'tag-grammar',
+    prompt: 'Choose the correct adjective form',
+    middle: [
+      el('div', { className: 'es-large', text: `${article} ${noun.es} ___` }),
+      el('div', { className: 'lesson-translation lesson-translation--loose', text: `the ${noun.en} · ${adjective.en}` }),
+    ],
   });
 
-  bindNextBtn(container);
+  bindChoiceButtons(container, choicesEl, feedback,
+    labels.map(label => ({ label, isCorrect: label === correctForm })),
+    {
+      feedbackHtml: ok => {
+        const phrase = `<em>${article} ${noun.es} ${correctForm}</em>`;
+        if (ok) return `✓ Correct — ${phrase}`;
+        const rule = adjective.endsO ? ADJ_RULES.a_fem : ADJ_RULES.invariable;
+        return `✗ ${phrase} — ${rule}`;
+      },
+      onAnswer: ok => onAnswer(ok, question),
+    },
+  );
 }
-

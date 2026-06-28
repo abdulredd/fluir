@@ -4,6 +4,8 @@ import Store from '../js/store.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
 import { exportToAnki } from '../js/anki.js';
 import { ALL_CHAPTERS } from '../js/data/registry.js';
+import { el } from '../js/dom.js';
+import { mountPage, sectionLabel } from './ui.js';
 
 function renderSettings(container) {
   const settings    = Store.getSettings();
@@ -11,72 +13,82 @@ function renderSettings(container) {
   const allUnlocked         = settings.unlockAll         || false;
   const allPracticeUnlocked = settings.unlockAllPractice || false;
 
-  container.innerHTML = `
-    <div class="page active" id="page-settings">
-
-      <div class="page-head page-head--spaced">
-        <h2 class="page-title mb-2">Settings</h2>
-      </div>
-
-      <div class="section-label">Anki export</div>
-      <div class="card card--spaced">
-        <div class="mb-3">
-          <div class="list-btn__title mb-2">Export vocabulary to Anki</div>
-          <div class="text-xs text-muted mb-2">${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} pending · ${queue.exported.length} already exported</div>
-          ${queue.exported.length > 0 ? `<div class="text-xs text-cyan">Previously exported cards will not be duplicated.</div>` : ''}
-        </div>
-        <button class="btn btn--amber btn--full" id="export-btn" ${queue.pending.length === 0 ? 'disabled' : ''}>
-          ${queue.pending.length === 0 ? 'No cards pending export' : `Export ${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} → Anki`}
-        </button>
-        ${queue.pending.length > 0 ? `<div class="notice-banner__hint">Downloads a .apkg file — open it in Anki to import.</div>` : ''}
-      </div>
-
-      <div class="section-label">Power user</div>
-      <div class="card card--spaced">
-        <div class="settings-row">
-          <div>
-            <div class="list-btn__title">Unlock all chapters</div>
-            <div class="text-xs text-muted">Skip linear progression — access any chapter directly</div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="unlock-all-toggle" ${allUnlocked ? 'checked' : ''}>
-            <span class="toggle__track"></span>
-          </label>
-        </div>
-        ${allUnlocked ? `
-          <div class="notice-banner--amber-inline">
-            All ${ALL_CHAPTERS.length} chapters unlocked. Chapters without lesson data yet show as "Coming soon."
-          </div>` : ''}
-        <div class="settings-divider"></div>
-        <div class="settings-row">
-          <div>
-            <div class="list-btn__title">Unlock all practice</div>
-            <div class="text-xs text-muted">Access Practice for any chapter without completing the lesson</div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="unlock-practice-toggle" ${allPracticeUnlocked ? 'checked' : ''}>
-            <span class="toggle__track"></span>
-          </label>
-        </div>
-        ${allPracticeUnlocked ? `
-          <div class="notice-banner--amber-inline">
-            All ${ALL_CHAPTERS.length} practice chapters unlocked.
-          </div>` : ''}
-      </div>
-
-      <div class="section-label">Data</div>
-      <div class="card card--spaced">
-        <div class="list-btn__title mb-2">Reset all data</div>
-        <div class="text-xs text-muted mb-3">Clears all chapters, progress, and settings. This cannot be undone.</div>
-        <button class="btn btn--danger btn--full" id="reset-btn">Reset Fluir</button>
-      </div>
-
-      <div class="settings-footer">
-        <span class="settings-footer__brand">fluir<span class="settings-footer__dot">.</span></span> · Companion App to Easy Spanish Step-by-Step
-      </div>
-
-    </div>
-  `;
+  mountPage(container, [
+    el('div', { className: 'page-head page-head--spaced' },
+      el('h2', { className: 'page-title mb-2', text: 'Settings' }),
+    ),
+    sectionLabel('Anki export'),
+    el('div', { className: 'card card--spaced' },
+      el('div', { className: 'mb-3' },
+        el('div', { className: 'list-btn__title mb-2', text: 'Export vocabulary to Anki' }),
+        el('div', {
+          className: 'text-xs text-muted mb-2',
+          text: `${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} pending · ${queue.exported.length} already exported`,
+        }),
+        queue.exported.length > 0
+          ? el('div', { className: 'text-xs text-cyan', text: 'Previously exported cards will not be duplicated.' })
+          : null,
+      ),
+      el('button', {
+        className: 'btn btn--amber btn--full',
+        id: 'export-btn',
+        disabled: queue.pending.length === 0,
+        text: queue.pending.length === 0
+          ? 'No cards pending export'
+          : `Export ${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} → Anki`,
+        onClick: handleExport,
+      }),
+      queue.pending.length > 0
+        ? el('div', { className: 'notice-banner__hint', text: 'Downloads a .apkg file — open it in Anki to import.' })
+        : null,
+    ),
+    sectionLabel('Power user'),
+    el('div', { className: 'card card--spaced' },
+      el('div', { className: 'settings-row' },
+        el('div', {},
+          el('div', { className: 'list-btn__title', text: 'Unlock all chapters' }),
+          el('div', { className: 'text-xs text-muted', text: 'Skip linear progression — access any chapter directly' }),
+        ),
+        el('label', { className: 'toggle' },
+          el('input', { type: 'checkbox', id: 'unlock-all-toggle', ...(allUnlocked ? { checked: true } : {}) }),
+          el('span', { className: 'toggle__track' }),
+        ),
+      ),
+      allUnlocked
+        ? el('div', {
+          className: 'notice-banner--amber-inline',
+          text: `All ${ALL_CHAPTERS.length} chapters unlocked. Chapters without lesson data yet show as "Coming soon."`,
+        })
+        : null,
+      el('div', { className: 'settings-divider' }),
+      el('div', { className: 'settings-row' },
+        el('div', {},
+          el('div', { className: 'list-btn__title', text: 'Unlock all practice' }),
+          el('div', { className: 'text-xs text-muted', text: 'Access Practice for any chapter without completing the lesson' }),
+        ),
+        el('label', { className: 'toggle' },
+          el('input', { type: 'checkbox', id: 'unlock-practice-toggle', ...(allPracticeUnlocked ? { checked: true } : {}) }),
+          el('span', { className: 'toggle__track' }),
+        ),
+      ),
+      allPracticeUnlocked
+        ? el('div', {
+          className: 'notice-banner--amber-inline',
+          text: `All ${ALL_CHAPTERS.length} practice chapters unlocked.`,
+        })
+        : null,
+    ),
+    sectionLabel('Data'),
+    el('div', { className: 'card card--spaced' },
+      el('div', { className: 'list-btn__title mb-2', text: 'Reset all data' }),
+      el('div', { className: 'text-xs text-muted mb-3', text: 'Clears all chapters, progress, and settings. This cannot be undone.' }),
+      el('button', { className: 'btn btn--danger btn--full', id: 'reset-btn', text: 'Reset Fluir', onClick: handleReset }),
+    ),
+    el('div', { className: 'settings-footer' },
+      el('span', { className: 'settings-footer__brand' }, 'fluir', el('span', { className: 'settings-footer__dot', text: '.' })),
+      ' · Companion App to Easy Spanish Step-by-Step',
+    ),
+  ], { id: 'page-settings' });
 
   document.getElementById('unlock-all-toggle')?.addEventListener('change', e => {
     Store.saveSetting('unlockAll', e.target.checked);
@@ -90,7 +102,7 @@ function renderSettings(container) {
     renderSettings(container);
   });
 
-  document.getElementById('export-btn')?.addEventListener('click', async () => {
+  async function handleExport() {
     const btn = document.getElementById('export-btn');
     btn.disabled = true;
     btn.textContent = 'Building deck…';
@@ -114,9 +126,9 @@ function renderSettings(container) {
       btn.disabled = false;
       btn.textContent = 'Export to Anki';
     }
-  });
+  }
 
-  document.getElementById('reset-btn')?.addEventListener('click', () => {
+  function handleReset() {
     showConfirmSheet({
       title:        'Reset all data',
       body:         'This will erase all your progress, scores, and settings. This cannot be undone.',
@@ -125,10 +137,10 @@ function renderSettings(container) {
       onConfirm:    () => {
         Store.clearAll();
         showToast('Data cleared');
-        setTimeout(() => location.hash = '#/', 800);
+        setTimeout(() => { location.hash = '#/'; }, 800);
       },
     });
-  });
+  }
 }
 
 export { renderSettings };

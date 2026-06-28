@@ -1,7 +1,8 @@
 /* ─── Fluir · App — boot, routing, nav ──────────────────────────────────── */
 
 import Store from './store.js';
-import { escapeHtml } from './utils.js';
+import { el } from './dom.js';
+import { buildConfirmSheet, buildChoiceSheet } from '../pages/ui.js';
 import { renderHome }     from '../pages/home.js';
 import { renderProgress } from '../pages/progress.js';
 import { renderSettings } from '../pages/settings.js';
@@ -31,7 +32,6 @@ function handleRoute() {
   const { parts } = parseHash();
   const main = document.getElementById('main-content');
 
-  /* parametric routes */
   if (parts[0] === 'chapter' && parts[1]) {
     renderLesson(main, parseInt(parts[1]));
     setActiveNav(null);
@@ -44,7 +44,6 @@ function handleRoute() {
     return;
   }
 
-  /* static routes */
   const cleanPath = '/' + (parts[0] || '');
   const renderer  = routes[cleanPath] || renderHome;
 
@@ -52,15 +51,11 @@ function handleRoute() {
   setActiveNav(cleanPath);
 }
 
-/* ── Nav ── */
-
 function setActiveNav(path) {
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.toggle('active', el.dataset.route === path);
   });
 }
-
-
 
 /* ── Toast ── */
 
@@ -107,20 +102,8 @@ function mountModalSheet(sheet, backdrop, onDismiss) {
 }
 
 function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel = 'Cancel', onConfirm, onCancel }) {
-  const backdrop = document.createElement('div');
-  backdrop.className = 'confirm-overlay';
-
-  const sheet = document.createElement('div');
-  sheet.className = 'confirm-sheet';
-  sheet.innerHTML = `
-    <div class="confirm-sheet__title" id="cs-title">${escapeHtml(title)}</div>
-    <div class="confirm-sheet__body">${escapeHtml(body)}</div>
-    <div class="confirm-sheet__actions">
-      <button class="btn btn--danger btn--full" id="cs-confirm">${escapeHtml(confirmLabel)}</button>
-      <button class="btn btn--ghost btn--full" id="cs-cancel">${escapeHtml(cancelLabel)}</button>
-    </div>
-  `;
-
+  const backdrop = el('div', { className: 'confirm-overlay' });
+  const sheet = buildConfirmSheet({ title, body, confirmLabel, cancelLabel });
   const dismiss = mountModalSheet(sheet, backdrop, onCancel);
 
   sheet.querySelector('#cs-confirm').addEventListener('click', () => { dismiss(); onConfirm?.(); });
@@ -129,21 +112,8 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
 }
 
 function showChoiceSheet({ title, body = '', actions = [] }) {
-  const backdrop = document.createElement('div');
-  backdrop.className = 'confirm-overlay';
-
-  const sheet = document.createElement('div');
-  sheet.className = 'confirm-sheet';
-  sheet.innerHTML = `
-    <div class="confirm-sheet__title" id="cs-title">${escapeHtml(title)}</div>
-    ${body ? `<div class="confirm-sheet__body">${escapeHtml(body)}</div>` : ''}
-    <div class="confirm-sheet__actions">
-      ${actions.map((a, i) => `
-        <button class="btn ${a.className || ''} btn--full" data-action="${i}">${escapeHtml(a.label)}</button>
-      `).join('')}
-    </div>
-  `;
-
+  const backdrop = el('div', { className: 'confirm-overlay' });
+  const sheet = buildChoiceSheet({ title, body, actions });
   const dismiss = mountModalSheet(sheet, backdrop);
 
   sheet.querySelectorAll('[data-action]').forEach(btn => {
@@ -156,26 +126,20 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
   backdrop.addEventListener('click', dismiss);
 }
 
-/* ── Boot ── */
-
 function boot() {
   Store.init();
 
-  /* nav click handlers */
   document.querySelectorAll('.nav-item').forEach(el => {
     el.addEventListener('click', () => navigate(el.dataset.route));
   });
 
-  /* logo click */
   const logo = document.getElementById('topbar-logo');
   if (logo) logo.addEventListener('click', () => navigate('/'));
 
-  /* route changes */
   window.addEventListener('hashchange', () => {
     handleRoute();
-    });
+  });
 
-  /* initial route */
   handleRoute();
 }
 

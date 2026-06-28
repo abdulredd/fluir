@@ -1,5 +1,7 @@
 /* ─── Fluir · Streak UI helpers ──────────────────────────────────────────── */
 
+import { el } from './dom.js';
+
 function getWeekDays(progress) {
   const todayDate = new Date();
   const todayStr  = todayDate.toISOString().split('T')[0];
@@ -19,20 +21,18 @@ function getWeekDays(progress) {
   });
 }
 
-function weekStreakHTML(weekDays) {
-  return `
-    <div class="week-streak">
-      ${weekDays.map(d => `
-        <div class="week-streak__day">
-          <div class="week-streak__label">${d.label}</div>
-          ${d.lit
-            ? `<div class="week-streak__flame">🔥</div>`
-            : `<div class="week-streak__dot ${d.future ? 'week-streak__dot--future' : ''}"></div>`
-          }
-        </div>
-      `).join('')}
-    </div>
-  `;
+/** @param {{ label: string, lit: boolean, future: boolean }[]} weekDays */
+function weekStreakEl(weekDays) {
+  return el('div', { className: 'week-streak' },
+    ...weekDays.map(d =>
+      el('div', { className: 'week-streak__day' },
+        el('div', { className: 'week-streak__label', text: d.label }),
+        d.lit
+          ? el('div', { className: 'week-streak__flame', text: '🔥' })
+          : el('div', { className: `week-streak__dot${d.future ? ' week-streak__dot--future' : ''}` }),
+      ),
+    ),
+  );
 }
 
-export { getWeekDays, weekStreakHTML };
+export { getWeekDays, weekStreakEl };

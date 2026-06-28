@@ -1,7 +1,4 @@
-/* ─── Fluir · Training Grounds ──────────────────────────────────────────────
-   Free-practice mode. Unlocks after chapter lesson is complete.
-   User picks game type and lesson. No scoring — just drill.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ─── Fluir · Training Grounds ────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
 import { loadChapter, ALL_CHAPTERS, VOCAB_KEYS } from '../js/data/registry.js';
@@ -9,7 +6,20 @@ import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/a
 import { renderGame, renderUnknownGame } from '../js/games/dispatch.js';
 import { pickTrainingQuestion } from '../js/training-questions.js';
 import { prepareQuestions } from './lesson/questions.js';
-import { escapeHtml } from '../js/utils.js';
+import { el, clearAndMount } from '../js/dom.js';
+import {
+  mountPage,
+  loadingPage,
+  pageWithEmptyState,
+  backButton,
+  sectionLabel,
+  trainingChapterCard,
+  listButton,
+  iconGrid,
+  iconChevronRight,
+  emptyState,
+  quizHeader,
+} from './ui.js';
 
 const VOCAB_KEY_LABELS = {
   vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
@@ -21,23 +31,13 @@ const VOCAB_KEY_LABELS = {
   conjunctions: 'Conjunctions', readingVocab: 'Reading Vocabulary',
 };
 
-/* ════════════════════════════════════════════════════════════════════════════
-   Entry point
-   ════════════════════════════════════════════════════════════════════════════ */
-
 async function renderTraining(container, chapterId) {
-  /* No chapterId = top-level hub — show all completed chapters */
   if (chapterId === null) {
     renderTrainingHub(container);
     return;
   }
 
-  container.innerHTML = `
-    <div class="page active">
-      <div class="empty-state empty-state--padded">
-        <div class="empty-state__title">Loading practice…</div>
-      </div>
-    </div>`;
+  clearAndMount(container, loadingPage('Loading practice…'));
 
   const chapter  = await loadChapter(chapterId);
   const progress = Store.getProgress();
@@ -45,360 +45,265 @@ async function renderTraining(container, chapterId) {
   const complete = isPracticeUnlocked(chapterId, progress, settings);
 
   if (!chapter) {
-    container.innerHTML = `
-      <div class="page active">
-        <div class="page-header">
-          <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
-        </div>
-        <div class="empty-state">
-          <div class="empty-state__title">Chapter ${chapterId} not available</div>
-          <div class="empty-state__body">This chapter hasn't been added to Fluir yet.</div>
-        </div>
-      </div>`;
-    container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
+    clearAndMount(container,
+      pageWithEmptyState(`Chapter ${chapterId} not available`, {
+        onBack: () => history.back(),
+        body:   'This chapter hasn\'t been added to Fluir yet.',
+      }),
+    );
     return;
   }
 
   if (!complete) {
-    container.innerHTML = `
-      <div class="page active">
-        <div class="page-header">
-          <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
-        </div>
-        <div class="card card--centered">
-          <div class="page-title page-title--amber page-title--sm mb-3">Complete the lesson first</div>
-          <p class="text-muted text-sm mb-5">Training Grounds unlocks after you finish Chapter ${chapterId}.</p>
-          <button class="btn btn--primary" id="go-lesson-btn">Go to lesson</button>
-        </div>
-      </div>`;
-    container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
-    container.querySelector('#go-lesson-btn')?.addEventListener('click', () => {
-      location.hash = `#/chapter/${chapterId}`;
-    });
+    clearAndMount(container,
+      el('div', { className: 'page active' },
+        el('div', { className: 'page-header' }, backButton('back-btn', () => history.back())),
+        el('div', { className: 'card card--centered' },
+          el('div', { className: 'page-title page-title--amber page-title--sm mb-3', text: 'Complete the lesson first' }),
+          el('p', { className: 'text-muted text-sm mb-5', text: `Training Grounds unlocks after you finish Chapter ${chapterId}.` }),
+          el('button', {
+            className: 'btn btn--primary',
+            id: 'go-lesson-btn',
+            text: 'Go to lesson',
+            onClick: () => { location.hash = `#/chapter/${chapterId}`; },
+          }),
+        ),
+      ),
+    );
     return;
   }
 
   renderTrainingMenu(container, chapter);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
-   Top-level Training Grounds hub — lists all completed chapters
-   ════════════════════════════════════════════════════════════════════════════ */
-
 function renderTrainingHub(container) {
   const progress  = Store.getProgress();
   const settings  = Store.getSettings();
   const completed = practiceUnlockedChapterIds(ALL_CHAPTERS, progress, settings);
 
-  container.innerHTML = `
-    <div class="page active">
-
-      <div class="page-head page-head--spaced">
-        <h2 class="page-title page-title--amber page-title--training">Practice</h2>
-        <p class="text-muted text-sm">Free practice — no scoring. Complete a chapter lesson to unlock it here.</p>
-      </div>
-
-      <div class="section-label">Chapters</div>
-
-      <div id="training-chapter-list">
-        ${ALL_CHAPTERS.map(ch => {
-        const isComplete = completed.includes(ch.id);
-
-        return `
-          <button type="button" class="chapter-card ${!isComplete ? 'chapter-card--locked' : 'chapter-card--clickable'}"
-               data-id="${ch.id}" data-unlocked="${isComplete ? '1' : '0'}" ${!isComplete ? 'disabled aria-disabled="true"' : ''}>
-            <div class="chapter-card__number ${isComplete ? 'chapter-card__number--practice' : ''}">${ch.id}</div>
-            <div class="chapter-card__body">
-              <div class="chapter-card__title">${escapeHtml(ch.title)}</div>
-              <div class="chapter-card__meta">
-                ${isComplete ? 'Practice unlocked' : 'Complete the lesson to unlock'}
-              </div>
-            </div>
-            <div class="chapter-card__arrow">
-              ${isComplete
-                ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`
-                : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`
-              }
-            </div>
-          </button>
-        `;
-      }).join('')}
-      </div>
-
-    </div>
-  `;
-
-  container.querySelectorAll('.chapter-card--clickable').forEach(el => {
-    el.addEventListener('click', () => {
-      location.hash = `#/training/${el.dataset.id}`;
-    });
-  });
+  mountPage(container, [
+    el('div', { className: 'page-head page-head--spaced' },
+      el('h2', { className: 'page-title page-title--amber page-title--training', text: 'Practice' }),
+      el('p', {
+        className: 'text-muted text-sm',
+        text: 'Free practice — no scoring. Complete a chapter lesson to unlock it here.',
+      }),
+    ),
+    sectionLabel('Chapters'),
+    el('div', { id: 'training-chapter-list' },
+      ...ALL_CHAPTERS.map(ch => trainingChapterCard(ch, completed.includes(ch.id))),
+    ),
+  ]);
 }
-
-/* ════════════════════════════════════════════════════════════════════════════
-   Chapter-specific Training Grounds menu
-   ════════════════════════════════════════════════════════════════════════════ */
 
 function renderTrainingMenu(container, chapter) {
-  container.innerHTML = `
-    <div class="page active">
-
-      <div class="page-header">
-        <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
-      </div>
-
-      <div class="page-kicker">Chapter ${chapter.id}</div>
-      <h2 class="page-title page-title--amber mb-2">Training Grounds</h2>
-      <p class="text-muted text-sm page-lead">Free practice — no scoring. Drill whatever you want, as many times as you want.</p>
-
-      <div class="mb-6">
-        <button class="btn btn--full list-btn list-btn--subtle" id="browse-vocab-btn">
-          <div>
-            <div class="list-btn__title">Browse vocabulary</div>
-            <div class="list-btn__meta">All words from Chapter ${chapter.id}</div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-        </button>
-      </div>
-
-      <div class="section-label">Practice</div>
-      <div id="sublesson-list" class="mb-6">
-        ${chapter.sublessons.map((sl, i) => `
-          <button class="btn btn--full list-btn list-btn--stack" id="sl-btn-${i}">
-            <div>
-              <div class="list-btn__title">${sl.title}</div>
-              <div class="list-btn__meta">${sl.subtitle}</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        `).join('')}
-        <button class="btn btn--full btn--amber list-btn" id="sl-btn-all">
-          <div>
-            <div class="list-btn__title">All lessons mixed</div>
-            <div class="list-btn__meta list-btn__meta--amber">Everything from Chapter ${chapter.id}</div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-
-    </div>
-  `;
-
-  container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
-
-  container.querySelector('#browse-vocab-btn').addEventListener('click', () => {
-    renderVocabBrowser(container, chapter);
-  });
-
-  chapter.sublessons.forEach((sl, i) => {
-    container.querySelector(`#sl-btn-${i}`).addEventListener('click', () => {
-      renderGameTypePicker(container, chapter, [sl]);
-    });
-  });
-
-  container.querySelector('#sl-btn-all').addEventListener('click', () => {
-    renderGameTypePicker(container, chapter, chapter.sublessons);
-  });
+  mountPage(container, [
+    el('div', { className: 'page-header' }, backButton('back-btn', () => history.back())),
+    el('div', { className: 'page-kicker', text: `Chapter ${chapter.id}` }),
+    el('h2', { className: 'page-title page-title--amber mb-2', text: 'Training Grounds' }),
+    el('p', {
+      className: 'text-muted text-sm page-lead',
+      text: 'Free practice — no scoring. Drill whatever you want, as many times as you want.',
+    }),
+    el('div', { className: 'mb-6' },
+      listButton('Browse vocabulary', () => renderVocabBrowser(container, chapter), {
+        id: 'browse-vocab-btn',
+        meta: `All words from Chapter ${chapter.id}`,
+        className: 'list-btn--subtle',
+        trailing: iconGrid(),
+      }),
+    ),
+    sectionLabel('Practice'),
+    el('div', { id: 'sublesson-list', className: 'mb-6' },
+      ...chapter.sublessons.map((sl, i) =>
+        listButton(sl.title, () => renderGameTypePicker(container, chapter, [sl]), {
+          id: `sl-btn-${i}`,
+          meta: sl.subtitle,
+          className: 'list-btn--stack',
+        }),
+      ),
+      listButton('All lessons mixed', () => renderGameTypePicker(container, chapter, chapter.sublessons), {
+        id: 'sl-btn-all',
+        meta: `Everything from Chapter ${chapter.id}`,
+        metaClass: 'list-btn__meta--amber',
+        className: 'btn--amber',
+      }),
+    ),
+  ]);
 }
-
-/* ════════════════════════════════════════════════════════════════════════════
-   Vocabulary browser — tap a card to flip it
-   ════════════════════════════════════════════════════════════════════════════ */
 
 function renderVocabBrowser(container, chapter) {
   const totalCount = chapter.sublessons.reduce((n, s) =>
     n + VOCAB_KEYS.reduce((m, k) => m + (s[k]?.length ?? 0), 0), 0);
 
-  const sections = chapter.sublessons.map(sl => {
+  const sections = chapter.sublessons.flatMap(sl => {
     const groups = VOCAB_KEYS
       .filter(k => sl[k]?.length)
-      .map(k => {
-        const cards = sl[k].map(item => {
-          const word = item.article
-            ? `${item.article} ${item.es || item.infinitive || ''}`
-            : (item.es || item.infinitive || '');
-          const sub = item.plural
-            ? `pl: ${item.plural}`
-            : (item.rule ? item.rule.replace(/<[^>]+>/g, '').trim().slice(0, 40) : '');
-          return `<div class="vocab-card" data-flipped="false">
-            <div class="vocab-card__front">
-              <span class="vocab-card__es">${word}</span>
-              ${sub ? `<span class="vocab-card__sub">${sub}</span>` : ''}
-            </div>
-            <div class="vocab-card__back">
-              <span class="vocab-card__en">${item.en || ''}</span>
-            </div>
-          </div>`;
-        }).join('');
-        return `<div class="vocab-group">
-          <div class="section-label section-label--tight">${VOCAB_KEY_LABELS[k]}</div>
-          <div class="vocab-grid">${cards}</div>
-        </div>`;
-      }).join('');
-
-    if (!groups) return '';
-    return `<div class="vocab-section">
-      <div class="vocab-section__title">${sl.title}</div>
-      <div class="vocab-section__subtitle">${sl.subtitle}</div>
-      ${groups}
-    </div>`;
-  }).join('');
-
-  container.innerHTML = `
-    <div class="page active">
-      <div class="page-header">
-        <button class="btn btn--ghost btn--sm" id="vocab-back">← Back</button>
-      </div>
-      <div class="page-kicker page-kicker--tight">Chapter ${chapter.id} · ${totalCount} items</div>
-      <h2 class="page-title page-title--amber mb-2">Vocabulary</h2>
-      <p class="text-muted text-sm page-lead">Tap a card to see the translation.</p>
-      ${sections}
-    </div>
-  `;
-
-  container.querySelector('#vocab-back').addEventListener('click', () => {
-    renderTrainingMenu(container, chapter);
+      .map(k => el('div', { className: 'vocab-group' },
+        sectionLabel(VOCAB_KEY_LABELS[k], { tight: true }),
+        el('div', { className: 'vocab-grid' },
+          ...sl[k].map(item => vocabCardEl(item)),
+        ),
+      ));
+    if (!groups.length) return [];
+    return [el('div', { className: 'vocab-section' },
+      el('div', { className: 'vocab-section__title', text: sl.title }),
+      el('div', { className: 'vocab-section__subtitle', text: sl.subtitle }),
+      ...groups,
+    )];
   });
 
-  container.querySelectorAll('.vocab-card').forEach(card => {
-    card.addEventListener('click', () => {
-      card.dataset.flipped = card.dataset.flipped === 'true' ? 'false' : 'true';
-    });
-  });
+  mountPage(container, [
+    el('div', { className: 'page-header' },
+      backButton('vocab-back', () => renderTrainingMenu(container, chapter)),
+    ),
+    el('div', { className: 'page-kicker page-kicker--tight', text: `Chapter ${chapter.id} · ${totalCount} items` }),
+    el('h2', { className: 'page-title page-title--amber mb-2', text: 'Vocabulary' }),
+    el('p', { className: 'text-muted text-sm page-lead', text: 'Tap a card to see the translation.' }),
+    ...sections,
+  ]);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
-   Game type picker
-   ════════════════════════════════════════════════════════════════════════════ */
+function vocabCardEl(item) {
+  const word = item.article
+    ? `${item.article} ${item.es || item.infinitive || ''}`
+    : (item.es || item.infinitive || '');
+  const sub = item.plural
+    ? `pl: ${item.plural}`
+    : (item.rule ? item.rule.replace(/<[^>]+>/g, '').trim().slice(0, 40) : '');
+
+  return el('div', {
+    className: 'vocab-card',
+    dataset: { flipped: 'false' },
+    onClick: ({ currentTarget }) => {
+      currentTarget.dataset.flipped = currentTarget.dataset.flipped === 'true' ? 'false' : 'true';
+    },
+  },
+    el('div', { className: 'vocab-card__front' },
+      el('span', { className: 'vocab-card__es', text: word }),
+      sub ? el('span', { className: 'vocab-card__sub', text: sub }) : null,
+    ),
+    el('div', { className: 'vocab-card__back' },
+      el('span', { className: 'vocab-card__en', text: item.en || '' }),
+    ),
+  );
+}
 
 const GAME_TYPES = [
-  { id: 'article-picker',  label: 'Article picker',      desc: 'Choose el or la',              tag: 'tag-vocab'    },
-  { id: 'fill-article',    label: 'Fill in the blank',   desc: 'Type the article',             tag: 'tag-grammar'  },
-  { id: 'matching',        label: 'Matching pairs',      desc: 'Match word to meaning',        tag: 'tag-vocab'    },
-  { id: 'translation',     label: 'Translation',         desc: 'English → Spanish',            tag: 'tag-vocab'    },
-  { id: 'plural-picker',   label: 'Plural builder',      desc: 'Choose the plural form',       tag: 'tag-grammar'  },
-  { id: 'adjective',       label: 'Adjective agreement', desc: 'Masculine, feminine, plural',  tag: 'tag-grammar'  },
-  { id: 'conjugation',     label: 'Conjugation',         desc: 'Pick the correct verb form',   tag: 'tag-grammar'  },
-  { id: 'ser-vs-estar',    label: 'Ser vs Estar',        desc: 'Choose the right "to be"',     tag: 'tag-grammar'  },
-  { id: 'number-quiz',        label: 'Number quiz',         desc: 'Numeral → Spanish word',           tag: 'tag-grammar'  },
-  { id: 'sentence-completion',label: 'Sentence completion', desc: 'Fill the blank in context',         tag: 'tag-grammar'  },
-  { id: 'random',             label: 'Random mix',          desc: 'Surprise me',                       tag: null           },
+  { id: 'article-picker',       label: 'Article picker',      desc: 'Choose el or la',             tag: 'tag-vocab'   },
+  { id: 'fill-article',         label: 'Fill in the blank',   desc: 'Type the article',            tag: 'tag-grammar' },
+  { id: 'matching',             label: 'Matching pairs',      desc: 'Match word to meaning',       tag: 'tag-vocab'   },
+  { id: 'translation',          label: 'Translation',         desc: 'English → Spanish',           tag: 'tag-vocab'   },
+  { id: 'plural-picker',        label: 'Plural builder',      desc: 'Choose the plural form',      tag: 'tag-grammar' },
+  { id: 'adjective',            label: 'Adjective agreement', desc: 'Masculine, feminine, plural', tag: 'tag-grammar' },
+  { id: 'conjugation',          label: 'Conjugation',         desc: 'Pick the correct verb form',  tag: 'tag-grammar' },
+  { id: 'ser-vs-estar',         label: 'Ser vs Estar',        desc: 'Choose the right "to be"',    tag: 'tag-grammar' },
+  { id: 'number-quiz',          label: 'Number quiz',         desc: 'Numeral → Spanish word',      tag: 'tag-grammar' },
+  { id: 'sentence-completion',  label: 'Sentence completion', desc: 'Fill the blank in context',   tag: 'tag-grammar' },
+  { id: 'random',               label: 'Random mix',          desc: 'Surprise me',                 tag: null          },
 ];
 
 function renderGameTypePicker(container, chapter, sublessons) {
   const slNames = sublessons.map(s => s.title).join(' · ');
 
-  container.innerHTML = `
-    <div class="page active">
-
-      <div class="page-header">
-        <button class="btn btn--ghost btn--sm" id="back-to-menu">← Back</button>
-        <span class="training-context">${slNames}</span>
-      </div>
-
-      <h3 class="page-title page-title--amber mb-2">Choose a game type</h3>
-      <p class="text-muted text-sm mb-5">All game types use your Chapter ${chapter.id} vocabulary.</p>
-
-      <div class="game-type-list" id="game-type-list">
-        ${GAME_TYPES.map(gt => `
-          <button class="btn btn--full list-btn" id="gt-${gt.id}">
-            <div class="game-type-row">
-              ${gt.tag ? `<span class="${gt.tag} tag--inline">${gt.label}</span>` : `<span class="list-btn__title">${gt.label}</span>`}
-              <span class="list-btn__meta">${gt.desc}</span>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        `).join('')}
-      </div>
-
-    </div>
-  `;
-
-  container.querySelector('#back-to-menu').addEventListener('click', () => {
-    renderTrainingMenu(container, chapter);
-  });
-
-  GAME_TYPES.forEach(gt => {
-    container.querySelector(`#gt-${gt.id}`).addEventListener('click', () => {
-      const gameType = gt.id === 'random'
-        ? GAME_TYPES[Math.floor(Math.random() * (GAME_TYPES.length - 1))].id
-        : gt.id;
-      startTrainingSession(container, chapter, sublessons, gameType);
-    });
-  });
+  mountPage(container, [
+    el('div', { className: 'page-header' },
+      backButton('back-to-menu', () => renderTrainingMenu(container, chapter)),
+      el('span', { className: 'training-context', text: slNames }),
+    ),
+    el('h3', { className: 'page-title page-title--amber mb-2', text: 'Choose a game type' }),
+    el('p', { className: 'text-muted text-sm mb-5', text: `All game types use your Chapter ${chapter.id} vocabulary.` }),
+    el('div', { className: 'game-type-list', id: 'game-type-list' },
+      ...GAME_TYPES.map(gt =>
+        el('button', {
+          className: 'btn btn--full list-btn',
+          id: `gt-${gt.id}`,
+          onClick: () => {
+            const gameType = gt.id === 'random'
+              ? GAME_TYPES[Math.floor(Math.random() * (GAME_TYPES.length - 1))].id
+              : gt.id;
+            startTrainingSession(container, chapter, sublessons, gameType);
+          },
+        },
+          el('div', { className: 'game-type-row' },
+            gt.tag
+              ? el('span', { className: `${gt.tag} tag--inline`, text: gt.label })
+              : el('span', { className: 'list-btn__title', text: gt.label }),
+            el('span', { className: 'list-btn__meta', text: gt.desc }),
+          ),
+          iconChevronRight(),
+        ),
+      ),
+    ),
+  ]);
 }
-
-/* ════════════════════════════════════════════════════════════════════════════
-   Training session runner — infinite loop until user quits
-   ════════════════════════════════════════════════════════════════════════════ */
 
 function startTrainingSession(container, chapter, sublessons, gameType) {
   let sessionCorrect = 0;
   let sessionTotal   = 0;
-  let roundCount     = 0;
 
   async function nextQuestion() {
-    roundCount++;
     await Promise.all(sublessons.map(sl => prepareQuestions(sl)));
     const q = pickTrainingQuestion(sublessons, gameType);
     if (!q) {
-      container.innerHTML = `
-        <div class="page active">
-          <div class="empty-state empty-state--padded">
-            <div class="empty-state__title">No practice content</div>
-            <div class="empty-state__body">These lessons have no questions for this game type yet.</div>
-            <button class="btn btn--primary" id="no-content-back" style="margin-top:var(--space-4)">Back</button>
-          </div>
-        </div>`;
-      container.querySelector('#no-content-back')?.addEventListener('click', () => {
-        renderTrainingMenu(container, chapter);
-      });
+      clearAndMount(container,
+        el('div', { className: 'page active' },
+          emptyState({
+            title: 'No practice content',
+            body:  'These lessons have no questions for this game type yet.',
+            padded: true,
+            action: el('button', {
+              className: 'btn btn--primary',
+              id: 'no-content-back',
+              style: 'margin-top:var(--space-4)',
+              text: 'Back',
+              onClick: () => renderTrainingMenu(container, chapter),
+            }),
+          }),
+        ),
+      );
       return;
     }
     renderTrainingQuestion(container, chapter, sublessons, gameType, q, {
       correct: sessionCorrect,
       total:   sessionTotal,
-      round:   roundCount,
       onAnswer: (isCorrect) => {
         if (isCorrect) sessionCorrect++;
         sessionTotal++;
       },
-      onNext:   nextQuestion,
-      onQuit:   () => renderTrainingMenu(container, chapter),
+      onNext: () => nextQuestion(),
+      onQuit: () => renderTrainingMenu(container, chapter),
     });
   }
 
   nextQuestion();
 }
 
-/* ── Render a training question with quit button ── */
-
 function renderTrainingQuestion(container, chapter, sublessons, gameType, q, session) {
   const accuracyPct = session.total > 0
     ? Math.round((session.correct / session.total) * 100)
     : 0;
 
-  container.innerHTML = `
-    <div class="page active">
-      <div class="quiz-header">
-        <button class="btn btn--ghost btn--sm" id="quit-btn">Quit</button>
-        <div class="page-header__actions">
-          <span class="text-xs quiz-score">${session.correct} correct</span>
-          <span class="text-xs text-muted">of ${session.total}</span>
-        </div>
-      </div>
+  const gameContent = el('div', { id: 'game-content' });
 
-      <div class="training-progress">
-        <div class="training-progress__fill" style="width:${accuracyPct}%"></div>
-      </div>
-
-      <div id="game-content"></div>
-    </div>
-  `;
-
-  container.querySelector('#quit-btn').addEventListener('click', session.onQuit);
-
-  const gameContent = container.querySelector('#game-content');
+  mountPage(container, [
+    quizHeader({
+      backBtn: el('button', {
+        className: 'btn btn--ghost btn--sm',
+        id: 'quit-btn',
+        text: 'Quit',
+        onClick: session.onQuit,
+      }),
+      actions: [
+        el('span', { className: 'text-xs quiz-score', text: `${session.correct} correct` }),
+        el('span', { className: 'text-xs text-muted', text: `of ${session.total}` }),
+      ],
+    }),
+    el('div', { className: 'training-progress' },
+      el('div', { className: 'training-progress__fill', style: `width:${accuracyPct}%` }),
+    ),
+    gameContent,
+  ]);
 
   gameContent.addEventListener('game:next', () => {
     session.onNext();
