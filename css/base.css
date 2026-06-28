@@ -13,6 +13,7 @@ html {
   height: -webkit-fill-available;
   -webkit-text-size-adjust: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -25,6 +26,7 @@ body {
   height: 100%;
   height: -webkit-fill-available;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* Swallow stray taps after navigation (iOS click-through). */

@@ -11,12 +11,20 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* ── Topbar ── */
 
 .topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
   height: var(--topbar-total-height);
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border-muted);
@@ -26,7 +34,6 @@
   padding-top: var(--safe-top);
   padding-left: calc(var(--space-4) + var(--safe-left));
   padding-right: calc(var(--space-4) + var(--safe-right));
-  flex-shrink: 0;
 }
 
 .topbar__logo {
@@ -74,8 +81,14 @@
 /* ── Bottom nav ── */
 
 .bottom-nav {
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
   height: var(--nav-total-height);
   background: var(--bg-panel);
   border-top: 1px solid var(--border-muted);
