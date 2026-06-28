@@ -1,0 +1,11 @@
+# Dev tooling — not served to users
+node_modules/
+tests/
+.cursor/
+eslint.config.js
+package.json
+package-lock.json
+devserver.py
+
+# Textbook PDFs — not used by the app at runtime
+docs/
