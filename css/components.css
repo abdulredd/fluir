@@ -475,3 +475,125 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── Toggle switch (settings) ── */
+
+.toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle__track {
+  position: absolute; inset: 0;
+  background: var(--bg-raised);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+.toggle__track::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--transition-base), background var(--transition-base);
+}
+.toggle input:checked + .toggle__track { background: var(--color-cyan-bg); border-color: var(--color-cyan); }
+.toggle input:checked + .toggle__track::after { transform: translateX(20px); background: var(--color-cyan); }
+
+/* ── Lesson rule cards ── */
+
+.rule-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.rule-view__progress {
+  margin-bottom: var(--space-5);
+}
+
+.rule-view__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.rule-badge {
+  display: inline-block;
+  font-size: var(--text-xs);
+  background: var(--color-purple-bg);
+  color: var(--color-purple);
+  border: 0.5px solid var(--color-purple);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rule-card {
+  margin-bottom: var(--space-5);
+}
+
+.rule-card__heading {
+  font-family: var(--font-serif);
+  color: var(--color-purple);
+  font-weight: normal;
+  margin-bottom: var(--space-3);
+}
+
+.rule-card__body {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  line-height: 1.7;
+}
+
+.rule-card__examples {
+  background: var(--bg-panel);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: 0;
+}
+
+.rule-card:has(.rule-card__tip) .rule-card__examples {
+  margin-bottom: var(--space-3);
+}
+
+.rule-card__example {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 0.5px solid var(--border-muted);
+}
+
+.rule-card__example:last-child {
+  border-bottom: none;
+}
+
+.rule-card__es {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  color: var(--color-amber);
+}
+
+.rule-card__en {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.rule-card__note {
+  color: var(--color-cyan);
+}
+
+.rule-card__tip {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-amber);
+  border-radius: 0;
+  font-size: var(--text-xs);
+  color: var(--color-amber);
+  line-height: 1.5;
+}

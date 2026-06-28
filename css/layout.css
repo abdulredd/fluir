@@ -202,6 +202,7 @@
 
 .progress-fill--green  { background: var(--color-green); }
 .progress-fill--amber  { background: var(--color-amber); }
+.progress-fill--red    { background: var(--color-red); }
 .progress-fill--purple { background: var(--color-purple); }
 
 /* ── Empty state ── */

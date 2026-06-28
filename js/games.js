@@ -6,15 +6,12 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import { GENDER_RULES, PLURAL_RULES, ADJ_RULES } from './data/chapter1.js';
+import { shuffle } from './utils.js';
 
 /* ── Helpers ── */
 
 function ruleText(ruleKey, rules = GENDER_RULES) {
   return rules[ruleKey] || 'Learn this word with its article.';
-}
-
-function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
 }
 
 function wrongArticle(correct) {
@@ -466,9 +463,9 @@ function gameConjugationPicker(container, question, onAnswer) {
   const { pronoun, correctForm, verb, en } = question;
 
   /* Build 3 plausible wrong answers from same verb's conjugation table */
-  const others = question.allForms
-    .filter(f => f.form !== correctForm)
-    .sort(() => Math.random() - 0.5)
+  const others = shuffle(
+    question.allForms.filter(f => f.form !== correctForm),
+  )
     .slice(0, 3)
     .map(f => f.form);
 

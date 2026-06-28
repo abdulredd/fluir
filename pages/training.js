@@ -4,23 +4,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from '../js/store.js';
-import CHAPTER_1 from '../js/data/chapter1.js';
-import CHAPTER_2 from '../js/data/chapter2.js';
-import CHAPTER_3 from '../js/data/chapter3.js';
-import CHAPTER_4 from '../js/data/chapter4.js';
-import CHAPTER_5, { ALL_VERBS_CH5, conjugate as conjugateCh5 } from '../js/data/chapter5.js';
-import CHAPTER_6, { ALL_VERBS_CH6, conjugateIrr } from '../js/data/chapter6.js';
-import CHAPTER_7 from '../js/data/chapter7.js';
-import CHAPTER_8 from '../js/data/chapter8.js';
-import CHAPTER_9 from '../js/data/chapter9.js';
-import CHAPTER_10 from '../js/data/chapter10.js';
-import CHAPTER_11 from '../js/data/chapter11.js';
-import CHAPTER_12 from '../js/data/chapter12.js';
-import CHAPTER_13, { subjunctiveFromYo } from '../js/data/chapter13.js';
-import CHAPTER_14, { conjugatePreterit } from '../js/data/chapter14.js';
-import CHAPTER_15, { conjugateImperfect } from '../js/data/chapter15.js';
-import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
-import { VOCAB_KEYS } from '../js/data/vocab-keys.js';
+import { CHAPTERS, ALL_CHAPTERS, VOCAB_KEYS } from '../js/data/registry.js';
 import { isPracticeUnlocked, practiceUnlockedChapterIds } from '../js/chapters/access.js';
 import {
   gameArticlePicker,
@@ -35,10 +19,7 @@ import {
   gameSentenceCompletion,
 } from '../js/games.js';
 import { setupQuestionAudio } from '../js/audio.js';
-
-const CHAPTERS = { 1: CHAPTER_1, 2: CHAPTER_2, 3: CHAPTER_3, 4: CHAPTER_4, 5: CHAPTER_5, 6: CHAPTER_6, 7: CHAPTER_7, 8: CHAPTER_8, 9: CHAPTER_9, 10: CHAPTER_10, 11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15 };
-
-function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+import { shuffle } from '../js/utils.js';
 
 const VOCAB_KEY_LABELS = {
   vocabulary: 'Vocabulary', adjectives: 'Adjectives', verbs: 'Verbs', idioms: 'Phrases',
@@ -69,29 +50,34 @@ function renderTraining(container, chapterId) {
   if (!chapter) {
     container.innerHTML = `
       <div class="page active">
-        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
-          <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
+        <div class="page-header">
+          <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
         </div>
         <div class="empty-state">
           <div class="empty-state__title">Chapter ${chapterId} not available</div>
           <div class="empty-state__body">This chapter hasn't been added to Fluir yet.</div>
         </div>
       </div>`;
+    container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
     return;
   }
 
   if (!complete) {
     container.innerHTML = `
       <div class="page active">
-        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
-          <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
+        <div class="page-header">
+          <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
         </div>
-        <div class="card" style="text-align:center;padding:var(--space-8)">
-          <div style="font-family:var(--font-serif);font-size:var(--text-lg);color:var(--color-amber);margin-bottom:var(--space-3)">Complete the lesson first</div>
-          <p class="text-muted text-sm" style="margin-bottom:var(--space-5)">Training Grounds unlocks after you finish Chapter ${chapterId}.</p>
-          <button class="btn btn--primary" onclick="location.hash='#/chapter/${chapterId}'">Go to lesson</button>
+        <div class="card card--centered">
+          <div class="page-title page-title--amber page-title--sm mb-3">Complete the lesson first</div>
+          <p class="text-muted text-sm mb-5">Training Grounds unlocks after you finish Chapter ${chapterId}.</p>
+          <button class="btn btn--primary" id="go-lesson-btn">Go to lesson</button>
         </div>
       </div>`;
+    container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
+    container.querySelector('#go-lesson-btn')?.addEventListener('click', () => {
+      location.hash = `#/chapter/${chapterId}`;
+    });
     return;
   }
 
@@ -110,14 +96,15 @@ function renderTrainingHub(container) {
   container.innerHTML = `
     <div class="page active">
 
-      <div style="margin-bottom:var(--space-6)">
-        <h2 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-1)">Practice</h2>
+      <div class="page-head page-head--spaced">
+        <h2 class="page-title page-title--amber page-title--training">Practice</h2>
         <p class="text-muted text-sm">Free practice — no scoring. Complete a chapter lesson to unlock it here.</p>
       </div>
 
       <div class="section-label">Chapters</div>
 
-      ${ALL_CHAPTERS.map(ch => {
+      <div id="training-chapter-list">
+        ${ALL_CHAPTERS.map(ch => {
         const isComplete = completed.includes(ch.id);
         const CHAPTER_DATA = CHAPTERS[ch.id];
         const vocabCount = CHAPTER_DATA
@@ -126,10 +113,9 @@ function renderTrainingHub(container) {
           : 0;
 
         return `
-          <div class="chapter-card ${!isComplete ? 'chapter-card--locked' : ''}"
-               ${isComplete ? `onclick="location.hash='#/training/${ch.id}'"` : ''}
-               style="${isComplete ? 'cursor:pointer' : ''}">
-            <div class="chapter-card__number" style="${isComplete ? 'color:var(--color-amber);background:var(--color-amber-bg);border-color:var(--color-amber)' : ''}">${ch.id}</div>
+          <div class="chapter-card ${!isComplete ? 'chapter-card--locked' : 'chapter-card--clickable'}"
+               data-id="${ch.id}" data-unlocked="${isComplete ? '1' : '0'}">
+            <div class="chapter-card__number ${isComplete ? 'chapter-card__number--practice' : ''}">${ch.id}</div>
             <div class="chapter-card__body">
               <div class="chapter-card__title">${ch.title}</div>
               <div class="chapter-card__meta">
@@ -147,9 +133,16 @@ function renderTrainingHub(container) {
           </div>
         `;
       }).join('')}
+      </div>
 
     </div>
   `;
+
+  container.querySelectorAll('.chapter-card--clickable').forEach(el => {
+    el.addEventListener('click', () => {
+      location.hash = `#/training/${el.dataset.id}`;
+    });
+  });
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -160,42 +153,39 @@ function renderTrainingMenu(container, chapter) {
   container.innerHTML = `
     <div class="page active">
 
-      <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
-        <button class="btn btn--ghost btn--sm" onclick="history.back()">← Back</button>
+      <div class="page-header">
+        <button class="btn btn--ghost btn--sm" id="back-btn">← Back</button>
       </div>
 
-      <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:var(--space-3)">Chapter ${chapter.id}</div>
-      <h2 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-2)">Training Grounds</h2>
-      <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">Free practice — no scoring. Drill whatever you want, as many times as you want.</p>
+      <div class="page-kicker">Chapter ${chapter.id}</div>
+      <h2 class="page-title page-title--amber mb-2">Training Grounds</h2>
+      <p class="text-muted text-sm page-lead">Free practice — no scoring. Drill whatever you want, as many times as you want.</p>
 
-      <div style="margin-bottom:var(--space-6)">
-        <button class="btn btn--full" id="browse-vocab-btn"
-          style="justify-content:space-between;text-align:left;padding:var(--space-3) var(--space-4);border-color:var(--border-subtle)">
+      <div class="mb-6">
+        <button class="btn btn--full list-btn list-btn--subtle" id="browse-vocab-btn">
           <div>
-            <div style="font-size:var(--text-sm);color:var(--text-bright)">Browse vocabulary</div>
-            <div style="font-size:var(--text-xs);color:var(--text-muted)">All words from Chapter ${chapter.id}</div>
+            <div class="list-btn__title">Browse vocabulary</div>
+            <div class="list-btn__meta">All words from Chapter ${chapter.id}</div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
         </button>
       </div>
 
       <div class="section-label">Practice</div>
-      <div id="sublesson-list" style="margin-bottom:var(--space-6)">
+      <div id="sublesson-list" class="mb-6">
         ${chapter.sublessons.map((sl, i) => `
-          <button class="btn btn--full" id="sl-btn-${i}"
-            style="justify-content:space-between;margin-bottom:var(--space-2);text-align:left;padding:var(--space-3) var(--space-4)">
+          <button class="btn btn--full list-btn list-btn--stack" id="sl-btn-${i}">
             <div>
-              <div style="font-size:var(--text-sm);color:var(--text-bright)">${sl.title}</div>
-              <div style="font-size:var(--text-xs);color:var(--text-muted)">${sl.subtitle}</div>
+              <div class="list-btn__title">${sl.title}</div>
+              <div class="list-btn__meta">${sl.subtitle}</div>
             </div>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         `).join('')}
-        <button class="btn btn--full btn--amber" id="sl-btn-all"
-          style="justify-content:space-between;text-align:left;padding:var(--space-3) var(--space-4)">
+        <button class="btn btn--full btn--amber list-btn" id="sl-btn-all">
           <div>
-            <div style="font-size:var(--text-sm)">All lessons mixed</div>
-            <div style="font-size:var(--text-xs);color:var(--color-amber-bg);opacity:0.8">Everything from Chapter ${chapter.id}</div>
+            <div class="list-btn__title">All lessons mixed</div>
+            <div class="list-btn__meta list-btn__meta--amber">Everything from Chapter ${chapter.id}</div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -203,6 +193,8 @@ function renderTrainingMenu(container, chapter) {
 
     </div>
   `;
+
+  container.querySelector('#back-btn')?.addEventListener('click', () => history.back());
 
   container.querySelector('#browse-vocab-btn').addEventListener('click', () => {
     renderVocabBrowser(container, chapter);
@@ -248,28 +240,28 @@ function renderVocabBrowser(container, chapter) {
             </div>
           </div>`;
         }).join('');
-        return `<div style="margin-bottom:var(--space-4)">
-          <div class="section-label" style="margin-bottom:var(--space-2)">${VOCAB_KEY_LABELS[k]}</div>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-2)">${cards}</div>
+        return `<div class="vocab-group">
+          <div class="section-label section-label--tight">${VOCAB_KEY_LABELS[k]}</div>
+          <div class="vocab-grid">${cards}</div>
         </div>`;
       }).join('');
 
     if (!groups) return '';
-    return `<div style="margin-bottom:var(--space-7)">
-      <div style="font-size:var(--text-sm);color:var(--text-bright);font-weight:600;margin-bottom:var(--space-1)">${sl.title}</div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-4)">${sl.subtitle}</div>
+    return `<div class="vocab-section">
+      <div class="vocab-section__title">${sl.title}</div>
+      <div class="vocab-section__subtitle">${sl.subtitle}</div>
       ${groups}
     </div>`;
   }).join('');
 
   container.innerHTML = `
     <div class="page active">
-      <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
+      <div class="page-header">
         <button class="btn btn--ghost btn--sm" id="vocab-back">← Back</button>
       </div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:var(--space-1)">Chapter ${chapter.id} · ${totalCount} items</div>
-      <h2 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-2)">Vocabulary</h2>
-      <p class="text-muted text-sm" style="margin-bottom:var(--space-6)">Tap a card to see the translation.</p>
+      <div class="page-kicker page-kicker--tight">Chapter ${chapter.id} · ${totalCount} items</div>
+      <h2 class="page-title page-title--amber mb-2">Vocabulary</h2>
+      <p class="text-muted text-sm page-lead">Tap a card to see the translation.</p>
       ${sections}
     </div>
   `;
@@ -309,21 +301,20 @@ function renderGameTypePicker(container, chapter, sublessons) {
   container.innerHTML = `
     <div class="page active">
 
-      <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5)">
+      <div class="page-header">
         <button class="btn btn--ghost btn--sm" id="back-to-menu">← Back</button>
-        <span style="font-size:var(--text-xs);color:var(--color-amber)">${slNames}</span>
+        <span class="training-context">${slNames}</span>
       </div>
 
-      <h3 style="font-family:var(--font-serif);color:var(--color-amber);font-weight:normal;margin-bottom:var(--space-2)">Choose a game type</h3>
-      <p class="text-muted text-sm" style="margin-bottom:var(--space-5)">All game types use your Chapter ${chapter.id} vocabulary.</p>
+      <h3 class="page-title page-title--amber mb-2">Choose a game type</h3>
+      <p class="text-muted text-sm mb-5">All game types use your Chapter ${chapter.id} vocabulary.</p>
 
-      <div style="display:flex;flex-direction:column;gap:var(--space-2)" id="game-type-list">
+      <div class="game-type-list" id="game-type-list">
         ${GAME_TYPES.map(gt => `
-          <button class="btn btn--full" id="gt-${gt.id}"
-            style="justify-content:space-between;text-align:left;padding:var(--space-3) var(--space-4)">
-            <div style="display:flex;align-items:center;gap:var(--space-3)">
-              ${gt.tag ? `<span class="${gt.tag}" style="margin-bottom:0;white-space:nowrap">${gt.label}</span>` : `<span style="font-size:var(--text-sm);color:var(--text-bright)">${gt.label}</span>`}
-              <span style="font-size:var(--text-xs);color:var(--text-muted)">${gt.desc}</span>
+          <button class="btn btn--full list-btn" id="gt-${gt.id}">
+            <div class="game-type-row">
+              ${gt.tag ? `<span class="${gt.tag} tag--inline">${gt.label}</span>` : `<span class="list-btn__title">${gt.label}</span>`}
+              <span class="list-btn__meta">${gt.desc}</span>
             </div>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
@@ -440,18 +431,22 @@ function buildTrainingQuestion(sublessons, gameType, round) {
 /* ── Render a training question with quit button ── */
 
 function renderTrainingQuestion(container, chapter, sublessons, gameType, q, session) {
+  const accuracyPct = session.total > 0
+    ? Math.round((session.correct / session.total) * 100)
+    : 0;
+
   container.innerHTML = `
     <div class="page active">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)">
+      <div class="quiz-header">
         <button class="btn btn--ghost btn--sm" id="quit-btn">Quit</button>
-        <div style="display:flex;align-items:center;gap:var(--space-3)">
-          <span class="text-xs" style="color:var(--color-green)">${session.correct} correct</span>
+        <div class="page-header__actions">
+          <span class="text-xs quiz-score">${session.correct} correct</span>
           <span class="text-xs text-muted">of ${session.total}</span>
         </div>
       </div>
 
-      <div style="background:var(--color-amber-bg);border-radius:var(--radius-sm);height:3px;margin-bottom:var(--space-5)">
-        <div style="height:100%;background:var(--color-amber);border-radius:var(--radius-sm);width:${session.total > 0 ? Math.round((session.correct/session.total)*100) : 0}%;transition:width 0.3s ease"></div>
+      <div class="training-progress">
+        <div class="training-progress__fill" style="width:${accuracyPct}%"></div>
       </div>
 
       <div id="game-content"></div>

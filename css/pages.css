@@ -1,0 +1,488 @@
+/* ─── Fluir · Page layout patterns ─────────────────────────────────────────── */
+
+#main-content {
+  flex: 1;
+}
+
+/* ── Topbar meta ── */
+
+.topbar__book {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.topbar__tagline {
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+/* ── Page chrome ── */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.page-header--split {
+  justify-content: space-between;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.page-head {
+  margin-bottom: var(--space-5);
+}
+
+.page-head--spaced {
+  margin-bottom: var(--space-6);
+}
+
+.page-kicker {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+
+.page-kicker--tight {
+  margin-bottom: var(--space-1);
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  color: var(--color-purple);
+  font-weight: normal;
+  margin-bottom: var(--space-2);
+}
+
+.page-title--amber {
+  color: var(--color-amber);
+}
+
+.page-title--sm {
+  font-size: var(--text-lg);
+}
+
+.page-lead {
+  margin-bottom: var(--space-6);
+}
+
+.page-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.page-meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+/* ── Spacing helpers ── */
+
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-5 { margin-bottom: var(--space-5); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mt-2 { margin-top: 2px; }
+
+/* ── Status badges ── */
+
+.status-badge {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid transparent;
+}
+
+.status-badge--complete {
+  color: var(--color-green);
+  background: var(--color-green-bg);
+  border-color: var(--color-green);
+}
+
+/* ── Score / metric colors ── */
+
+.text-score--good { color: var(--color-green); }
+.text-score--ok   { color: var(--color-amber); }
+.text-score--low  { color: var(--color-red); }
+
+.metric__value--green  { color: var(--color-green); }
+.metric__value--cyan   { color: var(--color-cyan); }
+.metric__value--purple { color: var(--color-purple); }
+.metric__value--red    { color: var(--color-red); }
+.metric__value--amber  { color: var(--color-amber); }
+
+/* ── Cards & rows ── */
+
+.card--spaced { margin-bottom: var(--space-5); }
+.card--stack  { margin-bottom: var(--space-3); }
+
+.card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.card-row__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.card-row__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.score-card {
+  margin-bottom: var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.score-card__value {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+}
+
+.score-card__value--lg {
+  font-size: var(--text-xl);
+  margin-left: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* ── Banners & notices ── */
+
+.notice-banner {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.notice-banner--cyan {
+  background: var(--color-cyan-bg);
+  border: 0.5px solid var(--color-cyan);
+}
+
+.notice-banner--cyan .notice-banner__label {
+  color: var(--color-cyan);
+}
+
+.notice-banner--amber {
+  background: var(--color-amber-bg);
+  border: 0.5px solid var(--color-amber);
+}
+
+.notice-banner--amber-inline {
+  font-size: var(--text-xs);
+  color: var(--color-amber);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-amber-bg);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-2);
+}
+
+.notice-banner__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.notice-banner__title {
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+}
+
+.notice-banner__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.notice-banner__body {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.notice-banner__hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+}
+
+/* ── Lesson intro sublesson rows ── */
+
+.sublesson-row {
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.sublesson-row__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  flex-shrink: 0;
+  border: 0.5px solid var(--border-subtle);
+  background: var(--bg-panel);
+  color: var(--color-purple);
+}
+
+.sublesson-row__icon--done {
+  background: var(--color-green-bg);
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.sublesson-row__icon--current {
+  background: var(--color-cyan-bg);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+.sublesson-row__arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Quiz / lesson runner ── */
+
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.quiz-progress {
+  margin-bottom: var(--space-2);
+}
+
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.quiz-score {
+  color: var(--color-green);
+}
+
+/* ── Lesson complete ── */
+
+.lesson-complete {
+  text-align: center;
+  padding-top: var(--space-10);
+}
+
+.lesson-complete__pct {
+  font-family: var(--font-serif);
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.lesson-complete__grade {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-purple);
+  margin-bottom: var(--space-2);
+}
+
+.lesson-complete__summary {
+  margin-bottom: var(--space-8);
+}
+
+/* ── Score breakdown (progress page) ── */
+
+.score-breakdown__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+/* ── Settings ── */
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.settings-divider {
+  border-top: 0.5px solid var(--border-subtle);
+  margin: var(--space-3) 0;
+}
+
+.settings-footer {
+  text-align: center;
+  padding: var(--space-6) 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.settings-footer__brand {
+  font-family: 'Plus Jakarta Sans', var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: -0.3px;
+}
+
+.settings-footer__dot {
+  color: var(--color-purple);
+}
+
+/* ── Training ── */
+
+.page-title--training {
+  margin-bottom: var(--space-1);
+}
+
+.list-btn {
+  justify-content: space-between;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+}
+
+.list-btn--stack {
+  margin-bottom: var(--space-2);
+}
+
+.list-btn__title {
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+}
+
+.list-btn__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.list-btn__meta--amber {
+  color: var(--color-amber-bg);
+  opacity: 0.8;
+}
+
+.training-context {
+  font-size: var(--text-xs);
+  color: var(--color-amber);
+}
+
+.training-progress {
+  background: var(--color-amber-bg);
+  border-radius: var(--radius-sm);
+  height: 3px;
+  margin-bottom: var(--space-5);
+}
+
+.training-progress__fill {
+  height: 100%;
+  background: var(--color-amber);
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+}
+
+.chapter-card__number--practice {
+  color: var(--color-amber);
+  background: var(--color-amber-bg);
+  border-color: var(--color-amber);
+}
+
+.vocab-section {
+  margin-bottom: var(--space-7);
+}
+
+.vocab-section__title {
+  font-size: var(--text-sm);
+  color: var(--text-bright);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.vocab-section__subtitle {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+
+.vocab-group {
+  margin-bottom: var(--space-4);
+}
+
+.game-type-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.game-type-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.card--centered {
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.chapter-card--clickable {
+  cursor: pointer;
+}
+
+.list-btn--subtle {
+  border-color: var(--border-subtle);
+}
+
+.section-label--tight {
+  margin-bottom: var(--space-2);
+}
+
+.tag--inline {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.text-cyan { color: var(--color-cyan); }
+
+.empty-state--padded {
+  padding: var(--space-8) var(--space-4);
+}
+
+/* ── Rule nav placeholder ── */
+
+.btn--invisible {
+  visibility: hidden;
+}

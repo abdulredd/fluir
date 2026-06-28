@@ -3,50 +3,49 @@
 import Store from '../js/store.js';
 import { showToast, showConfirmSheet } from '../js/app.js';
 import { exportToAnki } from '../js/anki.js';
-import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
+import { ALL_CHAPTERS } from '../js/data/registry.js';
 import { isAudioFeatureEnabled } from '../js/audio.js';
 
 function renderSettings(container) {
   const settings    = Store.getSettings();
   const queue       = Store.getAnkiQueue();
-  const progress    = Store.getProgress();
   const allUnlocked         = settings.unlockAll         || false;
   const allPracticeUnlocked = settings.unlockAllPractice || false;
 
   container.innerHTML = `
     <div class="page active" id="page-settings">
 
-      <div style="margin-bottom:var(--space-6)">
-        <h2 style="font-family:var(--font-serif);color:var(--color-purple);font-weight:normal;margin-bottom:var(--space-2)">Settings</h2>
+      <div class="page-head page-head--spaced">
+        <h2 class="page-title mb-2">Settings</h2>
       </div>
 
       ${isAudioFeatureEnabled() ? `
       <div class="section-label">Audio</div>
-      <div class="card" style="margin-bottom:var(--space-5)">
-        <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:var(--space-2)">Audio pronunciation</div>
-        <div style="font-size:var(--text-xs);color:var(--text-muted)">Play audio for vocabulary items</div>
+      <div class="card card--spaced">
+        <div class="list-btn__title mb-2">Audio pronunciation</div>
+        <div class="text-xs text-muted">Play audio for vocabulary items</div>
       </div>
       ` : ''}
 
       <div class="section-label">Anki export</div>
-      <div class="card" style="margin-bottom:var(--space-5)">
-        <div style="margin-bottom:var(--space-3)">
-          <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:4px">Export vocabulary to Anki</div>
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-2)">${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} pending · ${queue.exported.length} already exported</div>
-          ${queue.exported.length > 0 ? `<div style="font-size:var(--text-xs);color:var(--color-cyan)">Previously exported cards will not be duplicated.</div>` : ''}
+      <div class="card card--spaced">
+        <div class="mb-3">
+          <div class="list-btn__title mb-2">Export vocabulary to Anki</div>
+          <div class="text-xs text-muted mb-2">${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} pending · ${queue.exported.length} already exported</div>
+          ${queue.exported.length > 0 ? `<div class="text-xs text-cyan">Previously exported cards will not be duplicated.</div>` : ''}
         </div>
         <button class="btn btn--amber btn--full" id="export-btn" ${queue.pending.length === 0 ? 'disabled' : ''}>
           ${queue.pending.length === 0 ? 'No cards pending export' : `Export ${queue.pending.length} card${queue.pending.length !== 1 ? 's' : ''} → Anki`}
         </button>
-        ${queue.pending.length > 0 ? `<div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)">Downloads a .apkg file — open it in Anki to import.</div>` : ''}
+        ${queue.pending.length > 0 ? `<div class="notice-banner__hint">Downloads a .apkg file — open it in Anki to import.</div>` : ''}
       </div>
 
       <div class="section-label">Power user</div>
-      <div class="card" style="margin-bottom:var(--space-5)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-2)">
+      <div class="card card--spaced">
+        <div class="settings-row">
           <div>
-            <div style="font-size:var(--text-sm);color:var(--text-bright)">Unlock all chapters</div>
-            <div style="font-size:var(--text-xs);color:var(--text-muted)">Skip linear progression — access any chapter directly</div>
+            <div class="list-btn__title">Unlock all chapters</div>
+            <div class="text-xs text-muted">Skip linear progression — access any chapter directly</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="unlock-all-toggle" ${allUnlocked ? 'checked' : ''}>
@@ -54,14 +53,14 @@ function renderSettings(container) {
           </label>
         </div>
         ${allUnlocked ? `
-          <div style="font-size:var(--text-xs);color:var(--color-amber);padding:var(--space-2) var(--space-3);background:var(--color-amber-bg);border-radius:var(--radius-sm);margin-top:var(--space-2)">
+          <div class="notice-banner--amber-inline">
             All ${ALL_CHAPTERS.length} chapters unlocked. Chapters without lesson data yet show as "Coming soon."
           </div>` : ''}
-        <div style="border-top:0.5px solid var(--border-subtle);margin:var(--space-3) 0"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-2)">
+        <div class="settings-divider"></div>
+        <div class="settings-row">
           <div>
-            <div style="font-size:var(--text-sm);color:var(--text-bright)">Unlock all practice</div>
-            <div style="font-size:var(--text-xs);color:var(--text-muted)">Access Practice for any chapter without completing the lesson</div>
+            <div class="list-btn__title">Unlock all practice</div>
+            <div class="text-xs text-muted">Access Practice for any chapter without completing the lesson</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="unlock-practice-toggle" ${allPracticeUnlocked ? 'checked' : ''}>
@@ -69,20 +68,20 @@ function renderSettings(container) {
           </label>
         </div>
         ${allPracticeUnlocked ? `
-          <div style="font-size:var(--text-xs);color:var(--color-amber);padding:var(--space-2) var(--space-3);background:var(--color-amber-bg);border-radius:var(--radius-sm);margin-top:var(--space-2)">
+          <div class="notice-banner--amber-inline">
             All ${ALL_CHAPTERS.length} practice chapters unlocked.
           </div>` : ''}
       </div>
 
       <div class="section-label">Data</div>
-      <div class="card" style="margin-bottom:var(--space-5)">
-        <div style="font-size:var(--text-sm);color:var(--text-bright);margin-bottom:var(--space-2)">Reset all data</div>
-        <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">Clears all chapters, progress, and settings. This cannot be undone.</div>
+      <div class="card card--spaced">
+        <div class="list-btn__title mb-2">Reset all data</div>
+        <div class="text-xs text-muted mb-3">Clears all chapters, progress, and settings. This cannot be undone.</div>
         <button class="btn btn--danger btn--full" id="reset-btn">Reset Fluir</button>
       </div>
 
-      <div style="text-align:center;padding:var(--space-6) 0;font-size:var(--text-xs);color:var(--text-muted)">
-        <span style="font-family:'Plus Jakarta Sans',var(--font-sans);font-size:var(--text-sm);font-weight:600;color:var(--text-bright);letter-spacing:-0.3px">fluir<span style="color:var(--color-purple)">.</span></span> · Companion App to Easy Spanish Step-by-Step
+      <div class="settings-footer">
+        <span class="settings-footer__brand">fluir<span class="settings-footer__dot">.</span></span> · Companion App to Easy Spanish Step-by-Step
       </div>
 
     </div>

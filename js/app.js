@@ -1,6 +1,7 @@
 /* ─── Fluir · App — boot, routing, nav ──────────────────────────────────── */
 
 import Store from './store.js';
+import { escapeHtml } from './utils.js';
 import { renderHome }     from '../pages/home.js';
 import { renderProgress } from '../pages/progress.js';
 import { renderSettings } from '../pages/settings.js';
@@ -83,11 +84,11 @@ function showConfirmSheet({ title, body, confirmLabel = 'Continue', cancelLabel 
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
   sheet.innerHTML = `
-    <div class="confirm-sheet__title">${title}</div>
-    <div class="confirm-sheet__body">${body}</div>
+    <div class="confirm-sheet__title">${escapeHtml(title)}</div>
+    <div class="confirm-sheet__body">${escapeHtml(body)}</div>
     <div class="confirm-sheet__actions">
-      <button class="btn btn--danger btn--full" id="cs-confirm">${confirmLabel}</button>
-      <button class="btn btn--ghost btn--full" id="cs-cancel">${cancelLabel}</button>
+      <button class="btn btn--danger btn--full" id="cs-confirm">${escapeHtml(confirmLabel)}</button>
+      <button class="btn btn--ghost btn--full" id="cs-cancel">${escapeHtml(cancelLabel)}</button>
     </div>
   `;
 
@@ -110,11 +111,11 @@ function showChoiceSheet({ title, body = '', actions = [] }) {
   const sheet = document.createElement('div');
   sheet.className = 'confirm-sheet';
   sheet.innerHTML = `
-    <div class="confirm-sheet__title">${title}</div>
-    ${body ? `<div class="confirm-sheet__body">${body}</div>` : ''}
+    <div class="confirm-sheet__title">${escapeHtml(title)}</div>
+    ${body ? `<div class="confirm-sheet__body">${escapeHtml(body)}</div>` : ''}
     <div class="confirm-sheet__actions">
       ${actions.map((a, i) => `
-        <button class="btn ${a.className || ''} btn--full" data-action="${i}">${a.label}</button>
+        <button class="btn ${a.className || ''} btn--full" data-action="${i}">${escapeHtml(a.label)}</button>
       `).join('')}
     </div>
   `;

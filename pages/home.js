@@ -1,29 +1,11 @@
 /* ─── Fluir · Home — chapter map ────────────────────────────────────────── */
 
 import Store from '../js/store.js';
-import { ALL_CHAPTERS } from '../js/data/chapters-list.js';
+import { ALL_CHAPTERS } from '../js/data/registry.js';
 import { isLessonUnlocked } from '../js/chapters/access.js';
+import { getWeekDays, weekStreakHTML } from '../js/streak.js';
 
 const CHAPTERS = ALL_CHAPTERS;
-
-function getWeekDays(progress) {
-  const todayDate = new Date();
-  const todayStr  = todayDate.toISOString().split('T')[0];
-
-  const dow    = todayDate.getDay();
-  const offset = dow === 0 ? -6 : 1 - dow;
-  const monday = new Date(todayDate);
-  monday.setDate(todayDate.getDate() + offset);
-
-  const studied = new Set(progress.studyDates || []);
-
-  return ['M','T','W','T','F','S','S'].map((label, i) => {
-    const date    = new Date(monday);
-    date.setDate(monday.getDate() + i);
-    const dateStr = date.toISOString().split('T')[0];
-    return { label, lit: studied.has(dateStr), future: dateStr > todayStr };
-  });
-}
 
 function renderHome(container) {
   const progress  = Store.getProgress();
@@ -35,35 +17,25 @@ function renderHome(container) {
   container.innerHTML = `
     <div class="page active" id="page-home">
 
-      <div class="week-streak">
-        ${weekDays.map(d => `
-          <div class="week-streak__day">
-            <div class="week-streak__label">${d.label}</div>
-            ${d.lit
-              ? `<div class="week-streak__flame">🔥</div>`
-              : `<div class="week-streak__dot ${d.future ? 'week-streak__dot--future' : ''}"></div>`
-            }
-          </div>
-        `).join('')}
-      </div>
+      ${weekStreakHTML(weekDays)}
 
       <div class="metrics-row">
         <div class="metric">
-          <div class="metric__value" style="color:var(--color-green)">${completed}</div>
+          <div class="metric__value metric__value--green">${completed}</div>
           <div class="metric__label">Done</div>
         </div>
         <div class="metric">
-          <div class="metric__value" style="color:var(--color-cyan)">${total - completed}</div>
+          <div class="metric__value metric__value--cyan">${total - completed}</div>
           <div class="metric__label">Remaining</div>
         </div>
         <div class="metric">
-          <div class="metric__value" style="color:var(--color-purple)">${pct}%</div>
+          <div class="metric__value metric__value--purple">${pct}%</div>
           <div class="metric__label">Complete</div>
         </div>
       </div>
 
-      <div class="progress-track" style="margin-bottom:var(--space-6)">
-        <div class="progress-fill" style="width:${pct}%"></div>
+      <div class="progress-track mb-6">
+        <div class="progress-fill progress-fill--purple" style="width:${pct}%"></div>
       </div>
 
       <div class="section-label">Chapters</div>

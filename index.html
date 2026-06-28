@@ -22,31 +22,7 @@
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
-
-  <style>
-    /* Toggle switch for settings */
-    .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle__track {
-      position: absolute; inset: 0;
-      background: var(--bg-raised);
-      border: 0.5px solid var(--border-subtle);
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background var(--transition-base), border-color var(--transition-base);
-    }
-    .toggle__track::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      transition: transform var(--transition-base), background var(--transition-base);
-    }
-    .toggle input:checked + .toggle__track { background: var(--color-cyan-bg); border-color: var(--color-cyan); }
-    .toggle input:checked + .toggle__track::after { transform: translateX(20px); background: var(--color-cyan); }
-  </style>
+  <link rel="stylesheet" href="/css/pages.css">
 </head>
 <body>
 
@@ -56,13 +32,13 @@
     <header class="topbar">
       <a id="topbar-logo" class="topbar__logo" href="#/">fluir<span class="topbar__logo-dot">.</span></a>
       <div class="topbar__meta">
-        <div style="color:var(--text-muted);font-size:var(--text-xs)">Easy Spanish Step-by-Step</div>
-        <div style="color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;opacity:0.6">Companion App</div>
+        <div class="topbar__book">Easy Spanish Step-by-Step</div>
+        <div class="topbar__tagline">Companion App</div>
       </div>
     </header>
 
     <!-- Main content — pages render here -->
-    <main id="main-content" style="flex:1"></main>
+    <main id="main-content"></main>
 
     <!-- Bottom nav -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">

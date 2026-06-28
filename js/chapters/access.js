@@ -1,7 +1,7 @@
 /* ─── Fluir · Chapter access policy ────────────────────────────────────────
    Single source of truth for lesson and practice unlock rules.
-   Catalog fields (title, hasContent) live in chapters-list.js; user state
-   in Store progress/settings. Access is always derived — never stored on data.
+   Catalog fields (title, hasContent) live in registry.js (via chapters-list.js);
+   user state in Store progress/settings. Access is always derived — never stored on data.
    ─────────────────────────────────────────────────────────────────────────── */
 
 /**

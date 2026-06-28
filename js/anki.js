@@ -9,28 +9,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 import Store from './store.js';
-import { VOCAB_KEYS, vocabItemId } from './data/vocab-keys.js';
-import CHAPTER_1  from './data/chapter1.js';
-import CHAPTER_2  from './data/chapter2.js';
-import CHAPTER_3  from './data/chapter3.js';
-import CHAPTER_4  from './data/chapter4.js';
-import CHAPTER_5  from './data/chapter5.js';
-import CHAPTER_6  from './data/chapter6.js';
-import CHAPTER_7  from './data/chapter7.js';
-import CHAPTER_8  from './data/chapter8.js';
-import CHAPTER_9  from './data/chapter9.js';
-import CHAPTER_10 from './data/chapter10.js';
-import CHAPTER_11 from './data/chapter11.js';
-import CHAPTER_12 from './data/chapter12.js';
-import CHAPTER_13 from './data/chapter13.js';
-import CHAPTER_14 from './data/chapter14.js';
-import CHAPTER_15 from './data/chapter15.js';
-
-const CHAPTERS = {
-  1: CHAPTER_1,   2: CHAPTER_2,   3: CHAPTER_3,   4: CHAPTER_4,   5: CHAPTER_5,
-  6: CHAPTER_6,   7: CHAPTER_7,   8: CHAPTER_8,   9: CHAPTER_9,   10: CHAPTER_10,
-  11: CHAPTER_11, 12: CHAPTER_12, 13: CHAPTER_13, 14: CHAPTER_14, 15: CHAPTER_15,
-};
+import { CHAPTERS, VOCAB_KEYS, vocabItemId } from './data/registry.js';
 
 /* ── sql.js and JSZip are loaded via CDN script tags in index.html ── */
 
