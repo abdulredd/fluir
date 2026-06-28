@@ -79,4 +79,15 @@ describe('Chapter 1 textbook coverage', () => {
     assert.ok(adjQs.some(q => q.noun?.number === 'pl'));
     assert.ok(adjQs.every(q => q.noun?.plural));
   });
+
+  it('suerte has no plural form (uncountable in Ch1)', () => {
+    const suerte = SUBLESSON_1.vocabulary.find(v => v.es === 'suerte');
+    assert.ok(suerte);
+    assert.equal(suerte.plural, undefined);
+  });
+
+  it('lección uses the -ión gender rule key', () => {
+    const leccion = SUBLESSON_1.vocabulary.find(v => v.es === 'lección');
+    assert.equal(leccion.rule, 'ends_ion');
+  });
 });

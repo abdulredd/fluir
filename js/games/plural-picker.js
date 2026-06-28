@@ -75,7 +75,7 @@ export function gamePluralPicker(container, question, onAnswer) {
   bindChoiceButtons(container, choicesEl, feedback, options, {
     feedbackHtml: ok => {
       if (ok) return `✓ Correct — <em>${correctLabel}</em>`;
-      const ruleKey = vocab.rule?.includes('cion') ? 'cion_plural'
+      const ruleKey = /cion|ends_ion/.test(vocab.rule || '') ? 'cion_plural'
         : pluralArticle === 'las' ? (endsVowel ? 'vowel_fem' : 'cons_fem')
         : (endsVowel ? 'vowel_masc' : 'cons_masc');
       return `✗ <em>${correctLabel}</em> — ${ruleText(ruleKey, PLURAL_RULES)}`;

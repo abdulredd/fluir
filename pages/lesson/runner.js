@@ -26,29 +26,53 @@ import {
  * @param {boolean} autoSkipRules
  * @param {LessonApi} api
  */
-function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score, autoSkipRules, api) {
-  if (qIndex >= questions.length) {
-    api.startSubLesson(container, chapter, subIndex + 1, score, false, autoSkipRules);
+function finishSublesson(container, chapter, subIndex, score, api) {
+  const prior     = Store.getLessonState(chapter.id);
+  const nextIndex = subIndex + 1;
+
+  Store.recordSublessonScore(chapter.id, subIndex, score);
+  Store.saveLessonState(chapter.id, {
+    subIndex:       Math.max(prior?.subIndex ?? 0, nextIndex),
+    activeSubIndex: nextIndex,
+    qIndex:         0,
+    questions:      [],
+    sessionCorrect: score.correct,
+    sessionTotal:   score.total,
+  }, { markComplete: subIndex });
+
+  const aggregate = Store.getChapterAggregateScore(chapter.id, chapter.sublessons.length);
+  if (aggregate) {
+    renderLessonComplete(container, chapter, aggregate);
     return;
   }
 
+  api.renderChapterIntro(container, chapter);
+}
+
+function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex, score, autoSkipRules, api) {
+  if (qIndex >= questions.length) {
+    finishSublesson(container, chapter, subIndex, score, api);
+    return;
+  }
+
+  const prior = Store.getLessonState(chapter.id);
   Store.saveLessonState(chapter.id, {
-    subIndex,
+    subIndex:       prior?.subIndex ?? subIndex,
+    activeSubIndex: subIndex,
     qIndex,
     questions,
     sessionCorrect: score.correct,
     sessionTotal:   score.total,
-    savedAt:        Date.now(),
   });
 
   const q    = questions[qIndex];
-  const prog = Math.round(
-    ((subIndex / chapter.sublessons.length) +
-     (qIndex / (questions.length * chapter.sublessons.length))) * 100
-  );
+  const prog = questions.length > 0
+    ? Math.round(((qIndex + 1) / questions.length) * 100)
+    : 0;
 
   const hasRules = (sublesson.rules || []).length > 0;
   const gameContent = el('div', { id: 'game-content' });
+  const scoreEl = el('span', { className: 'text-xs quiz-score', text: `${score.correct} correct` });
 
   mountPage(container, [
     lessonQuizHeader({
@@ -68,7 +92,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
     progressBar(Math.max(prog, 5), { trackClass: 'quiz-progress' }),
     el('div', { className: 'quiz-meta' },
       el('span', { className: 'text-xs text-muted', text: `${qIndex + 1} of ${questions.length}` }),
-      el('span', { className: 'text-xs quiz-score', text: `${score.correct} correct` }),
+      scoreEl,
     ),
     gameContent,
   ]);
@@ -77,6 +101,7 @@ function runQuestions(container, chapter, sublesson, subIndex, questions, qIndex
     if (score.total === 0) Store.recordStudySession();
     if (isCorrect) score.correct++;
     score.total++;
+    scoreEl.textContent = `${score.correct} correct`;
   }
 
   gameContent.addEventListener('game:next', () => {

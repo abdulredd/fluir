@@ -141,7 +141,7 @@ function bindChoiceButtons(container, choicesEl, feedback, options, config) {
  * @param {Element|null} [config.checkBtn]
  * @param {(value: string) => string} [config.normalize]
  * @param {(value: string) => boolean} config.isCorrect
- * @param {(isCorrect: boolean) => string} config.feedbackHtml
+ * @param {(isCorrect: boolean, value: string) => string} config.feedbackHtml
  * @param {(isCorrect: boolean) => void} config.onAnswer
  */
 function bindTextCheck(container, feedback, config) {
@@ -165,7 +165,7 @@ function bindTextCheck(container, feedback, config) {
     input.className = `text-input ${ok ? 'correct' : 'wrong'}`;
     checkBtn?.classList.add('hidden');
 
-    const html = feedbackHtml(ok);
+    const html = feedbackHtml(ok, val);
     if (ok) feedbackCorrect(feedback, html);
     else feedbackWrong(feedback, html);
 

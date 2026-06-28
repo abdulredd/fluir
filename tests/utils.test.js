@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { shuffle, escapeHtml, scoreTierClass, scoreTierProgressClass } from '../js/utils.js';
+import { shuffle, escapeHtml, scoreTierClass, scoreTierProgressClass, foldAccents, spanishTextEquals, accentSpellingNote } from '../js/utils.js';
 
 describe('shuffle', () => {
   it('returns a new array with the same elements', () => {
@@ -45,5 +45,29 @@ describe('scoreTierProgressClass', () => {
     assert.equal(scoreTierProgressClass(70), 'progress-fill--amber');
     assert.equal(scoreTierProgressClass(60), 'progress-fill--amber');
     assert.equal(scoreTierProgressClass(40), 'progress-fill--red');
+  });
+});
+
+describe('spanishTextEquals', () => {
+  it('matches answers that differ only by accents or ñ', () => {
+    assert.equal(spanishTextEquals('el telefono', 'el teléfono'), true);
+    assert.equal(spanishTextEquals('la nina', 'la niña'), true);
+    assert.equal(spanishTextEquals('el gato', 'la gato'), false);
+  });
+
+  it('foldAccents strips combining marks', () => {
+    assert.equal(foldAccents('Teléfono'), 'telefono');
+    assert.equal(foldAccents('niño'), 'nino');
+  });
+});
+
+describe('accentSpellingNote', () => {
+  it('notes standard spelling when accents were omitted', () => {
+    const note = accentSpellingNote('el telefono', 'el teléfono');
+    assert.match(note, /teléfono/);
+  });
+
+  it('returns empty when spelling already matches', () => {
+    assert.equal(accentSpellingNote('el teléfono', 'el teléfono'), '');
   });
 });

@@ -3,8 +3,19 @@
 /** @import { LessonQuestion } from '../types.js' */
 
 import { el } from '../dom.js';
+import { spanishTextEquals, accentSpellingNote } from '../utils.js';
 import { ruleText } from './shared.js';
 import { renderGameShell, bindTextCheck, skipToNext } from './ui.js';
+
+function bindTranslationCheck(container, feedback, { input, checkBtn, correct, feedbackHtml, onAnswer }) {
+  bindTextCheck(container, feedback, {
+    input,
+    checkBtn,
+    isCorrect: val => spanishTextEquals(val, correct),
+    feedbackHtml: (ok, val) => feedbackHtml(ok, val) + (ok ? accentSpellingNote(val, correct) : ''),
+    onAnswer,
+  });
+}
 
 export function gameTranslation(container, question, onAnswer) {
   const { vocab, mode } = question;
@@ -23,18 +34,20 @@ export function gameTranslation(container, question, onAnswer) {
       feedbackClass: 'feedback--spaced',
       middle: [
         el('div', { className: 'es-large es-large--cyan es-large--loose', text: displayEn }),
-        el('input', {
-          className: 'text-input', id: 'trans-inp', placeholder: 'los/las + word…',
-          autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
-        }),
-        el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
+        el('div', { className: 'game-text-check' },
+          el('input', {
+            className: 'text-input', id: 'trans-inp', placeholder: 'los/las + word…',
+            autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
+          }),
+          el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
+        ),
       ],
     });
 
-    bindTextCheck(container, feedback, {
+    bindTranslationCheck(container, feedback, {
       input:    container.querySelector('#trans-inp'),
       checkBtn: container.querySelector('#check-btn'),
-      isCorrect: val => val === correct,
+      correct,
       feedbackHtml: ok => ok
         ? `✓ <em>${correct}</em> — ${displayEn}`
         : `✗ The answer is <em>${correct}</em> — ${ruleText(vocab.rule)}`,
@@ -67,18 +80,20 @@ export function gameTranslation(container, question, onAnswer) {
     feedbackClass: 'feedback--spaced',
     middle: [
       el('div', { className: 'es-large es-large--cyan es-large--loose', text: `the ${displayEn}` }),
-      el('input', {
-        className: 'text-input', id: 'trans-inp', placeholder: 'el/la + word…',
-        autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
-      }),
-      el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
+      el('div', { className: 'game-text-check' },
+        el('input', {
+          className: 'text-input', id: 'trans-inp', placeholder: 'el/la + word…',
+          autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
+        }),
+        el('button', { className: 'btn btn--primary', id: 'check-btn', text: 'Check' }),
+      ),
     ],
   });
 
-  bindTextCheck(container, feedback, {
+  bindTranslationCheck(container, feedback, {
     input:    container.querySelector('#trans-inp'),
     checkBtn: container.querySelector('#check-btn'),
-    isCorrect: val => val === correct,
+    correct,
     feedbackHtml: ok => ok
       ? `✓ <em>${correct}</em> — ${vocab.en}`
       : `✗ The answer is <em>${correct}</em> — ${ruleText(vocab.rule)}`,

@@ -227,6 +227,24 @@
   margin-top: var(--space-2);
 }
 
+.notice-banner__discard {
+  display: block;
+  margin-top: var(--space-3);
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.notice-banner__discard:hover {
+  color: var(--text-primary);
+}
+
 /* ── Lesson intro sublesson rows ── */
 
 .sublesson-row {
@@ -270,6 +288,13 @@ button.sublesson-row {
   background: var(--color-cyan-bg);
   border-color: var(--color-cyan);
   color: var(--color-cyan);
+}
+
+.sublesson-row__icon--done.sublesson-row__icon--current {
+  background: var(--color-green-bg);
+  border-color: var(--color-cyan);
+  color: var(--color-green);
+  box-shadow: 0 0 0 1px var(--color-cyan);
 }
 
 .sublesson-row__arrow {

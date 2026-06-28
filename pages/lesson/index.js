@@ -53,13 +53,14 @@ function createLessonFlow() {
         return;
       }
 
+      const prior = Store.getLessonState(chapter.id);
       Store.saveLessonState(chapter.id, {
-        subIndex,
+        subIndex:       prior?.subIndex ?? subIndex,
+        activeSubIndex: subIndex,
         qIndex:         resumeFromQ,
         questions,
         sessionCorrect: sessionScore.correct,
         sessionTotal:   sessionScore.total,
-        savedAt:        Date.now(),
       });
 
       api.runQuestions(container, chapter, sublesson, subIndex, questions, resumeFromQ, { ...sessionScore }, autoSkipRules);

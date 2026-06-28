@@ -126,9 +126,9 @@ function reviewAllRules(container, chapter, api) {
     ruleCount: entries.length,
     getRule:   (i) => entries[i].rule,
     getBadgeLabel: (i) => `Lesson ${entries[i].sublessonNumber} · ${entries[i].sublesson.title}`,
-    lastLabel: 'Begin Lesson →',
+    lastLabel: 'Back to chapter →',
     onBack:    () => api.renderChapterIntro(container, chapter),
-    onFinish:  () => api.startSubLesson(container, chapter, 0, { correct: 0, total: 0 }, true, true),
+    onFinish:  () => api.renderChapterIntro(container, chapter),
   });
 }
 

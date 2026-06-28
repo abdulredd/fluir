@@ -16,6 +16,7 @@ function getForm(adj, gender, number) {
   }
   if (number === 'pl') {
     if (adj.es === 'joven') return 'jóvenes';
+    if (/z$/i.test(form)) return form.slice(0, -1) + 'ces';
     const endsVowel = /[aeiouáéíóú]$/i.test(form);
     form = endsVowel ? form + 's' : form + 'es';
   }
@@ -72,7 +73,8 @@ export function gameAdjectiveAgreement(container, question, onAnswer) {
         const phrase = `<em>${article} ${nounWord} ${correctForm}</em>`;
         if (ok) return `✓ Correct — ${phrase}`;
         const rule = number === 'pl'
-          ? (adjective.endsO ? ADJ_RULES.plural_vowel : ADJ_RULES.plural_cons)
+          ? (/z$/i.test(adjective.es) ? ADJ_RULES.plural_z
+            : adjective.endsO ? ADJ_RULES.plural_vowel : ADJ_RULES.plural_cons)
           : (adjective.endsO ? ADJ_RULES.a_fem : ADJ_RULES.invariable);
         return `✗ ${phrase} — ${rule}`;
       },
@@ -80,3 +82,5 @@ export function gameAdjectiveAgreement(container, question, onAnswer) {
     },
   );
 }
+
+export { getForm as getAdjectiveForm };

@@ -46,14 +46,22 @@ function appendStudyDate(dates, dateStr) {
 }
 
 function normalizeProgress(raw) {
-  if (!raw) return { ...DEFAULT_PROGRESS };
+  if (!raw) {
+    return {
+      ...DEFAULT_PROGRESS,
+      studyDates:       [],
+      chaptersStarted:  [],
+      chaptersComplete: [],
+      lessonScores:     {},
+    };
+  }
   return {
     ...DEFAULT_PROGRESS,
     ...raw,
-    studyDates:       Array.isArray(raw.studyDates) ? raw.studyDates : [],
-    chaptersStarted:  raw.chaptersStarted  || [],
-    chaptersComplete: raw.chaptersComplete || [],
-    lessonScores:     raw.lessonScores     || {},
+    studyDates:       Array.isArray(raw.studyDates) ? [...raw.studyDates] : [],
+    chaptersStarted:  [...(raw.chaptersStarted || [])],
+    chaptersComplete: [...(raw.chaptersComplete || [])],
+    lessonScores:     { ...(raw.lessonScores || {}) },
   };
 }
 
@@ -180,22 +188,89 @@ const Store = {
 
   recordChapterComplete(id, score) {
     const progress = this.getProgress();
+    const prev     = progress.lessonScores[id] || {};
 
     if (!progress.chaptersComplete.includes(id)) {
       progress.chaptersComplete.push(id);
     }
 
-    if (!progress.lessonScores[id] || score > progress.lessonScores[id].best) {
-      progress.lessonScores[id] = {
-        best:     score,
-        attempts: (progress.lessonScores[id]?.attempts || 0) + 1,
-        date:     new Date().toISOString().split('T')[0],
-      };
-    } else {
-      progress.lessonScores[id].attempts++;
+    const attempts = (prev.attempts || 0) + 1;
+    let best = prev.best ?? 0;
+    let date = prev.date;
+
+    if (!prev.best || score > prev.best) {
+      best = score;
+      date = new Date().toISOString().split('T')[0];
     }
 
+    progress.lessonScores[id] = {
+      ...prev,
+      best,
+      attempts,
+      date,
+      sublessons: prev.sublessons || {},
+    };
+
     this.set(KEYS.PROGRESS, progress);
+  },
+
+  /**
+   * @param {number|string} chapterId
+   * @param {number} subIndex
+   * @param {{ correct: number, total: number }} run
+   */
+  recordSublessonScore(chapterId, subIndex, run) {
+    const progress = this.getProgress();
+    const pct      = run.total > 0 ? Math.round((run.correct / run.total) * 100) : 0;
+    const prevEntry  = progress.lessonScores[chapterId] || {};
+    const prevSubs   = prevEntry.sublessons || {};
+    const key        = String(subIndex);
+    const prev       = prevSubs[key];
+
+    let nextSub;
+    if (!prev || pct > prev.best || (pct === prev.best && run.correct > prev.correct)) {
+      nextSub = { best: pct, correct: run.correct, total: run.total, attempts: (prev?.attempts || 0) + 1 };
+    } else {
+      nextSub = { ...prev, attempts: prev.attempts + 1 };
+    }
+
+    progress.lessonScores[chapterId] = {
+      ...prevEntry,
+      sublessons: { ...prevSubs, [key]: nextSub },
+    };
+
+    this.set(KEYS.PROGRESS, progress);
+    return nextSub;
+  },
+
+  /**
+   * @param {number|string} chapterId
+   * @param {number} subIndex
+   * @returns {{ best: number, correct: number, total: number, attempts: number }|null}
+   */
+  getSublessonBest(chapterId, subIndex) {
+    return this.getProgress().lessonScores[chapterId]?.sublessons?.[String(subIndex)] ?? null;
+  },
+
+  /**
+   * Weighted chapter score from each sublesson's best run.
+   * @param {number|string} chapterId
+   * @param {number} sublessonCount
+   * @returns {{ correct: number, total: number }|null}
+   */
+  getChapterAggregateScore(chapterId, sublessonCount) {
+    const subs = this.getProgress().lessonScores[chapterId]?.sublessons;
+    if (!subs) return null;
+
+    let correct = 0;
+    let total   = 0;
+    for (let i = 0; i < sublessonCount; i++) {
+      const s = subs[String(i)];
+      if (!s) return null;
+      correct += s.correct;
+      total   += s.total;
+    }
+    return { correct, total };
   },
 
   getAnkiQueue() {
@@ -235,18 +310,50 @@ const Store = {
     return this.set(KEYS.SETTINGS, settings);
   },
 
-  /** @param {number|string} chapterId @param {Partial<LessonState>} state */
-  saveLessonState(chapterId, state) {
-    const all = this.get(KEYS.LESSON_STATE) || {};
+  /** @param {number|string} chapterId @param {Partial<LessonState>} state @param {{ markComplete?: number }} [opts] */
+  saveLessonState(chapterId, state, opts = {}) {
+    const all   = this.get(KEYS.LESSON_STATE) || {};
+    const prior = all[chapterId];
+
+    let completedSubs = state.completedSubs ?? prior?.completedSubs ?? [];
+    if (!completedSubs.length && (prior?.subIndex ?? 0) > 0) {
+      completedSubs = [...Array(prior.subIndex).keys()];
+    }
+    if (opts.markComplete != null) {
+      completedSubs = [...new Set([...completedSubs, opts.markComplete])].sort((a, b) => a - b);
+    }
+
     all[chapterId] = {
       subIndex:       state.subIndex,
+      activeSubIndex: state.activeSubIndex,
       qIndex:         state.qIndex,
       questions:      state.questions,
       sessionCorrect: state.sessionCorrect,
       sessionTotal:   state.sessionTotal,
+      completedSubs,
       savedAt:        Date.now(),
     };
     return this.set(KEYS.LESSON_STATE, all);
+  },
+
+  /**
+   * Sublesson indices the user has finished at least once.
+   * @param {LessonState|null} savedState
+   * @param {boolean} chapterComplete
+   * @param {number} sublessonCount
+   * @returns {Set<number>}
+   */
+  getCompletedSubs(savedState, chapterComplete, sublessonCount) {
+    if (chapterComplete) {
+      return new Set([...Array(sublessonCount).keys()]);
+    }
+    if (!savedState) return new Set();
+    if (Array.isArray(savedState.completedSubs) && savedState.completedSubs.length) {
+      return new Set(savedState.completedSubs);
+    }
+    const inferred = new Set();
+    for (let i = 0; i < (savedState.subIndex ?? 0); i++) inferred.add(i);
+    return inferred;
   },
 
   /** @param {number|string} chapterId @returns {LessonState|null} */

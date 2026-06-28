@@ -4,6 +4,7 @@ const GENDER_RULES = {
   ends_o:       'Most nouns ending in -o are masculine → el',
   ends_a:       'Most nouns ending in -a are feminine → la',
   ends_cion:    'Nouns ending in -ción are always feminine → la',
+  ends_ion:     'Nouns ending in -ión are always feminine → la',
   ends_sion:    'Nouns ending in -sión are always feminine → la',
   ends_dad:     'Nouns ending in -dad are always feminine → la',
   ends_tad:     'Nouns ending in -tad are always feminine → la',
@@ -30,6 +31,7 @@ const ADJ_RULES = {
   invariable:   'Adjectives not ending in -o have the same form for masculine and feminine nouns',
   plural_vowel: 'Adjectives ending in a vowel add -s to form the plural',
   plural_cons:  'Adjectives ending in a consonant add -es to form the plural',
+  plural_z:     'Adjectives ending in -z change z → c and add -es (feliz → felices)',
   position:     'In Spanish, adjectives almost always follow the noun they describe',
 };
 

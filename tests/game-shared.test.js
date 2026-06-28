@@ -34,3 +34,18 @@ describe('game shared helpers', () => {
     });
   });
 });
+
+describe('getAdjectiveForm', () => {
+  it('pluralizes -z adjectives with z → c + es', async () => {
+    const { getAdjectiveForm } = await import('../js/games/adjective.js');
+    const adj = { es: 'feliz', endsO: false };
+    assert.equal(getAdjectiveForm(adj, 'f', 'pl'), 'felices');
+    assert.equal(getAdjectiveForm(adj, 'm', 'pl'), 'felices');
+  });
+
+  it('keeps the joven → jóvenes exception', async () => {
+    const { getAdjectiveForm } = await import('../js/games/adjective.js');
+    const adj = { es: 'joven', endsO: false };
+    assert.equal(getAdjectiveForm(adj, 'm', 'pl'), 'jóvenes');
+  });
+});

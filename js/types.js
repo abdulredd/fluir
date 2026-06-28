@@ -76,7 +76,9 @@
 /**
  * Persisted mid-lesson resume state (see Store.saveLessonState).
  * @typedef {object} LessonState
- * @property {number} subIndex
+ * @property {number} subIndex — next sublesson index / count completed (never decreases)
+ * @property {number} [activeSubIndex] — sublesson currently being quizzed (when questions saved)
+ * @property {number[]} [completedSubs] — sublesson indices finished at least once
  * @property {number} qIndex
  * @property {LessonQuestion[]} questions
  * @property {number} sessionCorrect

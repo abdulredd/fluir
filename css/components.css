@@ -277,6 +277,7 @@ button.chapter-card {
 }
 
 .feedback.show   { display: block; }
+.feedback--spaced.show { margin-top: var(--space-3); }
 .feedback.correct { background: var(--color-green-bg); color: var(--color-green); border: 0.5px solid var(--color-green); }
 .feedback.wrong   { background: var(--color-red-bg);   color: var(--color-red);   border: 0.5px solid var(--color-red); }
 .feedback.info    { background: var(--color-cyan-bg);  color: var(--color-cyan);  border: 0.5px solid var(--color-cyan); }
@@ -387,7 +388,11 @@ button.chapter-card {
 .game-card-spaced   { margin-bottom: var(--space-5); }
 .game-plural-row    { display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2); }
 .game-plural-article { font-size: var(--text-sm); color: var(--text-muted); }
-.game-trans-input   { margin-bottom: var(--space-3); }
+.game-text-check    { display: flex; flex-direction: column; align-items: flex-start; }
+.game-text-check .text-input { margin-bottom: var(--space-4); }
+.game-text-check #check-btn  { margin-top: var(--space-3); }
+.game-body > .lesson-translation:not(.lesson-translation--loose) { margin-bottom: var(--space-4); }
+.game-body > #check-btn { margin-top: var(--space-3); }
 .game-verb-em       { color: var(--color-purple); }
 
 /* ── Confirm sheet ── */

@@ -46,7 +46,7 @@ const SUBLESSON_1 = {
         { es: 'la canción', en: 'the song',  note: '-ción → feminine' },
         { es: 'la ciudad',  en: 'the city',  note: '-dad → feminine' },
       ],
-      tip: 'Watch out — some nouns ending in -a are masculine: el día, el mapa, el problema.',
+      tip: 'Watch out — some nouns ending in -a are masculine: el día, el mapa, el problema, and nouns ending in -ma (poema, sistema, programa).',
     },
     {
       id: 'r4',
@@ -55,6 +55,17 @@ const SUBLESSON_1 = {
       examples: [
         { es: 'el libro → los libros',    en: 'the book → the books' },
         { es: 'la ciudad → las ciudades', en: 'the city → the cities', note: 'consonant + es' },
+      ],
+    },
+    {
+      id: 'r5',
+      heading: '-ista and -nte nouns',
+      body: 'Nouns ending in -ista or -nte often refer to people. They can be masculine or feminine — the article (el or la) shows the gender.',
+      examples: [
+        { es: 'el artista',      en: 'the (male) artist' },
+        { es: 'la artista',     en: 'the (female) artist' },
+        { es: 'el estudiante',  en: 'the (male) student' },
+        { es: 'la estudiante',  en: 'the (female) student' },
       ],
     },
   ],
@@ -117,7 +128,7 @@ const SUBLESSON_1 = {
     { id:'v1_49', es:'canción',      en:'song',           gender:'f', rule:'ends_cion',   article:'la',    plural:'canciones',    ex:'La canción es maravillosa.',     exEn:'The song is marvelous.' },
     { id:'v1_50', es:'conversación', en:'conversation',   gender:'f', rule:'ends_cion',   article:'la',    plural:'conversaciones',ex:'La conversación es interesante.',exEn:'The conversation is interesting.' },
     { id:'v1_51', es:'invitación',   en:'invitation',     gender:'f', rule:'ends_cion',   article:'la',    plural:'invitaciones', ex:'La invitación es para la fiesta.',exEn:'The invitation is for the party.' },
-    { id:'v1_52', es:'lección',      en:'lesson',         gender:'f', rule:'ends_cion',   article:'la',    plural:'lecciones',    ex:'La lección es difícil.',         exEn:'The lesson is difficult.' },
+    { id:'v1_52', es:'lección',      en:'lesson',         gender:'f', rule:'ends_ion',    article:'la',    plural:'lecciones',    ex:'La lección es difícil.',         exEn:'The lesson is difficult.' },
     { id:'v1_53', es:'ilusión',      en:'illusion',       gender:'f', rule:'ends_sion',   article:'la',    plural:'ilusiones',    ex:'La ilusión es fantástica.',      exEn:'The illusion is fantastic.' },
     { id:'v1_54', es:'televisión',   en:'television',     gender:'f', rule:'ends_sion',   article:'la',    plural:'televisiones', ex:'La televisión es grande.',       exEn:'The television is big.' },
     /* Feminine -dad/-tad/-tud */
@@ -134,7 +145,7 @@ const SUBLESSON_1 = {
     { id:'v1_63', es:'flor',     en:'flower',             gender:'f', rule:'fem_irreg',   article:'la',    plural:'flores',       ex:'La flor es amarilla.',           exEn:'The flower is yellow.' },
     { id:'v1_64', es:'luz',      en:'light',              gender:'f', rule:'fem_irreg',   article:'la',    plural:'luces',        ex:'La luz es verde.',               exEn:'The light is green.' },
     { id:'v1_65', es:'mujer',    en:'woman',              gender:'f', rule:'fem_irreg',   article:'la',    plural:'mujeres',      ex:'La mujer hermosa es la doctora.',exEn:'The beautiful woman is the doctor.' },
-    { id:'v1_66', es:'suerte',   en:'luck',               gender:'f', rule:'fem_irreg',   article:'la',    plural:'suertes',      ex:'La suerte es buena.',            exEn:'The luck is good.' },
+    { id:'v1_66', es:'suerte',   en:'luck',               gender:'f', rule:'fem_irreg',   article:'la',    ex:'La suerte es buena.',            exEn:'The luck is good.' },
     { id:'v1_75', es:'piel',     en:'skin',               gender:'f', rule:'fem_irreg',   article:'la',    plural:'pieles',       ex:'La piel es suave.',              exEn:'The skin is soft.' },
     /* -ista */
     { id:'v1_67', es:'artista',  en:'artist',             gender:'n', rule:'ista_gender', article:'el/la', plural:'artistas',     ex:'El artista es famoso.',          exEn:'The artist is famous.' },
@@ -300,7 +311,7 @@ const SUBLESSON_3 = {
     { id:'a1_33', es:'maravilloso',en:'marvelous',   endsO:true,  ex:'La canción maravillosa es nueva.', exEn:'The marvelous song is new.' },
     { id:'a1_34', es:'pequeño',  en:'small',         endsO:true,  ex:'El niño pequeño es alegre.',       exEn:'The small child is happy.' },
     { id:'a1_35', es:'pobre',    en:'poor',          endsO:false, ex:'El hombre pobre es triste.',       exEn:'The poor man is sad.' },
-    { id:'a1_36', es:'rico',     en:'rich',          endsO:true,  ex:'El hotel rico es caro.',           exEn:'The rich hotel is expensive.' },
+    { id:'a1_36', es:'rico',     en:'rich',          endsO:true,  ex:'El hombre rico es simpático.',    exEn:'The rich man is nice.' },
     { id:'a1_37', es:'simpático',en:'nice',          endsO:true,  ex:'La persona simpática es mi amiga.',exEn:'The nice person is my friend.' },
     { id:'a1_37b',es:'sincero',  en:'sincere',       endsO:true,  ex:'La gerente sincera es mi amiga.',  exEn:'The sincere manager is my friend.' },
     { id:'a1_37c',es:'tacaño',   en:'stingy',        endsO:true,  ex:'El hombre tacaño es pobre.',       exEn:'The stingy man is poor.' },

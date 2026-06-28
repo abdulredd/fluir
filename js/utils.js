@@ -10,6 +10,31 @@ function shuffle(arr) {
   return copy;
 }
 
+/** Lowercase and strip accents/ñ for lenient Spanish answer matching. */
+function foldAccents(str) {
+  return String(str ?? '')
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+}
+
+/** True when two Spanish strings match ignoring case, accents, and ñ/n. */
+function spanishTextEquals(a, b) {
+  return foldAccents(a) === foldAccents(b);
+}
+
+/**
+ * HTML note when the learner's answer is right but missing accents/ñ.
+ * @param {string} submitted — normalized learner input
+ * @param {string} canonical — canonical answer (preserves accents)
+ */
+function accentSpellingNote(submitted, canonical) {
+  const sub = String(submitted ?? '').trim().toLowerCase();
+  const can = String(canonical ?? '').trim().toLowerCase();
+  if (sub === can || !spanishTextEquals(sub, can)) return '';
+  return `<div class="text-xs text-muted" style="margin-top:6px">Standard spelling: <em>${canonical.trim()}</em></div>`;
+}
+
 function escapeHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;')
@@ -33,4 +58,4 @@ function scoreTierProgressClass(pct) {
   return 'progress-fill--red';
 }
 
-export { shuffle, escapeHtml, scoreTierClass, scoreTierProgressClass };
+export { shuffle, foldAccents, spanishTextEquals, accentSpellingNote, escapeHtml, scoreTierClass, scoreTierProgressClass };

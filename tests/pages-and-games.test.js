@@ -334,4 +334,23 @@ describe('game answer flows', () => {
     assert.equal(container.querySelectorAll('.option').length, 0);
     assert.equal(skipped, true);
   });
+
+  it('translation accepts answers without accents and notes standard spelling', async () => {
+    const { gameTranslation } = await import('../js/games/translation.js');
+    const container = mockContainer();
+    let result = null;
+
+    gameTranslation(container, {
+      type: 'translation',
+      vocab: { es: 'teléfono', en: 'telephone', article: 'el', rule: 'ends_o' },
+    }, (ok) => { result = ok; });
+
+    const input = container.querySelector('#trans-inp');
+    input.value = 'el telefono';
+    input.dispatchEvent({ type: 'keydown', key: 'Enter' });
+
+    assert.equal(result, true);
+    const feedback = container.querySelector('#feedback');
+    assert.match(feedback.innerHTML, /teléfono/);
+  });
 });
