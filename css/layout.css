@@ -1,34 +1,27 @@
 /* ─── Fluir · Layout ────────────────────────────────────────────────────── */
 
-/* ── App shell ──
-   Pin the whole shell to the viewport so chrome stays at the edges.
-   Only #main-content scrolls — never the page body. */
+/* ── App shell: topbar | scrollable main | bottom nav ── */
 
 #app {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--app-height, 100dvh);
-  max-width: var(--max-width);
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
   overflow: hidden;
-  overscroll-behavior: none;
   background: var(--bg-panel);
 }
 
 /* ── Topbar ── */
 
 .topbar {
-  flex-shrink: 0;
-  z-index: 100;
-  min-height: var(--topbar-height);
+  flex: none;
+  height: var(--topbar-total-height);
   padding-top: var(--safe-top);
   padding-left: calc(var(--space-4) + var(--safe-left));
   padding-right: calc(var(--space-4) + var(--safe-right));
-  padding-bottom: 0;
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border-muted);
   display: flex;
@@ -81,15 +74,8 @@
 /* ── Bottom nav ── */
 
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  width: 100%;
-  max-width: var(--max-width);
-  margin-inline: auto;
-  min-height: var(--nav-height);
+  flex: none;
+  height: var(--nav-total-height);
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
@@ -98,7 +84,6 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  box-sizing: border-box;
 }
 
 .nav-item {

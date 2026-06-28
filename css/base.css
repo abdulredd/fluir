@@ -7,26 +7,34 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/*
+ * iOS PWA shell: lock the document to the visible viewport.
+ * Only #main-content scrolls — never html/body.
+ */
 html {
   font-size: 16px;
+  width: 100%;
   height: 100%;
-  height: -webkit-fill-available;
-  -webkit-text-size-adjust: 100%;
   overflow: hidden;
   overscroll-behavior: none;
   background-color: var(--bg-panel);
 }
 
 body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--text-primary);
   background-color: var(--bg-panel);
   line-height: 1.6;
-  height: 100%;
-  height: -webkit-fill-available;
-  overflow: hidden;
-  overscroll-behavior: none;
 }
 
 /* Swallow stray taps after navigation (iOS click-through). */

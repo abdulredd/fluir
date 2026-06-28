@@ -77,7 +77,6 @@
   --max-width:      480px;
   --nav-height:     56px;
   --topbar-height:  56px;
-  --app-height:     100dvh;
 
   /* iPhone safe areas (requires viewport-fit=cover in index.html) */
   --safe-top:    env(safe-area-inset-top, 0px);
@@ -86,12 +85,4 @@
   --safe-left:   env(safe-area-inset-left, 0px);
   --nav-total-height:    calc(var(--nav-height) + var(--safe-bottom));
   --topbar-total-height: calc(var(--topbar-height) + var(--safe-top));
-}
-
-/* iOS home-screen app: env() is sometimes 0 — pad for home indicator anyway */
-@media (display-mode: standalone) {
-  :root {
-    --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-    --nav-total-height: calc(var(--nav-height) + var(--safe-bottom));
-  }
 }
